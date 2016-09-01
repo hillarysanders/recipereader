@@ -1,3 +1,8 @@
+<!--load the poll application's css file in polls/static/polls/style.css. The %static% tag generates the full path: -->
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'polls/style.css' %}" />
+
+<h1>Poll application</h1>
 <h4>Polls:</h4>
 {% if latest_question_list %}
     <ul>
