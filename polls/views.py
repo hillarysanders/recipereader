@@ -3,6 +3,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader
 from django.http import Http404
 from django.urls import reverse
+from django.views import generic
 from .models import Question, Choice
 # Create your views here.
 
@@ -17,16 +18,16 @@ def index(request, **kwargs):
     # return HttpResponse(template.render(context, request))
     return render(request, 'polls/index.html', context)
 
+class DetailView(generic.DetailView):
+    # note that this uses a generic.DetailView
+    model = Question
+    template_name = 'polls/detail.html'
 
-def detail(request, question_id):
-    question = get_object_or_404(Question, pk=question_id)
-    return render(request, 'polls/detail.html', {'question': question})
 
-
-def results(request, question_id):
-    question = get_object_or_404(Question, pk=question_id)
-    return render(request, 'polls/results.html', {'question': question})
-
+class ResultsView(generic.DetailView):
+    # note that this uses a generic.DetailView
+    model = Question
+    template_name = 'polls/results.html'
 
 def vote(request, question_id):
     question = get_object_or_404(Question, pk=question_id)
