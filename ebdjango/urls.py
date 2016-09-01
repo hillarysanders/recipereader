@@ -29,7 +29,7 @@ urlpatterns = [
     # templates.
 
     # include URLs from polls/urls.py
-    url(r'^$', include('home.urls')),
     url(r'^polls/', include('polls.urls')),
     url(r'^admin/', admin.site.urls),
+    url(r'^', include('home.urls')),
 ]
