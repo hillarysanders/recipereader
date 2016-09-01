@@ -1,0 +1,13 @@
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
+
+# heavy files that will need to be added by hand:
+*.csv
+*.json
+*.png
+*.jpg
+*.jpeg
+*.zip
