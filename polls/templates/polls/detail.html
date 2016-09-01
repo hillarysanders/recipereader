@@ -4,3 +4,23 @@
     <li>{{ choice.choice_text }}</li>
 {% endfor %}
 </ul>
+
+<h1>{{ question.question_text }}</h1>
+
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+<!--the method="post" part makes it so that submitting this form will alter data server side.-->
+<!--obviously quite different from method="get"-->
+<form action="{% url 'polls:vote' question.id %}" method="post">
+<!--the csrf token protects against  Cross Site Request Forgeries.-->
+<!--All POST forms that are targeted at an internal URL should us this tag: -->
+{% csrf_token %}
+{% for choice in question.choice_set.all %}
+    <!--note the use of forloop counter object: -->
+    <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}" />
+    <!--This label tag is in essence wrapped around the above input; they're tied together by the id (above)
+    and for (below) attributes. -->
+    <label for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label><br />
+{% endfor %}
+<input type="submit" value="Vote" />
+</form>
