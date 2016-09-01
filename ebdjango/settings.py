@@ -30,13 +30,17 @@ ALLOWED_HOSTS = []
 
 # Application definition
 
+# note: the migrate command will only run migrations (create database tables) for apps in INSTALLED_APPS:
 INSTALLED_APPS = [
+    # all of these come with django by default
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # homemade apps:
+    'polls.apps.PollsConfig',
 ]
 
 MIDDLEWARE_CLASSES = [

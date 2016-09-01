@@ -1,0 +1,22 @@
+<h4>Polls:</h4>
+{% if latest_question_list %}
+    <ul>
+    {% for question in latest_question_list %}
+        <!--<li><a href="/polls/{{ question.id }}/">{{ question.question_text }}</a></li>-->
+        <!--Better to not hardcode in the URL structure:-->
+        <li><a href="{% url 'polls:detail' question.id %}">{{ question.question_text }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No polls are available.</p>
+{% endif %}
+
+<br>
+<h4>Kwargs dictionary:</h4>
+{{ kwargs }}
+{% for k, v in kwargs.items %}
+    <br>{{ k }} = {{ v }}
+{% endfor %}
+<br> keys: {{kwargs.keys}}
+<br> values: {{kwargs.values}}
+<br> items: {{kwargs.items}}
