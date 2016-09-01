@@ -1,0 +1,28 @@
+body {
+    background: #A8C3D6;
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+}
+main {
+    flex: 1 0 auto;
+}
+html {
+    font-color: black;
+}
+
+.col1 {
+    background: #7893A6 !important;
+}
+.col2 {
+    background: #688396 !important;
+}
+
+footer.page-footer {
+  padding-top: 0px;
+}
+
+
+_nav .brand-logo {
+    color: 000;
+}
