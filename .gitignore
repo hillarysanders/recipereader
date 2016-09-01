@@ -4,6 +4,8 @@
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
 
+*.idea
+
 # heavy files that will need to be added by hand:
 *.csv
 *.json
