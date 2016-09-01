@@ -30,10 +30,10 @@ ALLOWED_HOSTS = []
 
 # Application definition
 
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static"),
-    os.path.join(BASE_DIR, "static/materialize/"),
-]
+# STATICFILES_DIRS = [
+#     os.path.join(BASE_DIR, "static"),
+#     os.path.join(BASE_DIR, "static/materialize/"),
+# ]
 
 # note: the migrate command will only run migrations (create database tables) for apps in INSTALLED_APPS:
 INSTALLED_APPS = [
