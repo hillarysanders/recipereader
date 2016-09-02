@@ -6,6 +6,7 @@ app_name = 'home'
 urlpatterns = [
     # match to ''
     # ex: /polls/
-    url(r'^$', views.index, name='index')
+    url(r'^$', views.auth_login, name='login'),
+    url(r'^home/$', views.index, name='index')
 
 ]
