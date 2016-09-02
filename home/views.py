@@ -12,7 +12,7 @@ from .forms import UserForm, LoginForm
 
 def index(request):
 
-    user = request.user
+    user = request.user  # can this be anonymous?
     context = {
         'a': 1,
         'user': user

@@ -1,0 +1,46 @@
+<html lang="en">
+<head>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'home/css/materialize.css' %}"/>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{% static 'home/css/style.css' %}"/>
+
+</head>
+
+
+<div class="container">
+    <div class="col s12">
+        <center><h1>RecipeReader</h1></center>
+    </div>
+
+    <div class="row">
+        <div class="col login_pushdown s12 m10 l8 push-m1 push-l2">
+
+            <div class="col s12 m6 l6">
+                <center><h4> create an account</h4></center>
+                <form action="/" method="post">
+                    {% csrf_token %}
+                    {{ createuserform }}
+                    <input type="submit" value="Submit" name="createUserSubmit"
+                           class="waves-effect waves-light btn col2"/>
+                </form>
+            </div>
+
+            <div class="col s12 m6 l6">
+                <center><h4>login</h4></center>
+                <form action="/" method="post">
+                    {% csrf_token %}
+                    {{ loginform }}
+                    <input type="submit" value="Submit" name="loginSubmit"
+                           class="waves-effect waves-light btn col2"/>
+                </form>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+
+</html>
+
