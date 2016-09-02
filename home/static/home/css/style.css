@@ -28,11 +28,12 @@ _nav .brand-logo {
 }
 
 .login_pushdown {
-    /* push down the login boxes 10% of viewport */
-    margin-top: 10vh;
+    /* push down the login boxes some % of viewport */
+    margin-top: 5vh;
     border: 3px solid #888899;
 }
 
 .icontxtpush {
+ margin-top: -10px;
  margin-bottom: -40px;
 }
