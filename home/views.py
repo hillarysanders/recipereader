@@ -2,6 +2,8 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.contrib.auth import authenticate, login
+from django.shortcuts import get_object_or_404
+from django.contrib.auth.models import User
 from .forms import UserForm, LoginForm
 
 
@@ -10,8 +12,10 @@ from .forms import UserForm, LoginForm
 
 def index(request):
 
+    user = request.user
     context = {
-        'a': 1
+        'a': 1,
+        'user': user
     }
     # template = loader.get_template('polls/index.html')
     # return HttpResponse(template.render(context, request))

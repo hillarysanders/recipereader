@@ -1,25 +1,29 @@
 <html lang="en">
-    <head>
-        {% load static %}
-        <link rel="stylesheet" type="text/css" href="{% static 'home/css/materialize.css' %}"/>
-        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-        <link rel="stylesheet" type="text/css" href="{% static 'home/css/style.css' %}"/>
+<head>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'home/css/materialize.css' %}"/>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{% static 'home/css/style.css' %}"/>
 
-    </head>
+</head>
 
-    <main>
-        <nav class="col1">
-            <div class="nav-wrapper">
-                <a href="#!" class="brand-logo">&nbsp;RecipeReader</a>
-                <ul class="right">
-                    <li><a href="#!"><i class="small material-icons">library_add</i></a></li>
-                    <li><a href="#!"><i class="small material-icons">mode_edit</i></a></li>
-                    <li><a href="#!"><i class="small material-icons">library_books</i></a></li>
-                    <li><a href="#!"><i class="small material-icons">assignment_ind</i></a></li>
-                </ul>
-            </div>
-        </nav>
+<main>
+    <nav class="col1">
+        <div class="nav-wrapper">
+            <a href="#!" class="brand-logo">&nbsp;RecipeReader</a>
+            <ul class="right">
 
+                <li><a href="#!"><i class="small material-icons icontxtpush">library_add</i>add a recipe</a></li>
+                <li><a href="#!"><i class="small material-icons icontxtpush">library_books</i>cookbook</a></li>
+                <li><a href="#!"><i class="small material-icons icontxtpush">assignment_ind</i>{{ user.username }}</a>
+                </li>
+
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <br>
         <nav class="searchnav col2">
             <div class="nav-wrapper">
                 <form>
@@ -31,19 +35,17 @@
                 </form>
             </div>
         </nav>
+    </div>
 
-        <br>
-        <h4>Context dictionary:</h4>
-        {{ a }}
-        <br>a = {{ a }}
-    </main>
 
-    <footer class="page-footer col1">
-        <div class="footer-copyright col1">
-            <div class="container col1">
-                © 2016 Hillary Sanders
-                <a class="grey-text text-lighten-4 right" href="#!">Contact Me</a>
-            </div>
+</main>
+
+<footer class="page-footer col1">
+    <div class="footer-copyright col1">
+        <div class="container col1">
+            © 2016 Hillary Sanders
+            <a class="grey-text text-lighten-4 right" href="#!">Contact Me</a>
         </div>
-    </footer>
+    </div>
+</footer>
 </html>

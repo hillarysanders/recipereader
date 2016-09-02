@@ -32,3 +32,11 @@ _nav .brand-logo {
     margin-top: 10vh;
     border: 3px solid #888899;
 }
+
+ nav ul .waves-effect i {
+    display: inline;
+}
+
+.icontxtpush {
+ margin-bottom: -40px;
+}
