@@ -1,20 +1,20 @@
-from django.shortcuts import render
+from django.shortcuts import render, render_to_response
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.contrib.auth import authenticate, login
+from django.template import RequestContext
+from django.utils import timezone
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
-from .forms import UserForm, LoginForm
+from .forms import UserForm, LoginForm, AddRecipe
 
 
 # Create your views here.
 
 
 def index(request):
-
     user = request.user  # can this be anonymous?
     context = {
-        'a': 1,
         'user': user
     }
     # template = loader.get_template('polls/index.html')
@@ -23,7 +23,6 @@ def index(request):
 
 
 def auth_login(request):
-
     if request.method == "POST":
         # if the user clicked the create user submit button:
         if request.POST.get("createUserSubmit"):
@@ -52,15 +51,30 @@ def auth_login(request):
         loginform = LoginForm()
 
         context = {
-            'a': 1,
             'createuserform': createuserform,
             'loginform': loginform
         }
-        # template = loader.get_template('polls/index.html')
-        # return HttpResponse(template.render(context, request))
         return render(request, 'home/login.html', context)
 
 
+def add_recipe(request):
 
+    if request.method == "POST":
+        rform = AddRecipe(data=request.POST)
+        if rform.is_valid():
+            recipe = rform.save()
+            print recipe
+            # recipe.user = request.user.username
+            # recipe.pub_date = timezone.now()
+            recipe.save()
+            return HttpResponseRedirect('/home/')
+        else:
+            return HttpResponse('Invalid Inputs. :( Try again? <3')
+    else:
+        add_recipe_form = AddRecipe()
 
+    context = {
+        'add_recipe_form': add_recipe_form,
+    }
 
+    return render(request, 'home/add_recipe.html', context)

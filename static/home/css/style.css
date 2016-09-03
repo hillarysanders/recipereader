@@ -26,3 +26,19 @@ footer.page-footer {
 _nav .brand-logo {
     color: 000;
 }
+
+.login_pushdown {
+    /* push down the login boxes some % of viewport */
+    margin-top: 5vh;
+    border: 3px solid #888899;
+}
+
+.icontxtpush {
+ margin-top: -10px;
+ margin-bottom: -40px;
+}
+
+
+.big_form_input {
+    height: 100px;
+}

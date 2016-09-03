@@ -4,9 +4,11 @@
     <link rel="stylesheet" type="text/css" href="{% static 'home/css/materialize.css' %}"/>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="{% static 'home/css/style.css' %}"/>
-
 </head>
 
+<!--TODO: eventually, probably kill this page. Or change it, actually. Users should not be forced to log in-->
+<!--TODO: to a goddamned recipe website every time they go to it - that's dumb. Instead, there should be log-in-->
+<!--TODO: buttons on the website if you're browsing anonymously. But that's a TODO.-->
 
 <div class="container">
     <div class="col s12">
@@ -40,7 +42,7 @@
                 <br>
                 <h4 class="center"> or...</h4>
                 <br>
-                <a class="waves-effect waves-light btn-large" href="{% url 'home:index' %}">Skip That Shit</a>
+                <a class="waves-effect waves-light btn-large col2" href="{% url 'home:index' %}">Skip That Shit</a>
             </div>
 
 

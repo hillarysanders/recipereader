@@ -37,3 +37,8 @@ _nav .brand-logo {
  margin-top: -10px;
  margin-bottom: -40px;
 }
+
+
+.big_form_input {
+    height: 100px;
+}
