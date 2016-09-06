@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 from django.db import models
+from django.utils import timezone
 
 
 from django.contrib.auth.models import User
@@ -17,10 +18,10 @@ class Recipe(models.Model):
     ingredients_text = models.TextField(max_length=2048)
     instructions_text = models.TextField(max_length=2048)
     # # optional positional first argument = field name:
-    # pub_date = models.DateTimeField('date published')
+    pub_date = models.DateTimeField('date published', default=timezone.now())
     # # each recipe is related to a single user.
     # # on_delete=models.CASCADE means that if a user is deleted his / her recipes will be too.
-    user = models.ForeignKey(User, on_delete=models.CASCADE, default=User.objects.get_by_natural_key('hills'))
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.description
@@ -42,7 +43,8 @@ class Recipe(models.Model):
                     value = None
 
             # only display fields with values and skip some fields entirely
-            if f.editable and value and f.name not in ('id', 'status', 'workshop', 'user', 'complete', 'recipe_name'):
+            if f.editable and value and f.name not in ('id',  'user', 'recipe_name',
+                                                       'status', 'workshop', 'complete'):
 
                 fields.append(
                   {

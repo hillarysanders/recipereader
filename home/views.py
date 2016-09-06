@@ -69,7 +69,7 @@ def add_recipe(request):
         if rform.is_valid():
             recipe = rform.save()
             recipe.user = request.user
-            # recipe.pub_date = timezone.now()
+            recipe.pub_date = timezone.now()
             recipe.save()
             return HttpResponseRedirect('/recipes/detail/{}/'.format(recipe.id))
             # return HttpResponseRedirect('/home/')
