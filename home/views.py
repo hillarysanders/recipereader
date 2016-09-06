@@ -6,7 +6,7 @@ from django.template import RequestContext
 from django.utils import timezone
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
-from .forms import UserForm, LoginForm, AddRecipeForm, ArticleForm
+from .forms import UserForm, LoginForm, AddRecipeForm
 
 
 # Create your views here.
