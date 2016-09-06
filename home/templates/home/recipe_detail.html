@@ -3,8 +3,13 @@
 {% block content %}
 {% load materialize %}
 
-    <h2> Recipe Detail </h2>
-    {{ recipe }}
+<h2> {{ recipe.recipe_name }} </h2>
+
+{% for field in recipe.get_all_fields %}
+    <h5>{{field.label|capfirst}}</h5>
+    {{field.value|escape|urlize|linebreaks}}
+    <br>
+{% endfor %}
 
 
 {% endblock %}

@@ -6,6 +6,8 @@ from django.template import RequestContext
 from django.utils import timezone
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
+from django.views import generic
+from .models import Recipe
 from .forms import UserForm, LoginForm, AddRecipeForm
 
 
@@ -66,10 +68,10 @@ def add_recipe(request):
         rform = AddRecipeForm(data=request.POST)
         if rform.is_valid():
             recipe = rform.save()
-            # recipe.user = request.user.username
+            recipe.user = request.user
             # recipe.pub_date = timezone.now()
             recipe.save()
-            return HttpResponseRedirect('/home/recipes/detail/{}/'.format(recipe.id))
+            return HttpResponseRedirect('/recipes/detail/{}/'.format(recipe.id))
             # return HttpResponseRedirect('/home/')
         else:
             return HttpResponse('Invalid Inputs. :( Try again? <3')
@@ -82,6 +84,11 @@ def add_recipe(request):
 
         return render(request, 'home/add_recipe.html', context)
 
+
+class RecipeDetailView(generic.DetailView):
+    # note that this uses a generic.DetailView
+    model = Recipe
+    template_name = 'home/recipe_detail.html'
 
 
 

@@ -38,10 +38,10 @@ class AddRecipeForm(forms.ModelForm):
     class Meta:
         model = Recipe
         fields = '__all__'
-        # exclude = ('user', 'pub_date',)
+        exclude = ('user', 'pub_date',)
 
     # def __init__(self, *args, **kwargs):
-    #     super(AddRecipe, self).__init__(*args, **kwargs)
+    #     super(AddRecipeForm, self).__init__(*args, **kwargs)
     #
     #     self.fields['description'].widget = forms.TextInput(attrs={'size': '200'})
     #     self.fields['ingredients_text'].widget = forms.Textarea(attrs={'class': "big_form_input"})
