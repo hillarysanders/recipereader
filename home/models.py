@@ -15,11 +15,17 @@ class Recipe(models.Model):
     description = models.CharField(max_length=1024)
     ingredients_text = models.TextField()
     instructions_text = models.TextField()
-    # optional positional first argument = field name:
-    pub_date = models.DateTimeField('date published')
-    # each recipe is related to a single user.
-    # on_delete=models.CASCADE means that if a user is deleted his / her recipes will be too.
-    user = models.ForeignKey(User, on_delete=models.CASCADE)  # todo is this what's causing the auth request? fix...
+    # # optional positional first argument = field name:
+    # pub_date = models.DateTimeField('date published')
+    # # each recipe is related to a single user.
+    # # on_delete=models.CASCADE means that if a user is deleted his / her recipes will be too.
+    # # user = models.ForeignKey(User, on_delete=models.CASCADE)  # todo is this what's causing the auth request? fix...
+    #
+    # def __str__(self):
+    #     return self.description
 
-    def __str__(self):
-        return self.description
+
+
+
+
+

@@ -45,7 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # materialize form helper: (awesome: https://github.com/florent1933/django-materializecss-form)
-    'materializecssform',
+    'materialize_forms',
     # homemade apps:
     'polls.apps.PollsConfig',
     'home.apps.HomeConfig',

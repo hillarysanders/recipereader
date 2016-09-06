@@ -1,13 +1,16 @@
 {% extends "home/index.html" %}
 
 {% block content %}
+{% load materialize %}
 <!--this is where content from child templates will go-->
 
     <h2> Add a Recipe </h2>
 
     <form action="/" method="post">
         {% csrf_token %}
-        {{ add_recipe_form }}
+        {% for f in add_recipe_form %}
+            {{ f|as_material:"s12" }}
+        {% endfor %}
         <br><br>
         <input type="submit" value="Submit" name="addRecipe" class="waves-effect waves-light btn col2"/>
     </form>

@@ -1,19 +1,30 @@
+<!DOCTYPE html>
 <html lang="en">
+
 <head>
     {% load static %}
-    <link rel="stylesheet" type="text/css" href="{% static 'home/css/materialize.css' %}"/>
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!--Import Google Icon Font-->
+    <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!--Import materialize.css-->
+    <link type="text/css" rel="stylesheet" href="{% static 'home/css/materialize.min.css' %}" media="screen,projection"/>
+    <!--Let browser know website is optimized for mobile-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <!--load website base css:-->
     <link rel="stylesheet" type="text/css" href="{% static 'home/css/style.css' %}"/>
-
 </head>
 
-<main>
+<body>
+    <!--Import jQuery before materialize.js-->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script type="text/javascript" src="{% static 'home/js/materialize.min.js' %}"></script>
+
     <nav class="col1">
         <div class="nav-wrapper">
             <a href="{% url 'home:index' %}" class="brand-logo ">&nbsp;RecipeReader</a>
 
             <ul class="right center">
-                <li><a href="{% url 'home:add_recipe' %}"><i class="small material-icons icontxtpush">library_add</i>add a recipe</a></li>
+                <li><a href="{% url 'home:add_recipe' %}"><i class="small material-icons icontxtpush">library_add</i>add a
+                    recipe</a></li>
                 <li><a href="#!"><i class="small material-icons icontxtpush">library_books</i>cookbook</a></li>
                 <li><a href="#!"><i class="small material-icons icontxtpush">
                     assignment_ind</i>{{ user.username }}</a></li>
@@ -24,27 +35,24 @@
     <div class="container">
         <br>
         <!--<nav class="searchnav col2">-->
-            <!--<div class="nav-wrapper">-->
-                <!--<form>-->
-                    <!--<div class="input-field">-->
-                        <!--<input id="search" type="search" required>-->
-                        <!--<label for="search"><i class="material-icons">search</i></label>-->
-                        <!--<i class="material-icons">close</i>-->
-                    <!--</div>-->
-                <!--</form>-->
-            <!--</div>-->
+        <!--<div class="nav-wrapper">-->
+        <!--<form>-->
+        <!--<div class="input-field">-->
+        <!--<input id="search" type="search" required>-->
+        <!--<label for="search"><i class="material-icons">search</i></label>-->
+        <!--<i class="material-icons">close</i>-->
+        <!--</div>-->
+        <!--</form>-->
+        <!--</div>-->
         <!--</nav>-->
 
         <div id="content">
             {% block content %}
-                <!--this is where content from child templates will go-->
+            <!--this is where content from child templates will go-->
             {% endblock %}
         </div>
-
     </div>
-
-
-</main>
+</body>
 
 <footer class="page-footer col1">
     <div class="footer-copyright col1">

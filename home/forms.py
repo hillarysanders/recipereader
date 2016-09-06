@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from .models import Recipe
 
+
 class UserForm(UserCreationForm):
     class Meta:
         model = User
@@ -31,20 +32,18 @@ class LoginForm(forms.ModelForm):
         self.fields['username'].help_text = ''
 
 
-class AddRecipe(forms.ModelForm):
+class AddRecipeForm(forms.ModelForm):
     class Meta:
         model = Recipe
         fields = '__all__'
-        exclude = ('user', 'pub_date',)
+        # exclude = ('user', 'pub_date',)
 
-    def __init__(self, *args, **kwargs):
-        super(AddRecipe, self).__init__(*args, **kwargs)
-
-        self.fields['description'].widget = forms.TextInput(attrs={'size': '200'})
-        self.fields['ingredients_text'].widget = forms.Textarea(attrs={'class': "big_form_input"})
-        self.fields['instructions_text'].widget = forms.Textarea(attrs={'class': "big_form_input"})
-
-
+    # def __init__(self, *args, **kwargs):
+    #     super(AddRecipe, self).__init__(*args, **kwargs)
+    #
+    #     self.fields['description'].widget = forms.TextInput(attrs={'size': '200'})
+    #     self.fields['ingredients_text'].widget = forms.Textarea(attrs={'class': "big_form_input"})
+    #     self.fields['instructions_text'].widget = forms.Textarea(attrs={'class': "big_form_input"})
 
 
 
