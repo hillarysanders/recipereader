@@ -94,6 +94,10 @@ DATABASES = {
         'PASSWORD': 'evergreen',
         'HOST': 'aa1cr8xv0zx8h6p.cpa0rmdl6ahx.us-west-2.rds.amazonaws.com',
         'PORT': '3306',
+        # adding this options.init_command line so that user <--> recipe relationships don't break things...?
+        'OPTIONS': {
+         "init_command": "SET foreign_key_checks = 0;",
+        },
     }
     # 'default': {
     #     'ENGINE': 'django.db.backends.sqlite3',

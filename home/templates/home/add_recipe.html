@@ -2,11 +2,10 @@
 
 {% block content %}
 {% load materialize %}
-<!--this is where content from child templates will go-->
 
     <h2> Add a Recipe </h2>
 
-    <form action="/" method="post">
+    <form method="post">
         {% csrf_token %}
         {% for f in add_recipe_form %}
             {{ f|as_material:"s12" }}

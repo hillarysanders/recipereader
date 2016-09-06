@@ -6,7 +6,7 @@ from django.template import RequestContext
 from django.utils import timezone
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
-from .forms import UserForm, LoginForm, AddRecipeForm
+from .forms import UserForm, LoginForm, AddRecipeForm, ArticleForm
 
 
 # Create your views here.
@@ -29,7 +29,10 @@ def auth_login(request):
             uform = UserForm(data=request.POST)
             if uform.is_valid():
                 user = uform.save()
+                # save the new user profile:
                 user.save()
+                # go ahead and login the user:
+                login(request, user)
                 return HttpResponseRedirect('/home/')
             else:
                 return HttpResponse('Invalid Inputs. :( Try again? <3')
@@ -66,7 +69,8 @@ def add_recipe(request):
             # recipe.user = request.user.username
             # recipe.pub_date = timezone.now()
             recipe.save()
-            return HttpResponseRedirect('/home/')
+            return HttpResponseRedirect('/home/recipes/detail/{}/'.format(recipe.id))
+            # return HttpResponseRedirect('/home/')
         else:
             return HttpResponse('Invalid Inputs. :( Try again? <3')
     else:
@@ -77,5 +81,7 @@ def add_recipe(request):
         }
 
         return render(request, 'home/add_recipe.html', context)
+
+
 
 
