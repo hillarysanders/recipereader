@@ -17,8 +17,15 @@ class Recipe(models.Model):
     description = models.CharField(max_length=1024)
     ingredients_text = models.TextField(max_length=2048)
     instructions_text = models.TextField(max_length=2048)
-    # # optional positional first argument = field name:
-    pub_date = models.DateTimeField('date published', default=timezone.now())
+    # optional:
+    prep_time = models.IntegerField(blank=True, null=True)
+    cook_time = models.IntegerField(blank=True, null=True)
+    ready_in = models.IntegerField(blank=True, null=True)
+    num_servings = models.IntegerField(blank=True, null=False, default=1)
+    image = models.ImageField(blank=True, upload_to='home/images/uploaded_recipe_images/')
+
+    # invisible to the user stuff:
+    pub_date = models.DateTimeField('date published', default=timezone.now)
     # # each recipe is related to a single user.
     # # on_delete=models.CASCADE means that if a user is deleted his / her recipes will be too.
     user = models.ForeignKey(User, on_delete=models.CASCADE)

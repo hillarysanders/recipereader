@@ -7,9 +7,6 @@ body {
 main {
     flex: 1 0 auto;
 }
-html {
-    font-color: black;
-}
 
 .col1 {
     background: #7893A6 !important;

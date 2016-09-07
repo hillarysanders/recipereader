@@ -1,3 +1,4 @@
 Django==1.10
 MySQL-python==1.2.3
+Pillow==3.3.1
 # django-materialize-forms==0.2.0

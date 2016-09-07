@@ -1,0 +1,15 @@
+{% extends "home/index.html" %}
+
+{% block content %}
+{% load materialize %}
+
+<h2> My Cookbook </h2>
+
+{% for recipe in recipes %}
+    <h5>{{recipe.recipe_name|capfirst}}</h5>
+    {{recipe.description|escape|urlize|linebreaks}}
+    <br>
+{% endfor %}
+
+
+{% endblock %}

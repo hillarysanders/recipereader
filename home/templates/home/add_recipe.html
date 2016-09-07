@@ -5,13 +5,44 @@
 
     <h2> Add a Recipe </h2>
 
-    <form method="post">
+    <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        {% for f in add_recipe_form %}
-            {{ f|as_material:"s12" }}
-        {% endfor %}
+        <!--{% for f in add_recipe_form %}-->
+            <!--{{ f|as_material:"s12" }}-->
+        <!--{% endfor %}-->
+        <div class="row">
+            <div class="col s12 m3 l2">
+                <p>{{add_recipe_form.prep_time|as_material:"s12"}}</p>
+                <p>{{add_recipe_form.cook_time|as_material:"s12"}}</p>
+                <p>{{add_recipe_form.ready_in|as_material:"s12"}}</p>
+                <p>{{add_recipe_form.num_servings|as_material:"s12"}}</p>
+            </div>
+            <div class="col s12 m9 l10">
+                <p>{{add_recipe_form.recipe_name|as_material:"s12"}}</p>
+                <p>{{add_recipe_form.description|as_material:"s12"}}</p>
+                <p>{{add_recipe_form.ingredients_text|as_material:"s12"}}</p>
+                <p>{{add_recipe_form.instructions_text|as_material:"s12"}}</p>
+                <p>{{add_recipe_form.image|as_material:"s12"}}</p>
+            </div>
+        </div>
+
         <br><br>
-        <input type="submit" value="Submit" name="addRecipe" class="waves-effect waves-light btn col2"/>
+        <input type="submit" value="Submit" class="waves-effect waves-light btn col2"/>
     </form>
+
+    {% if add_recipe_form.errors %}
+        {% for field in add_recipe_form %}
+            {% for error in field.errors %}
+                <div class="alert alert-danger">
+                    <strong class="red">{{ error|escape }}</strong>
+                </div>
+            {% endfor %}
+        {% endfor %}
+        {% for error in add_recipe_form.non_field_errors %}
+            <div class="alert alert-danger">
+                <strong class="red">{{ error|escape }}</strong>
+            </div>
+        {% endfor %}
+    {% endif %}
 
 {% endblock %}

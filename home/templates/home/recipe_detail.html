@@ -1,7 +1,7 @@
 {% extends "home/index.html" %}
 
 {% block content %}
-{% load materialize %}
+<!--{% load materialize %}-->
 
 <h2> {{ recipe.recipe_name }} </h2>
 
@@ -10,6 +10,23 @@
     {{field.value|escape|urlize|linebreaks}}
     <br>
 {% endfor %}
+
+        <!--<div class="row">-->
+            <!--<div class="col s12 m3 l2">-->
+                <!--<p>{{recipe.prep_time}}</p>-->
+                <!--<p>{{recipe.prep_time}}</p>-->
+                <!--<p>{{recipe.cook_time}}</p>-->
+                <!--<p>{{recipe.ready_in}}</p>-->
+                <!--<p>{{recipe.num_servings}}</p>-->
+            <!--</div>-->
+            <!--<div class="col s12 m9 l10">-->
+                <!--<p>{{recipe.recipe_name}}</p>-->
+                <!--<p>{{recipe.description}}</p>-->
+                <!--<p>{{recipe.ingredients_text}}</p>-->
+                <!--<p>{{recipe.instructions_text}}</p>-->
+                <!--<p>{{recipe.image}}</p>-->
+            <!--</div>-->
+        <!--</div>-->
 
 
 {% endblock %}

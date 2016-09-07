@@ -7,6 +7,7 @@ from django.utils import timezone
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
 from django.views import generic
+from django.core.files.uploadedfile import SimpleUploadedFile
 from .models import Recipe
 from .forms import UserForm, LoginForm, AddRecipeForm
 
@@ -65,24 +66,24 @@ def auth_login(request):
 def add_recipe(request):
 
     if request.method == "POST":
-        rform = AddRecipeForm(data=request.POST)
-        if rform.is_valid():
-            recipe = rform.save()
+        add_recipe_form = AddRecipeForm(request.POST, request.FILES)
+        if add_recipe_form.is_valid():
+            recipe = add_recipe_form.save(commit=False)  # doesn't save the instance yet, since we need to add stuff
             recipe.user = request.user
             recipe.pub_date = timezone.now()
             recipe.save()
             return HttpResponseRedirect('/recipes/detail/{}/'.format(recipe.id))
-            # return HttpResponseRedirect('/home/')
         else:
-            return HttpResponse('Invalid Inputs. :( Try again? <3')
+            # no return redirect statement here, as errors will be shown in template below
+            pass
     else:
         add_recipe_form = AddRecipeForm()
 
-        context = {
-            'add_recipe_form': add_recipe_form,
-        }
+    context = {
+        'add_recipe_form': add_recipe_form,
+    }
 
-        return render(request, 'home/add_recipe.html', context)
+    return render(request, 'home/add_recipe.html', context)
 
 
 class RecipeDetailView(generic.DetailView):
@@ -90,5 +91,14 @@ class RecipeDetailView(generic.DetailView):
     model = Recipe
     template_name = 'home/recipe_detail.html'
 
+
+def cookbook(request):
+    user = request.user
+    user_recipes = Recipe.objects.filter(user=user.id)
+    context = {
+        'user': user,
+        'recipes': user_recipes
+    }
+    return render(request, 'home/cookbook.html', context)
 
 

@@ -40,12 +40,16 @@ class AddRecipeForm(forms.ModelForm):
         fields = '__all__'
         exclude = ('user', 'pub_date',)
 
-    # def __init__(self, *args, **kwargs):
-    #     super(AddRecipeForm, self).__init__(*args, **kwargs)
-    #
-    #     self.fields['description'].widget = forms.TextInput(attrs={'size': '200'})
-    #     self.fields['ingredients_text'].widget = forms.Textarea(attrs={'class': "big_form_input"})
-    #     self.fields['instructions_text'].widget = forms.Textarea(attrs={'class': "big_form_input"})
+    def __init__(self, *args, **kwargs):
+        super(AddRecipeForm, self).__init__(*args, **kwargs)
+
+        self.fields['description'].widget = forms.TextInput(attrs={'size': '200'})
+        self.fields['ingredients_text'].widget = forms.Textarea(attrs={
+            'placeholder': 'put each ingredient on its own line'
+        })
+        self.fields['instructions_text'].widget = forms.Textarea(attrs={
+            'placeholder': 'put each step on its own line'
+        })
 
 
 

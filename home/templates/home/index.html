@@ -18,40 +18,44 @@
     <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
     <script type="text/javascript" src="{% static 'home/js/materialize.min.js' %}"></script>
 
-    <nav class="col1">
-        <div class="nav-wrapper">
-            <a href="{% url 'home:index' %}" class="brand-logo ">&nbsp;RecipeReader</a>
+    <main>
+        <nav class="col1">
+            <div class="nav-wrapper">
+                <a href="{% url 'home:index' %}" class="brand-logo ">&nbsp;RecipeReader</a>
 
-            <ul class="right center">
-                <li><a href="{% url 'home:add_recipe' %}"><i class="small material-icons icontxtpush">library_add</i>add a
-                    recipe</a></li>
-                <li><a href="#!"><i class="small material-icons icontxtpush">library_books</i>cookbook</a></li>
-                <!--<li><a href="#!"><i class="small material-icons icontxtpush">-->
-                    <!--assignment_ind</i>{{ user.username }}</a></li>-->
-            </ul>
+                <ul class="right center">
+                    <li><a href="{% url 'home:add_recipe' %}"><i class="small material-icons icontxtpush">library_add</i>add a
+                        recipe</a></li>
+                    <li><a href="{% url 'home:cookbook' %}"><i class="small material-icons icontxtpush">library_books</i>cookbook</a></li>
+                    <li><a href="#!"><i class="small material-icons icontxtpush">
+                        assignment_ind</i>{{ user.username }}</a></li>
+                </ul>
+            </div>
+        </nav>
+
+        <div class="container">
+            <br>
+            <!--<nav class="searchnav col2">-->
+            <!--<div class="nav-wrapper">-->
+            <!--<form>-->
+            <!--<div class="input-field">-->
+            <!--<input id="search" type="search" required>-->
+            <!--<label for="search"><i class="material-icons">search</i></label>-->
+            <!--<i class="material-icons">close</i>-->
+            <!--</div>-->
+            <!--</form>-->
+            <!--</div>-->
+            <!--</nav>-->
+
+            <div id="content">
+                {% block content %}
+                <!--this is where content from child templates will go-->
+                {% endblock %}
+            </div>
         </div>
-    </nav>
 
-    <div class="container">
-        <br>
-        <!--<nav class="searchnav col2">-->
-        <!--<div class="nav-wrapper">-->
-        <!--<form>-->
-        <!--<div class="input-field">-->
-        <!--<input id="search" type="search" required>-->
-        <!--<label for="search"><i class="material-icons">search</i></label>-->
-        <!--<i class="material-icons">close</i>-->
-        <!--</div>-->
-        <!--</form>-->
-        <!--</div>-->
-        <!--</nav>-->
 
-        <div id="content">
-            {% block content %}
-            <!--this is where content from child templates will go-->
-            {% endblock %}
-        </div>
-    </div>
+    </main>
 </body>
 
 <footer class="page-footer col1">
