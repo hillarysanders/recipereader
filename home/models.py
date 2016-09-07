@@ -22,7 +22,7 @@ class Recipe(models.Model):
     cook_time = models.IntegerField(blank=True, null=True)
     ready_in = models.IntegerField(blank=True, null=True)
     num_servings = models.IntegerField(blank=True, null=False, default=1)
-    image = models.ImageField(blank=True, upload_to='home/images/uploaded_recipe_images/')
+    # image = models.ImageField(blank=True, upload_to='home/images/uploaded_recipe_images/')
 
     # invisible to the user stuff:
     pub_date = models.DateTimeField('date published', default=timezone.now)

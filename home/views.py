@@ -66,7 +66,8 @@ def auth_login(request):
 def add_recipe(request):
 
     if request.method == "POST":
-        add_recipe_form = AddRecipeForm(request.POST, request.FILES)
+        add_recipe_form = AddRecipeForm(request.POST)
+        # add_recipe_form = AddRecipeForm(request.POST, request.FILES)  # TODO (image)
         if add_recipe_form.is_valid():
             recipe = add_recipe_form.save(commit=False)  # doesn't save the instance yet, since we need to add stuff
             recipe.user = request.user
