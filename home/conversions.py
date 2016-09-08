@@ -15,10 +15,10 @@ def parse_ingredient_line(line = '2 and a half egg yolks, whisked'):
         line = re.sub(' +', ' ', line)
         return line
 
-    def find_matches(line, name_maps, key='numbers', replacement_key='name'):
-        numbers_pattern = '|'.join(conv.names[key])
+    def find_matches(line, name_maps, key='numbers'):
+        pattern = '|'.join(conv.names[key])
         # finds non-overlapping matches to our (sorted!) long joined pattern:
-        matches = list(re.finditer(numbers_pattern, line))
+        matches = list(re.finditer(pattern, line))
 
         # base record data frame:
         out = pd.DataFrame(columns=['start', 'end', 'pattern', 'replacement', 'oldline', 'newline'])
@@ -29,13 +29,18 @@ def parse_ingredient_line(line = '2 and a half egg yolks, whisked'):
             pattern = line[start:end]
             # grab the relevant dict:
             dd = [d for d in name_maps if pattern in d['names']]
-            if len(dd)>1:
-                print 'warning: >1 hits to a string... Probably fine though.\n\t' + '\n\t'.join(map(str, dd))
-            d = dd[0]
-            replacement = d['name']
-            oldline = line
-            line = oldline[:start] + replacement + oldline[end:]
-            out.loc[len(out), :] = [start, end, pattern, replacement, oldline, line]
+            if len(dd) > 0:
+                if len(dd) > 1:
+                    print 'warning: >1 hits to a string... Probably fine though.\n\t' + '\n\t'.join(map(str, dd))
+                d = dd[0]
+                if key == 'numbers':
+                    replacement = d['name']
+                else:
+                    replacement = '__{}_OR_{}__'.format(d['singular'], d['plural'])
+
+                oldline = line
+                line = oldline[:start] + replacement + oldline[end:]
+                out.loc[len(out), :] = [start, end, pattern, replacement, oldline, line]
 
         return out
 
@@ -47,7 +52,19 @@ def parse_ingredient_line(line = '2 and a half egg yolks, whisked'):
     number_hits = find_matches(line=line, name_maps=conv.name_maps_numbers, key='numbers')
     volume_hits = find_matches(line=line, name_maps=conv.name_maps_volume, key='volume')
     weight_hits = find_matches(line=line, name_maps=conv.name_maps_weight, key='weight')
+    # for weight and volume hits, the preceding numbers can inform plurality.
+    # todo 1) Make sure none of these hits overlap. If they do, shout out a warning.
+    # todo 2) Make a conversion matrix for weight and volume and in-between (liters?).
+    # todo 3) Maybe have the parsed lines materialize in the form (on the right side) as the user is typing.
+    # todo      then maybe they can fix any parsing mistakes (highlight ones that spout warnings?)
+    # todo 4) Add on a widget in the recipe view or edit page to change units (each ingredient? all ingredients?)
+    # todo 5) Flag the longest substring apart from ^^ to be the 'ingredient' after removing e.g. 'and', etc.
+    # tod       Simple as that for now.
+    # todo 6) Change recipe data table to encompass all this information
 
+
+# when you get onto directions instead of ingredients.... how do you differentiate between numbers for time
+# and numbers for amounts? :) That'll be a bit tricky.
 
 
 
@@ -57,15 +74,17 @@ class Conversions:
     # todo yeah ok so I think you can keeps the list of dicts, just transform in __init__ to dataframe of
     # todo repeated name info. Then you just add the row into out in find_matches() above.
     name_maps_numbers = [
-        dict(names=['a half', 'one half', '1/2', '.5'],
+        dict(names=['a half', 'one half', '1/2', '.5', 'halves'],
              name='1/2'),
-        dict(names=['a quarter', 'one quarter', '1/4', '.25', 'a forth'],
+        dict(names=['a quarter', 'one quarter', '1/4', '.25', 'a forth', 'quarters'],
              name='1/4'),
-        dict(names=['one third', 'a third', '1/3'],
+        dict(names=['a fifth', 'one fifth', '1/5', '.2', 'a fifth', 'fifths'],
+             name='1/4'),
+        dict(names=['one third', 'a third', '1/3', 'thirds'],
              name='1/3'),
-        dict(names=['one sixth', 'a sixth', '1/6'],
+        dict(names=['one sixth', 'a sixth', '1/6', 'sixths'],
              name='1/6'),
-        dict(names=['one eighth', 'an eighth', '1/8'],
+        dict(names=['one eighth', 'an eighth', '1/8', 'eighths'],
              name='1/8'),
         dict(names=['the whole', 'a whole', 'one'],
              name='1')
@@ -119,13 +138,26 @@ class Conversions:
     ]
 
     def __init__(self):
+        # use num2words:
         self._extend_number_name_maps()
+        # capitalize stuff:
+        self.name_maps_numbers = self._extend_names_with_capitalization(self.name_maps_numbers)
         self.name_maps_volume = self._extend_names_with_capitalization(self.name_maps_volume)
         self.name_maps_weight = self._extend_names_with_capitalization(self.name_maps_weight)
+        # add spaces:
+        self.name_maps_numbers = self._add_spaces_to_sides(self.name_maps_numbers)
+        self.name_maps_weight = self._add_spaces_to_sides(self.name_maps_weight)
+        self.name_maps_volume = self._add_spaces_to_sides(self.name_maps_volume)
+        # aggregate the names:
         self.names = self._aggregate_names()
 
     def __str__(self):
         return 'Unit & number conversions class instance.'
+
+    def _add_spaces_to_sides(self, name_maps):
+        for i in range(len(name_maps)):
+            name_maps[i]['names'] = [' {} '.format(n) for n in name_maps[i]['names']]
+        return name_maps
 
     def _extend_number_name_maps(self, n=1000):
         for i in range(2, n):
@@ -141,14 +173,15 @@ class Conversions:
             self.name_maps_numbers.extend([el])
 
     def _extend_names_with_capitalization(self, name_maps):
-        placeholder = name_maps
-        for d in placeholder:
+        for d in name_maps:
             replacement = d['names']
-            replacement.extend([el.capitalize() for el in replacement if el != 't'])
-            replacement.extend([el.upper() for el in replacement if el != 't'])
+            capitalized = [el.capitalize() for el in replacement if el != 't']
+            upper = [el.upper() for el in replacement if el != 't']
+            replacement.extend(capitalized)
+            replacement.extend(upper)
             replacement = list(set(replacement))
 
-        return placeholder
+        return name_maps
 
     def _aggregate_names(self):
         # could do this scalable w/ dict comprehensions if you ever wanted to add conversion types.
