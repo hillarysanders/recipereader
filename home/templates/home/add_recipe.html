@@ -3,6 +3,7 @@
 {% block content %}
 {% load materialize %}
 
+
     <h2> Add a Recipe </h2>
 
     <form method="post" enctype="multipart/form-data">
@@ -11,19 +12,32 @@
             <!--{{ f|as_material:"s12" }}-->
         <!--{% endfor %}-->
         <div class="row">
-            <div class="col s12 m3 l2">
-                <p>{{add_recipe_form.prep_time|as_material:"s12"}}</p>
-                <p>{{add_recipe_form.cook_time|as_material:"s12"}}</p>
-                <p>{{add_recipe_form.ready_in|as_material:"s12"}}</p>
-                <p>{{add_recipe_form.num_servings|as_material:"s12"}}</p>
-            </div>
-            <div class="col s12 m9 l10">
-                <p>{{add_recipe_form.recipe_name|as_material:"s12"}}</p>
-                <p>{{add_recipe_form.description|as_material:"s12"}}</p>
-                <p>{{add_recipe_form.ingredients_text|as_material:"s12"}}</p>
-                <p>{{add_recipe_form.instructions_text|as_material:"s12"}}</p>
-                <p>{{add_recipe_form.image|as_material:"s12"}}</p>
-            </div>
+            <p>{{add_recipe_form.recipe_name|as_material:"s12 m6 l4"}}</p>
+        </div>
+        <div class="row">
+            <p>{{add_recipe_form.num_servings|as_material:"s10 m2 l2"}}</p>
+            <!--format this little image upload guy:-->
+            <p>{{add_recipe_form.image|as_material:"s12 m6"}}</p>
+
+        </div>
+        <div class="row">
+            <p>   {{add_recipe_form.prep_time_hours|as_material:"s5 m2 l2"}}</p>
+            <p> {{add_recipe_form.prep_time_minutes|as_material:"s7 m2 l2"}}</p>
+            <p>   {{add_recipe_form.cook_time_hours|as_material:"s5 m2 l2"}}</p>
+            <p> {{add_recipe_form.cook_time_minutes|as_material:"s7 m2 l2"}}</p>
+            <p>    {{add_recipe_form.ready_in_hours|as_material:"s5 m2 l2"}}</p>
+            <p>  {{add_recipe_form.ready_in_minutes|as_material:"s7 m2 l2"}}</p>
+
+            <p>{{add_recipe_form.description|as_material:"s12"}}</p>
+        </div>
+
+        <div class="row">
+            <p>{{add_recipe_form.ingredients_text|as_material:"s12 m6"}}</p>
+            <div class="col s12 m6 textbox">  TODO (realtime validation textbox)  </div>
+        </div>
+        <div class="row">
+            <p>{{add_recipe_form.instructions_text|as_material:"s12 m6"}}</p>
+            <div class="col s12 m6 textbox"> TODO (realtime validation textbox) </div>
         </div>
 
         <br><br>

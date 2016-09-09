@@ -43,7 +43,11 @@ class AddRecipeForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(AddRecipeForm, self).__init__(*args, **kwargs)
 
-        self.fields['description'].widget = forms.TextInput(attrs={'size': '200'})
+        for f in ['prep_time_hours', 'cook_time_hours', 'ready_in_hours']:
+            self.fields[f].widget = forms.NumberInput(attrs={'placeholder': 'hours'})
+        for f in ['prep_time_minutes', 'cook_time_minutes', 'ready_in_minutes']:
+            self.fields[f].widget = forms.NumberInput(attrs={'placeholder': 'minutes'})
+
         self.fields['ingredients_text'].widget = forms.Textarea(attrs={
             'placeholder': 'put each ingredient on its own line'
         })
@@ -51,8 +55,8 @@ class AddRecipeForm(forms.ModelForm):
             'placeholder': 'put each step on its own line'
         })
 
-
-
+        # make recipe name big:
+        self.fields['recipe_name'].widget = forms.TextInput(attrs={'style': 'font-size: 30px'})
 
 
 # sweet. now make a welcome page, and better error catching, and a login along with create user form.

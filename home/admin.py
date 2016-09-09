@@ -8,7 +8,7 @@ from .models import Recipe
 # this class isn't required, it just allows you to order your fields in the admin site interface:
 class RecipeAdmin(admin.ModelAdmin):
     fields = ('recipe_name', 'description', 'user', 'pub_date', 'ingredients_text', 'instructions_text',
-              'prep_time', 'cook_time', 'ready_in', 'num_servings', 'image')
+              'num_servings', 'image')
     list_display = ('recipe_name', 'description', 'user', 'pub_date')
 
     # this adds a search box to the top of the admin/polls/question page, so you can search for question text:

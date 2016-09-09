@@ -79,6 +79,7 @@ def add_recipe(request):
             pass
     else:
         add_recipe_form = AddRecipeForm()
+        add_recipe_form.prep_time = 100
 
     context = {
         'add_recipe_form': add_recipe_form,

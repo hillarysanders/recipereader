@@ -53,7 +53,7 @@ def parse_ingredient_line(line = '2 and a half egg yolks, whisked'):
     volume_hits = find_matches(line=line, name_maps=conv.name_maps_volume, key='volume')
     weight_hits = find_matches(line=line, name_maps=conv.name_maps_weight, key='weight')
     # for weight and volume hits, the preceding numbers can inform plurality.
-    # todo 1) Make sure none of these hits overlap. If they do, shout out a warning.
+    # todo 1) Make sure none of these hits overlap. If they do, shout out a warning. Show these as highlights in the UI.
     # todo 2) Make a conversion matrix for weight and volume and in-between (liters?).
     # todo 3) Maybe have the parsed lines materialize in the form (on the right side) as the user is typing.
     # todo      then maybe they can fix any parsing mistakes (highlight ones that spout warnings?)
@@ -65,7 +65,6 @@ def parse_ingredient_line(line = '2 and a half egg yolks, whisked'):
 
 # when you get onto directions instead of ingredients.... how do you differentiate between numbers for time
 # and numbers for amounts? :) That'll be a bit tricky.
-
 
 
 class Conversions:

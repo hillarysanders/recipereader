@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 from django.db import models
 from django.utils import timezone
+from django.db.models.signals import pre_save
 
 
 from django.contrib.auth.models import User
@@ -15,13 +16,17 @@ class Recipe(models.Model):
     # TextField is larger than CharField
     recipe_name = models.CharField(max_length=128, default='')
     description = models.CharField(max_length=1024)
-    ingredients_text = models.TextField(max_length=2048)
-    instructions_text = models.TextField(max_length=2048)
+    ingredients_text = models.TextField(max_length=2048*2)
+    instructions_text = models.TextField(max_length=2048*4)
     # optional:
-    prep_time = models.IntegerField(blank=True, null=True)
-    cook_time = models.IntegerField(blank=True, null=True)
-    ready_in = models.IntegerField(blank=True, null=True)
-    num_servings = models.IntegerField(blank=True, null=False, default=1)
+    prep_time_hours = models.IntegerField(blank=True, null=True, verbose_name='Prep time')
+    prep_time_minutes = models.IntegerField(blank=True, null=True, verbose_name='')
+    cook_time_hours = models.IntegerField(blank=True, null=True, verbose_name='Cook time')
+    cook_time_minutes = models.IntegerField(blank=True, null=True, verbose_name='')
+    ready_in_hours = models.IntegerField(blank=True, null=True, verbose_name='Ready in')
+    ready_in_minutes = models.IntegerField(blank=True, null=True, verbose_name='')
+    num_servings = models.IntegerField(blank=True, null=False, default=4)
+    # your recipe image
     image = models.ImageField(blank=True, upload_to='home/images/uploaded_recipe_images/')
 
     # invisible to the user stuff:
@@ -41,8 +46,8 @@ class Recipe(models.Model):
             fname = f.name
             # resolve picklists/choices, with get_xyz_display() function
             get_choice = 'get_'+fname+'_display'
-            if hasattr( self, get_choice):
-                value = getattr( self, get_choice)()
+            if hasattr(self, get_choice):
+                value = getattr(self, get_choice)()
             else:
                 try :
                     value = getattr(self, fname)
@@ -61,3 +66,12 @@ class Recipe(models.Model):
                   }
                 )
         return fields
+
+    # def __init__(self, *args, **kwargs):
+    #     super(Recipe, self).__init__(*args, **kwargs)
+    #     self.fields['prep_time_hours'].label = 'Prep Time'
+    #     self.fields['prep_time_minutes'].label = ''
+    #     self.fields['cook_time_hours'].label = 'Cook Time'
+    #     self.fields['cook_time_minutes'].label = ''
+    #     self.fields['ready_in_hours'].label = 'Ready In'
+    #     self.fields['ready_in_minutes'].label = ''

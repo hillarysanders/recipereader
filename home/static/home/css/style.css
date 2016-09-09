@@ -39,3 +39,24 @@ _nav .brand-logo {
 .big_form_input {
     height: 100px;
 }
+
+
+
+input[type="number"] {
+  font-size: 14pt;
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    height: 6em;
+    width: 6ch;
+  }
+}
+
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+
+.container {
+  margin: 0 auto;
+  max-width: 2560px;
+  width: 90%;
+}
