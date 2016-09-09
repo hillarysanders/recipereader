@@ -4,6 +4,7 @@ import re
 import pandas as pd
 from . import utils
 
+
 def parse_ingredient_line(line = '2 and a half egg yolks, whisked'):
 
     def clean_line(line):
@@ -16,7 +17,7 @@ def parse_ingredient_line(line = '2 and a half egg yolks, whisked'):
         return line
 
     def find_matches(line, name_maps, key='numbers'):
-        pattern = '|'.join(conv.names[key])
+        pattern = '|'.join(reversed(conv.names[key]))
         # finds non-overlapping matches to our (sorted!) long joined pattern:
         matches = list(re.finditer(pattern, line))
 
@@ -43,7 +44,6 @@ def parse_ingredient_line(line = '2 and a half egg yolks, whisked'):
                 out.loc[len(out), :] = [start, end, pattern, replacement, oldline, line]
 
         return out
-
 
     conv = Conversions()
     # first, save the original line:
