@@ -58,11 +58,3 @@ class AddRecipeForm(forms.ModelForm):
         # make recipe name big:
         self.fields['recipe_name'].widget = forms.TextInput(attrs={'style': 'font-size: 30px'})
 
-
-# sweet. now make a welcome page, and better error catching, and a login along with create user form.
-# and figure out where the users are going in the database, and make it all pretty.
-
-# ok, awesome. now on the home page show your user profile name in the corner. and add a container box.
-# and also figure out how to inherit web pages with django.
-
-# yahoo, done! OK, now add an add recipe page! Fix all the add_recipe stuff :). Model after polls?

@@ -19,6 +19,11 @@
             <!--format this little image upload guy:-->
             <p>{{add_recipe_form.image|as_material:"s12 m6"}}</p>
 
+            <!--{% if add_recipe_form.image %}-->
+                <!--<img src="{{ add_recipe_form.image.url }}" />-->
+                <!--WHY U NO WORK?!!!!!!-->
+            <!--{% endif %}-->
+
         </div>
         <div class="row">
             <p>   {{add_recipe_form.prep_time_hours|as_material:"s5 m2 l2"}}</p>

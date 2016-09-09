@@ -66,12 +66,3 @@ class Recipe(models.Model):
                   }
                 )
         return fields
-
-    # def __init__(self, *args, **kwargs):
-    #     super(Recipe, self).__init__(*args, **kwargs)
-    #     self.fields['prep_time_hours'].label = 'Prep Time'
-    #     self.fields['prep_time_minutes'].label = ''
-    #     self.fields['cook_time_hours'].label = 'Cook Time'
-    #     self.fields['cook_time_minutes'].label = ''
-    #     self.fields['ready_in_hours'].label = 'Ready In'
-    #     self.fields['ready_in_minutes'].label = ''
