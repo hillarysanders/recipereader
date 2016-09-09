@@ -9,7 +9,7 @@ from .models import Recipe
 class RecipeAdmin(admin.ModelAdmin):
     fields = ('recipe_name', 'description', 'user', 'pub_date', 'ingredients_text', 'instructions_text',
               'num_servings', 'image')
-    list_display = ('recipe_name', 'description', 'user', 'pub_date')
+    list_display = ('recipe_name', 'description', 'user')
 
     # this adds a search box to the top of the admin/polls/question page, so you can search for question text:
     search_fields = ['recipe_name', 'description']

@@ -75,6 +75,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                # this line is so we can use MEDIA_URL in templates:
+                'django.template.context_processors.media',
             ],
         },
     },
@@ -143,3 +145,5 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = 'static'
+MEDIA_ROOT = '/Users/hills/Desktop/code/django-beanstalk/ebdjango/media/'
+MEDIA_URL = '/media/'

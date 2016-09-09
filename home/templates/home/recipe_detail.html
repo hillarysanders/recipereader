@@ -3,13 +3,45 @@
 {% block content %}
 <!--{% load materialize %}-->
 
-<h2> {{ recipe.recipe_name }} </h2>
+<h2 class="center"> {{ recipe.recipe_name }} </h2>
 
-{% for field in recipe.get_all_fields %}
-    <h5>{{field.label|capfirst}}</h5>
-    {{field.value|escape|urlize|linebreaks}}
-    <br>
-{% endfor %}
+<div class="row">
+    <div class="col s12 recipe_text">
+        <!--recipe image, time took prep / cook / make, description:-->
+        <div class="col s12 m4 l4 recipe_image float_left">
+                <div class="col s12 center"><i>serves {{recipe.num_servings }}</i></div>
+            <div class="col s12 m12 l12">
+                <div class="col s12 m12 l6 float_left margin_10">
+                    <div class="col s12">{{ recipe.get_prep_time }}</div>
+                    <div class="col s12">{{ recipe.get_cook_time }}</div>
+                    <div class="col s12">{{ recipe.get_ready_in_time }}</div>
+                </div>
+                                <i>{{ recipe.description }}</i>
+
+            </div>
+
+            {% if recipe.image %}
+                <img src="{{ recipe.image.url }}" />
+            {% endif %}
+        </div>
+
+        <!--ingredients:-->
+        <div class="col s12 m4 l4 recipe_text">
+            <em><h5 class="center">Ingredients</h5></em>
+            {{ recipe.ingredients }}
+        </div>
+
+        <!--directions:-->
+        <em><h5 class="center">Directions</h5></em>
+        {{ recipe.instructions }}
+
+    </div>
+</div>
+<!--{% for field in recipe.get_all_fields %}-->
+    <!--<h5>{{field.label|capfirst}}</h5>-->
+    <!--{{field.value|escape|urlize|linebreaks}}-->
+    <!--<br>-->
+<!--{% endfor %}-->
 
         <!--<div class="row">-->
             <!--<div class="col s12 m3 l2">-->

@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 from django.db import models
 from django.utils import timezone
 from django.db.models.signals import pre_save
+from django.utils.safestring import mark_safe
 
 
 from django.contrib.auth.models import User
@@ -27,16 +28,21 @@ class Recipe(models.Model):
     ready_in_minutes = models.IntegerField(blank=True, null=True, verbose_name='')
     num_servings = models.IntegerField(blank=True, null=False, default=4)
     # your recipe image
-    image = models.ImageField(blank=True, upload_to='home/images/uploaded_recipe_images/')
+    image = models.ImageField(blank=True, upload_to='images/recipes/', null=True)
 
     # invisible to the user stuff:
-    pub_date = models.DateTimeField('date published', default=timezone.now)
+    pub_date = models.DateTimeField('date published', auto_now_add=True)
     # # each recipe is related to a single user.
     # # on_delete=models.CASCADE means that if a user is deleted his / her recipes will be too.
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.description
+
+    def save(self, *args, **kwargs):
+        self.ingredients = mark_safe(self.ingredients_text.replace("\n", "<br/>"))
+        self.instructions = mark_safe(self.instructions_text.replace("\n", "<br/>"))
+        super(Recipe, self).save(*args, **kwargs)
 
     def get_all_fields(self):
         """Returns a list of all field names on the instance."""
@@ -66,3 +72,38 @@ class Recipe(models.Model):
                   }
                 )
         return fields
+
+    def get_time(self, hours, minutes):
+        if hours == 0 or hours is None:
+            h = ''
+        elif hours == 1:
+            h = '1 h, '
+        else:
+            h = '{} h, '.format(hours)
+
+        if minutes == 0 or minutes is None:
+            m = ''
+            h = h.replace(', ', '')
+        elif minutes == 1:
+            m = '1 m'
+        else:
+            m = '{} m'.format(minutes)
+
+        line = h + m
+        return line
+
+    def get_prep_time(self):
+        time = self.get_time(self.prep_time_hours, self.prep_time_minutes)
+        time = '' if (time == '') else 'Prep Time: {}'.format(time)
+        return time
+
+    def get_cook_time(self):
+        time = self.get_time(self.cook_time_hours, self.cook_time_minutes)
+        time = '' if (time == '') else 'Cook Time: {}'.format(time)
+        return time
+
+    def get_ready_in_time(self):
+        time = self.get_time(self.ready_in_hours, self.ready_in_minutes)
+        time = '' if (time == '') else 'Ready In: {}'.format(time)
+        return time
+
