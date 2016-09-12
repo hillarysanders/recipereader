@@ -3,9 +3,9 @@ from django.db import models
 from django.utils import timezone
 from django.db.models.signals import pre_save
 from django.utils.safestring import mark_safe
-
-
 from django.contrib.auth.models import User
+
+
 # Create your models here.
 # Each model is represented by a class that subclasses django.db.models.Model. Each model has a number of class
 # variables, each of which represents a database field in the model.
@@ -86,7 +86,8 @@ class Recipe(models.Model):
         else:
             h = '{} h, '.format(hours)
 
-        if minutes == 0 or minutes is None:
+        # the or (minutes*60 == hours) is in case people think they have to put in e.g. .5 hours and 30 minutes.
+        if minutes == 0 or minutes is None or (minutes*60 == hours):
             m = ''
             h = h.replace(', ', '')
         elif minutes == 1:
@@ -113,18 +114,25 @@ class Recipe(models.Model):
         return time
 
 
-class ingredient_line(models.Model):
-    raw_text = models.TextField(max_length=2048*2)
+class IngredientLine(models.Model):
+    raw_text = models.TextField(max_length=2048*2, blank=False, null=False)
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
+    # todo add in more fields that are created upon save, based on conversion text parsing of raw_text.
 
+    # def save(self, *args, **kwargs):
+    #     if self.raw_text:
+    #         # make attributes that are the output of parsing the line:
+    #         parsed = parse_ingredient_line(self.raw_text)
+    #
+    #     super(IngredientLine, self).save(*args, **kwargs)
 
-# making your own field type:
-class IngredientField(models.Field):
-    description = "An ingredient line and its parsing outputs"
-
-    def __init__(self, *args, **kwargs):
-        # do stuff ...
-        super(IngredientField, self).__init__(*args, **kwargs)
+# class IngredientNumber(models.Model):
+#     start = models.IntegerField()
+#     end = models.IntegerField()
+#     pattern = models.CharField()
+#     number_name = models.CharField()
+#     number_value = models.FloatField()
+#     ingredient_line = models.ForeignKey(IngredientLine)
 
 
 

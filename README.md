@@ -3,9 +3,7 @@ This is my recipe reader website. I hope it's going to be cool. If it is awesome
 
 Anyways.
 
-Here are the current issues I'm working on!
-
- [![Stories in Progress](https://badge.waffle.io/hillarysanders/recipereader.svg?label=in%20progress&title=In%20Progress)](http://waffle.io/hillarysanders/recipereader)
+Here are the current issues I'm working on! [![Stories in Progress](https://badge.waffle.io/hillarysanders/recipereader.svg?label=in%20progress&title=In%20Progress)](http://waffle.io/hillarysanders/recipereader)
 
 
 

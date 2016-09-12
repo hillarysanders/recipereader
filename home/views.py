@@ -8,7 +8,7 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
 from django.views import generic
 from django.core.files.uploadedfile import SimpleUploadedFile
-from .models import Recipe
+from .models import Recipe, IngredientLine
 from .forms import UserForm, LoginForm, AddRecipeForm
 
 
@@ -71,8 +71,13 @@ def add_recipe(request):
         if add_recipe_form.is_valid():
             recipe = add_recipe_form.save(commit=False)  # doesn't save the instance yet, since we need to add stuff
             recipe.user = request.user
-            # recipe.pub_date = timezone.now()
+
+            ingredient_lines = recipe.ingredients_text.split('\n')
             recipe.save()
+
+            for line in ingredient_lines:
+                ing = IngredientLine(raw_text=line, recipe=recipe)
+                ing.save()
             return HttpResponseRedirect('/recipes/detail/{}/'.format(recipe.id))
         else:
             # no return redirect statement here, as errors will be shown in template below
@@ -92,6 +97,11 @@ class RecipeDetailView(generic.DetailView):
     # note that this uses a generic.DetailView
     model = Recipe
     template_name = 'home/recipe_detail.html'
+
+    # def get_context_data(self, **kwargs):
+    #     context = super(RecipeDetailView, self).get_context_data(**kwargs)
+    #     context['now'] = timezone.now()
+    #     return context
 
 
 def cookbook(request):

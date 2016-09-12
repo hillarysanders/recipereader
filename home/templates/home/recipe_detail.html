@@ -30,13 +30,18 @@
             <em><h5 class="center">Ingredients</h5></em>
 
             {{ recipe.ingredients_text | linebreaks}}
+
+            {% for line in recipe.ingredientline_set.all %}
+            <br>
+                {{line.raw_text}}
+            {% endfor %}
         </div>
 
         <!--directions:-->
         <em><h5 class="center">Directions</h5></em>
-        <pre>{{ recipe.instructions_text }}</pre>
-        <pre>{{ recipe.instructions_text }}</pre>
-        <pre>{{ recipe.instructions_text }}</pre>
+        {{ recipe.instructions_text }}
+        <!--<pre>{{ recipe.instructions_text }}</pre>-->
+        <!--<pre>{{ recipe.instructions_text }}</pre>-->
     </div>
 
 </div>
