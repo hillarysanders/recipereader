@@ -5,8 +5,6 @@ Anyways.
 
 Here are the current issues I'm working on! [![Stories in Ready](https://badge.waffle.io/hillarysanders/recipereader.png?label=ready&title=Issues Ready Fo Dev!)](http://waffle.io/hillarysanders/recipereader)
 
-[![Stories in Ready](https://badge.waffle.io/hillarysanders/recipereader.png?label=ready&title=Ready)](http://waffle.io/hillarysanders/recipereader)
-
 When this website is actually usable I'll add more to this README. 
 
 Luv ya'lls <3.
