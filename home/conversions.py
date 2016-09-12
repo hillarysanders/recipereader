@@ -1,3 +1,4 @@
+# coding=utf8
 import itertools
 from num2words import num2words
 import re
@@ -40,8 +41,9 @@ def parse_ingredient_line(line='2 and a half egg yolks, whisked'):
                     replacement = '__{}_OR_{}__'.format(d['singular'], d['plural'])
 
                 oldline = line
-                line = oldline[:start] + replacement + oldline[end:]
+                line = oldline[:start] + ' {} '.format(replacement) + oldline[end:]
                 out.loc[len(out), :] = [start, end, pattern, replacement, oldline, line]
+
 
         return out
 
@@ -63,6 +65,7 @@ def parse_ingredient_line(line='2 and a half egg yolks, whisked'):
     # todo 6) Change recipe data table to encompass all this information
 
 
+
 # when you get onto directions instead of ingredients.... how do you differentiate between numbers for time
 # and numbers for amounts? :) That'll be a bit tricky.
 
@@ -72,86 +75,98 @@ class Conversions:
     # TODO! Or actually... hm. dataframe might be faster. Figure out and implement.
     # todo yeah ok so I think you can keeps the list of dicts, just transform in __init__ to dataframe of
     # todo repeated name info. Then you just add the row into out in find_matches() above.
-    name_maps_numbers = [
-        dict(names=['a half', 'one half', '1/2', '.5', 'halves'],
-             name='1/2'),
-        dict(names=['a quarter', 'one quarter', '1/4', '.25', 'a forth', 'quarters'],
-             name='1/4'),
-        dict(names=['a fifth', 'one fifth', '1/5', '.2', 'a fifth', 'fifths'],
-             name='1/4'),
-        dict(names=['one third', 'a third', '1/3', 'thirds'],
-             name='1/3'),
-        dict(names=['one sixth', 'a sixth', '1/6', 'sixths'],
-             name='1/6'),
-        dict(names=['one eighth', 'an eighth', '1/8', 'eighths'],
-             name='1/8'),
-        dict(names=['the whole', 'a whole', 'one'],
-             name='1')
-    ]
-    # anything above 1 uses num_to_words
-    name_maps_volume = [
-        dict(names=['teaspoon', 'tsp', 't'],
-             singular='teaspoon',
-             plural='tsp.'),
-        dict(names=['tablespoon', 'tbsp', 'tbls', 'tbs', 'T'],
-             singular='tablespoon',
-             plural='tbsp.'),
-        dict(names=['fluid ounce', 'fluid oz', 'ounce (fluid)', 'fl oz'],
-             singular='fluid ounce',
-             plural='fluid oz.'),
-        dict(names=['cup'],
-             singular='cup',
-             plural='cups'),
-        dict(names=['pint'],
-             singular='pint',
-             plural='pints'),  # technically pts. but nobody knows that
-        dict(names=['quart'],
-             singular='quart',
-             plural='quarts'),
-        dict(names=['gallon'],
-             singular='gallon',
-             plural='gallons'),
-        dict(names=['liter', 'litre', 'ltr', 'lt', 'l'],
-             singular='liter',
-             plural='liters'),
-        dict(names=['milliliter', 'millilitre', 'ml'],
-             singular='milliliter',
-             plural='ml')
-        ]
-    name_maps_weight = [
-        dict(names=['gr', 'g', 'grm', 'gram'],
-             singular='gram',
-             plural='grams'),
-        dict(names=['kg', 'kilogram'],
-             singular='kg',
-             plural='kilograms'),
-        dict(names=['milligram', 'mg'],
-             singular='milligram',
-             plural='mg'),
-        dict(names=['lb', 'pound'],
-             singular='lb.',
-             plural='lbs.'),
-        dict(names=['oz', 'ounce', 'onze', 'onza'],
-             singular='ounce',
-             plural='oz.')
-    ]
 
     def __init__(self):
+        self.name_maps_numbers = [
+            dict(names=['half', 'a half', 'one half', '1/2', '.5', 'halves', '½'],
+                 name='½',
+                 value=.5),
+            dict(names=['a quarter', 'one quarter', '1/4', '.25', 'a forth', 'quarters', '¼'],
+                 name='¼',
+                 value=.25),
+            dict(names=['a fifth', 'one fifth', '1/5', '.2', 'a fifth', 'fifths', '⅕'],
+                 name='⅕',
+                 value=.2),
+            dict(names=['one third', 'a third', '1/3', 'thirds', '⅓'],
+                 name='⅓',
+                 value=float(1)/3),
+            dict(names=['one sixth', 'a sixth', '1/6', 'sixths', '⅙'],
+                 name='⅙',
+                 value=float(1)/6),
+            dict(names=['one eighth', 'an eighth', '1/8', 'eighths', '⅛'],
+                 name='⅛',
+                 value=float(1)/8),
+            dict(names=['the whole', 'a whole', 'one'],  # todo protect against e.g. 'one at at time'...
+                 name='1',
+                 value=1.)
+        ]
+        # anything above 1 uses num_to_words
+        self.name_maps_volume = [
+            dict(names=['teaspoon', 'tsp', 't'],
+                 singular='teaspoon',
+                 plural='tsp.'),
+            dict(names=['tablespoon', 'tbsp', 'tbls', 'tbs', 'T'],
+                 singular='tablespoon',
+                 plural='tbsp.'),
+            dict(names=['fluid ounce', 'fluid oz', 'ounce (fluid)', 'fl oz'],
+                 singular='fluid ounce',
+                 plural='fluid oz.'),
+            dict(names=['cup'],
+                 singular='cup',
+                 plural='cups'),
+            dict(names=['pint'],
+                 singular='pint',
+                 plural='pints'),  # technically pts. but nobody knows that
+            dict(names=['quart'],
+                 singular='quart',
+                 plural='quarts'),
+            dict(names=['gallon'],
+                 singular='gallon',
+                 plural='gallons'),
+            dict(names=['liter', 'litre', 'ltr', 'lt', 'l'],
+                 singular='liter',
+                 plural='liters'),
+            dict(names=['milliliter', 'millilitre', 'ml'],
+                 singular='milliliter',
+                 plural='ml')
+            ]
+
+        self.name_maps_weight = [
+            dict(names=['gr', 'g', 'grm', 'gram'],
+                 singular='gram',
+                 plural='grams'),
+            dict(names=['kg', 'kilogram'],
+                 singular='kg',
+                 plural='kilograms'),
+            dict(names=['milligram', 'mg'],
+                 singular='milligram',
+                 plural='mg'),
+            dict(names=['lb', 'pound'],
+                 singular='lb.',
+                 plural='lbs.'),
+            dict(names=['oz', 'ounce', 'onze', 'onza'],
+                 singular='ounce',
+                 plural='oz.')
+        ]
         # use num2words:
-        self._extend_number_name_maps()
+        name_maps_numbers = self._extend_number_name_maps(n=1000)
         # capitalize stuff:
-        self.name_maps_numbers = self._extend_names_with_capitalization(self.name_maps_numbers)
-        self.name_maps_volume = self._extend_names_with_capitalization(self.name_maps_volume)
-        self.name_maps_weight = self._extend_names_with_capitalization(self.name_maps_weight)
-        # add spaces:
-        self.name_maps_numbers = self._add_spaces_to_sides(self.name_maps_numbers)
-        self.name_maps_weight = self._add_spaces_to_sides(self.name_maps_weight)
-        self.name_maps_volume = self._add_spaces_to_sides(self.name_maps_volume)
+        self.name_maps_numbers = self._prep_name_map(self.name_maps_numbers)
+        self.name_maps_volume = self._prep_name_map(self.name_maps_volume)
+        self.name_maps_weight = self._prep_name_map(self.name_maps_weight)
         # aggregate the names:
         self.names = self._aggregate_names()
 
     def __str__(self):
         return 'Unit & number conversions class instance.'
+
+    def _prep_name_map(self, name_maps):
+        # capitalize stuff:
+        name_maps = self._extend_names_with_capitalization(name_maps)
+        # add spaces:
+        name_maps = self._add_spaces_to_sides(name_maps)
+
+        return name_maps
 
     def _add_spaces_to_sides(self, name_maps):
         for i in range(len(name_maps)):
@@ -160,12 +175,12 @@ class Conversions:
 
     def _extend_number_name_maps(self, n=1000):
         for i in range(2, n):
-            el = dict(names=[num2words(i), str(i)], name=str(i))
+            el = dict(names=[num2words(i), str(i)], name=str(i), value=float(i))
             if (i % 12) == 0:
                 # two dozen, etc...
                 el['names'].extend(['{} dozen'.format(num2words(i/12))])
 
-                if i==12:
+                if i == 12:
                     # include 'a dozen'
                     el['names'].extend(['a dozen'])
 

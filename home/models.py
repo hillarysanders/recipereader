@@ -19,6 +19,9 @@ class Recipe(models.Model):
     description = models.CharField(max_length=1024)
     ingredients_text = models.TextField(max_length=2048*2)
     instructions_text = models.TextField(max_length=2048*4)
+
+    ingredients = models.TextField(max_length=2048*2, default='', blank=True, null=True)
+    instructions = models.TextField(max_length=2048*4, default='', blank=True, null=True)
     # optional:
     prep_time_hours = models.IntegerField(blank=True, null=True, verbose_name='Prep time')
     prep_time_minutes = models.IntegerField(blank=True, null=True, verbose_name='')
@@ -39,10 +42,12 @@ class Recipe(models.Model):
     def __str__(self):
         return self.description
 
-    def save(self, *args, **kwargs):
-        self.ingredients = mark_safe(self.ingredients_text.replace("\n", "<br/>"))
-        self.instructions = mark_safe(self.instructions_text.replace("\n", "<br/>"))
-        super(Recipe, self).save(*args, **kwargs)
+    # def save(self, *args, **kwargs):
+    #     # todo fix this (not working atm)... Hm. maybe make into field? Or implement in view, or make into function?
+    #     self.ingredients = mark_safe(self.ingredients_text.replace("\n", "<br/>"))
+    #     self.instructions = mark_safe(self.instructions_text.replace("\n", "<br/>"))
+    #     # todo put parsing info in a child class or somehting???
+    #     super(Recipe, self).save(*args, **kwargs)
 
     def get_all_fields(self):
         """Returns a list of all field names on the instance."""
@@ -106,4 +111,23 @@ class Recipe(models.Model):
         time = self.get_time(self.ready_in_hours, self.ready_in_minutes)
         time = '' if (time == '') else 'Ready In: {}'.format(time)
         return time
+
+
+class ingredient_line(models.Model):
+    raw_text = models.TextField(max_length=2048*2)
+    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
+
+
+# making your own field type:
+class IngredientField(models.Field):
+    description = "An ingredient line and its parsing outputs"
+
+    def __init__(self, *args, **kwargs):
+        # do stuff ...
+        super(IngredientField, self).__init__(*args, **kwargs)
+
+
+
+
+
 
