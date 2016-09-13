@@ -55,8 +55,10 @@ def parse_ingredient_line(line='2 and a half egg yolks, whisked'):
     matches = find_number_matches(line=line, name_maps=name_maps_numbers)
     # do the same for volume and units but determine plurality based on nearest number(s) to the left?
 
-    line = multiple_replace(pattern_replace_dict={r.pattern: r.replacement for p, r in matches.iterrows()},
-                            text=line)
+    if len(matches)>0:
+        line = multiple_replace(pattern_replace_dict={r.pattern: r.replacement for p, r in matches.iterrows()},
+                                text=line)
+
     line = re.sub('^ | $', '', line)
 
     return dict(original_line=original_line,

@@ -1,6 +1,6 @@
 # coding=utf8
 from num2words import num2words
-
+import pandas as pd
 """
 Base conversion dictionaries that conversions.py will use to build nicely formatted conversion objects.
 Not meant to be used directly.

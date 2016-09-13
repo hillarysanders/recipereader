@@ -4,7 +4,7 @@ from django.utils import timezone
 from django.db.models.signals import pre_save
 from django.utils.safestring import mark_safe
 from django.contrib.auth.models import User
-
+from . import conversions
 
 # Create your models here.
 # Each model is represented by a class that subclasses django.db.models.Model. Each model has a number of class
@@ -119,12 +119,13 @@ class IngredientLine(models.Model):
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
     # todo add in more fields that are created upon save, based on conversion text parsing of raw_text.
 
-    # def save(self, *args, **kwargs):
-    #     if self.raw_text:
-    #         # make attributes that are the output of parsing the line:
-    #         parsed = parse_ingredient_line(self.raw_text)
-    #
-    #     super(IngredientLine, self).save(*args, **kwargs)
+    def save(self, *args, **kwargs):
+        if self.raw_text:
+            # make attributes that are the output of parsing the line:
+            parsed = conversions.parse_ingredient_line(self.raw_text)
+            self.new_text = parsed['parsed_line']
+
+        super(IngredientLine, self).save(*args, **kwargs)
 
 # class IngredientNumber(models.Model):
 #     start = models.IntegerField()
