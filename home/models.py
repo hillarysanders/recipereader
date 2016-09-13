@@ -87,7 +87,7 @@ class Recipe(models.Model):
             h = '{} h, '.format(hours)
 
         # the or (minutes*60 == hours) is in case people think they have to put in e.g. .5 hours and 30 minutes.
-        if minutes == 0 or minutes is None or (minutes*60 == hours):
+        if minutes == 0 or minutes is None:
             m = ''
             h = h.replace(', ', '')
         elif minutes == 1:
@@ -114,6 +114,15 @@ class Recipe(models.Model):
         return time
 
 
+# class NumberMatch(models.Model):
+#     start = models.IntegerField()
+#     end = models.IntegerField()
+#     pattern = models.CharField()
+#     replacement = models.CharField()
+#     value = models.FloatField()
+#     ingredient_line = models.ForeignKey(IngredientLine, on_delete=models.CASCADE)
+
+
 class IngredientLine(models.Model):
     raw_text = models.TextField(max_length=2048*2, blank=False, null=False)
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
@@ -123,9 +132,12 @@ class IngredientLine(models.Model):
         if self.raw_text:
             # make attributes that are the output of parsing the line:
             parsed = conversions.parse_ingredient_line(self.raw_text)
+            # todo this doesn't work still:
             self.new_text = parsed['parsed_line']
 
         super(IngredientLine, self).save(*args, **kwargs)
+
+        # TODO would using postgres mean we could use multiple fields in django?
 
 # class IngredientNumber(models.Model):
 #     start = models.IntegerField()

@@ -29,12 +29,12 @@
         <div class="col s12 m4 l4 recipe_text">
             <em><h5 class="center">Ingredients</h5></em>
 
-            {{ recipe.ingredients_text | linebreaks}}
-
+            {{ FOO | linebreaks}}
             {% for line in recipe.ingredientline_set.all %}
             <br>
                 {{line.raw_text}}
-                {{line.new_text}}
+                <!--{{line.new_text}}-->
+                <!--{{line.FOO}}-->
             {% endfor %}
         </div>
 

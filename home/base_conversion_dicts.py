@@ -1,4 +1,5 @@
 # coding=utf8
+from __future__ import unicode_literals
 from num2words import num2words
 import pandas as pd
 """
@@ -6,55 +7,55 @@ Base conversion dictionaries that conversions.py will use to build nicely format
 Not meant to be used directly.
 """
 
-# name_maps_numbers = [
-#     # don't want to match to... half and half, half chopped, etc
-#     dict(pattern=['half', 'a half', 'one half', '1/2', '.5', 'halves', '½'],
-#          name='½',
-#          value=.5),
-#     dict(pattern=['a quarter', 'one quarter', '1/4', '.25', 'a forth', 'quarters', '¼'],
-#          name='¼',
-#          value=.25),
-#     dict(pattern=['a fifth', 'one fifth', '1/5', '.2', 'a fifth', 'fifths', '⅕'],
-#          name='⅕',
-#          value=.2),
-#     dict(pattern=['one third', 'a third', '1/3', 'thirds', '⅓'],
-#          name='⅓',
-#          value=float(1) / 3),
-#     dict(pattern=['one sixth', 'a sixth', '1/6', 'sixths', '⅙'],
-#          name='⅙',
-#          value=float(1) / 6),
-#     dict(pattern=['one eighth', 'an eighth', '1/8', 'eighths', '⅛'],
-#          name='⅛',
-#          value=float(1) / 8),
-#     dict(pattern=['the whole', 'a whole', 'one'],  # todo protect against e.g. 'one at at time'...
-#          name='1',
-#          value=1.)
-# ]
-
 name_maps_numbers = [
     # don't want to match to... half and half, half chopped, etc
-    dict(pattern=['half', 'a half', 'one half', '1/2', '.5', 'halves'],
-         name='1/2',
+    dict(pattern=['half', 'a half', 'one half', '1/2', '\.5', 'halves', '½'],
+         name='½',
          value=.5),
-    dict(pattern=['a quarter', 'one quarter', '1/4', '.25', 'a forth', 'quarters'],
-         name='1/4',
+    dict(pattern=['a quarter', 'one quarter', '1/4', '\.25', 'a forth', 'quarters', '¼'],
+         name='¼',
          value=.25),
-    dict(pattern=['a fifth', 'one fifth', '1/5', '.2', 'a fifth', 'fifths'],
-         name='1/5',
+    dict(pattern=['a fifth', 'one fifth', '1/5', '\.2', 'a fifth', 'fifths', '⅕'],
+         name='⅕',
          value=.2),
-    dict(pattern=['one third', 'a third', '1/3', 'thirds'],
-         name='1/3',
+    dict(pattern=['one third', 'a third', '1/3', 'thirds', '⅓'],
+         name='⅓',
          value=float(1) / 3),
-    dict(pattern=['one sixth', 'a sixth', '1/6', 'sixths'],
-         name='1/6',
+    dict(pattern=['one sixth', 'a sixth', '1/6', 'sixths', '⅙'],
+         name='⅙',
          value=float(1) / 6),
-    dict(pattern=['one eighth', 'an eighth', '1/8', 'eighths'],
-         name='1/8',
+    dict(pattern=['one eighth', 'an eighth', '1/8', 'eighths', '⅛'],
+         name='⅛',
          value=float(1) / 8),
     dict(pattern=['the whole', 'a whole', 'one'],  # todo protect against e.g. 'one at at time'...
          name='1',
          value=1.)
 ]
+
+# name_maps_numbers = [
+#     # don't want to match to... half and half, half chopped, etc
+#     dict(pattern=['half', 'a half', 'one half', '1/2', '\.5', 'halves'],
+#          name='1/2',
+#          value=.5),
+#     dict(pattern=['a quarter', 'one quarter', '1/4', '\.25', 'a forth', 'quarters'],
+#          name='1/4',
+#          value=.25),
+#     dict(pattern=['a fifth', 'one fifth', '1/5', '\.2', 'a fifth', 'fifths'],
+#          name='1/5',
+#          value=.2),
+#     dict(pattern=['one third', 'a third', '1/3', 'thirds'],
+#          name='1/3',
+#          value=float(1) / 3),
+#     dict(pattern=['one sixth', 'a sixth', '1/6', 'sixths'],
+#          name='1/6',
+#          value=float(1) / 6),
+#     dict(pattern=['one eighth', 'an eighth', '1/8', 'eighths'],
+#          name='1/8',
+#          value=float(1) / 8),
+#     dict(pattern=['the whole', 'a whole', 'one'],  # todo protect against e.g. 'one at at time'...
+#          name='1',
+#          value=1.)
+# ]
 # anything above 1 uses num_to_words
 name_maps_volume = [
     dict(pattern=['teaspoon', 'tsp', 't'],

@@ -1,4 +1,5 @@
 # coding=utf8
+from __future__ import unicode_literals
 import re
 import pandas as pd
 from .base_conversion_dicts import name_maps_numbers, name_maps_volume, name_maps_weight
@@ -20,18 +21,20 @@ def multiple_replace(pattern_replace_dict, text):
 
 def clean_line(line):
     # remove periods:
-    line = line.replace('.', '')
+    line = line.replace('. ', ' ')  # doesn't remove e.g. .25 or .5
     # add whitespace padding:
     line = ' {} '.format(line)
-    # remove double+ whitespaces:
-    line = re.sub(' +', ' ', line)
+    # replace () with placeholder:
+    line = line.replace('(', ' _(_ ').replace(')', ' _)_ ')
+    # # remove double+ whitespaces:
+    # line = re.sub(' +', ' ', line)
     return line
 
 
 def find_number_matches(line, name_maps):
-    pattern = '|'.join(reversed(name_maps.index))
+    pat = '|'.join(reversed(name_maps.index))
     # finds non-overlapping matches to our (sorted!) long joined pattern:
-    matches = re.finditer(pattern, line)
+    matches = re.finditer(pat, line)
 
     # base record data frame:
     out = pd.DataFrame(columns=['start', 'end', 'pattern', 'replacement', 'value'])
@@ -41,7 +44,7 @@ def find_number_matches(line, name_maps):
         # grab what actually caused the hit:
         pattern = line[start:end]
         # grab the relevant dict:
-        replacement = ' {} '.format(name_maps.loc[pattern, 'name'])
+        replacement = ' {} '.format(name_maps.loc[pattern, 'name'])  # todo spaces on sides? But then e.g. '2 cups'?...
         value = name_maps.loc[pattern, 'value']
         out.loc[len(out), :] = [start, end, pattern, replacement, value]
 
@@ -60,6 +63,7 @@ def parse_ingredient_line(line='2 and a half egg yolks, whisked'):
                                 text=line)
 
     line = re.sub('^ | $', '', line)
+    line = line.replace(' _(_ ', '(').replace(' _)_ ', ')')
 
     return dict(original_line=original_line,
                 parsed_line=line,

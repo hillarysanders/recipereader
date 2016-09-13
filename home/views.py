@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 from django.shortcuts import render, render_to_response
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
@@ -10,7 +11,7 @@ from django.views import generic
 from django.core.files.uploadedfile import SimpleUploadedFile
 from .models import Recipe, IngredientLine
 from .forms import UserForm, LoginForm, AddRecipeForm
-
+from . import conversions
 
 # Create your views here.
 
@@ -98,10 +99,11 @@ class RecipeDetailView(generic.DetailView):
     model = Recipe
     template_name = 'home/recipe_detail.html'
 
-    # def get_context_data(self, **kwargs):
-    #     context = super(RecipeDetailView, self).get_context_data(**kwargs)
-    #     context['now'] = timezone.now()
-    #     return context
+    def get_context_data(self, **kwargs):
+        context = super(RecipeDetailView, self).get_context_data(**kwargs)
+        x = conversions.parse_ingredient_line(context['recipe'].ingredients_text)
+        context['FOO'] = x['parsed_line']
+        return context
 
 
 def cookbook(request):
