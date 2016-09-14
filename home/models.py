@@ -79,6 +79,7 @@ class Recipe(models.Model):
         return fields
 
     def get_time(self, hours, minutes):
+        # ugly structure since originally did 'minutes' vs 'minute'.
         if hours == 0 or hours is None:
             h = ''
         elif hours == 1:
@@ -86,7 +87,7 @@ class Recipe(models.Model):
         else:
             h = '{} h, '.format(hours)
 
-        # the or (minutes*60 == hours) is in case people think they have to put in e.g. .5 hours and 30 minutes.
+        # the or (minutes*60 == hours) is in case people think they have to put in e.g. .5 hours and 30 minutes?
         if minutes == 0 or minutes is None:
             m = ''
             h = h.replace(', ', '')
