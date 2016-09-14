@@ -73,7 +73,7 @@ def add_recipe(request):
             recipe = add_recipe_form.save(commit=False)  # doesn't save the instance yet, since we need to add stuff
             recipe.user = request.user
 
-            ingredient_lines = recipe.ingredients_text.split('\n')
+            recipe.ingredients = conversions.parse_ingredients(recipe.ingredients_text)
             # todo parse and save ingredients and directions here
             recipe.save()
 
