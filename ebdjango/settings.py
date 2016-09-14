@@ -91,11 +91,11 @@ WSGI_APPLICATION = 'ebdjango.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'rrpostgres',
-        'USER': 'admin',  # admin or hills?
+        'NAME': 'ebdb',
+        'USER': 'hills',  # admin or hills?
         'PASSWORD': 'evergreen',
         # 'HOST': 'aa1cr8xv0zx8h6p.cpa0rmdl6ahx.us-west-2.rds.amazonaws.com',
-        'HOST': ' recipereader-db-postgres.cpa0rmdl6ahx.us-west-2.rds.amazonaws.com',
+        'HOST': ' aa41d8yb3k2jjo.cpa0rmdl6ahx.us-west-2.rds.amazonaws.com',
         # 'HOST': 'aaehhk86lochd0.cpa0rmdl6ahx.us-west-2.rds.amazonaws.com',
         # 'PORT': '3306',
         'PORT': '5432',
