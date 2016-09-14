@@ -1,9 +1,7 @@
 from __future__ import unicode_literals
 from django.db import models
-from django.utils import timezone
-from django.db.models.signals import pre_save
-from django.utils.safestring import mark_safe
 from django.contrib.auth.models import User
+from django.contrib.postgres.fields import JSONField
 from . import conversions
 
 # Create your models here.
@@ -19,9 +17,9 @@ class Recipe(models.Model):
     description = models.CharField(max_length=1024)
     ingredients_text = models.TextField(max_length=2048*2)
     instructions_text = models.TextField(max_length=2048*4)
+    ingredients = JSONField(default=dict)
+    instructions = JSONField(default=dict)
 
-    ingredients = models.TextField(max_length=2048*2, default='', blank=True, null=True)
-    instructions = models.TextField(max_length=2048*4, default='', blank=True, null=True)
     # optional:
     prep_time_hours = models.IntegerField(blank=True, null=True, verbose_name='Prep time')
     prep_time_minutes = models.IntegerField(blank=True, null=True, verbose_name='')
@@ -41,13 +39,6 @@ class Recipe(models.Model):
 
     def __str__(self):
         return self.description
-
-    # def save(self, *args, **kwargs):
-    #     # todo fix this (not working atm)... Hm. maybe make into field? Or implement in view, or make into function?
-    #     self.ingredients = mark_safe(self.ingredients_text.replace("\n", "<br/>"))
-    #     self.instructions = mark_safe(self.instructions_text.replace("\n", "<br/>"))
-    #     # todo put parsing info in a child class or somehting???
-    #     super(Recipe, self).save(*args, **kwargs)
 
     def get_all_fields(self):
         """Returns a list of all field names on the instance."""
@@ -123,22 +114,22 @@ class Recipe(models.Model):
 #     value = models.FloatField()
 #     ingredient_line = models.ForeignKey(IngredientLine, on_delete=models.CASCADE)
 
-
-class IngredientLine(models.Model):
-    raw_text = models.TextField(max_length=2048*2, blank=False, null=False)
-    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
-    # todo add in more fields that are created upon save, based on conversion text parsing of raw_text.
-
-    def save(self, *args, **kwargs):
-        # if self.raw_text:
-        #     # make attributes that are the output of parsing the line:
-        #     parsed = conversions.parse_ingredient_line(self.raw_text)
-        #     # todo this doesn't work still:
-        #     self.new_text = parsed['parsed_line']
-
-        super(IngredientLine, self).save(*args, **kwargs)
-
-        # TODO would using postgres mean we could use multiple fields in django?
+#
+# class IngredientLine(models.Model):
+#     raw_text = models.TextField(max_length=2048*2, blank=False, null=False)
+#     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
+#     # todo add in more fields that are created upon save, based on conversion text parsing of raw_text.
+#
+#     def save(self, *args, **kwargs):
+#         # if self.raw_text:
+#         #     # make attributes that are the output of parsing the line:
+#         #     parsed = conversions.parse_ingredient_line(self.raw_text)
+#         #     # todo this doesn't work still:
+#         #     self.new_text = parsed['parsed_line']
+#
+#         super(IngredientLine, self).save(*args, **kwargs)
+#
+#         # TODO would using postgres mean we could use multiple fields in django?
 
 # class IngredientNumber(models.Model):
 #     start = models.IntegerField()

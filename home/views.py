@@ -9,7 +9,7 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
 from django.views import generic
 from django.core.files.uploadedfile import SimpleUploadedFile
-from .models import Recipe, IngredientLine
+from .models import Recipe
 from .forms import UserForm, LoginForm, AddRecipeForm
 from . import conversions
 
@@ -74,11 +74,9 @@ def add_recipe(request):
             recipe.user = request.user
 
             ingredient_lines = recipe.ingredients_text.split('\n')
+            # todo parse and save ingredients and directions here
             recipe.save()
 
-            for line in ingredient_lines:
-                ing = IngredientLine(raw_text=line, recipe=recipe)
-                ing.save()
             return HttpResponseRedirect('/recipes/detail/{}/'.format(recipe.id))
         else:
             # no return redirect statement here, as errors will be shown in template below
@@ -98,12 +96,6 @@ class RecipeDetailView(generic.DetailView):
     # note that this uses a generic.DetailView
     model = Recipe
     template_name = 'home/recipe_detail.html'
-
-    def get_context_data(self, **kwargs):
-        context = super(RecipeDetailView, self).get_context_data(**kwargs)
-        x = conversions.parse_ingredient_line(context['recipe'].ingredients_text)
-        context['FOO'] = x['parsed_line']
-        return context
 
 
 def cookbook(request):
