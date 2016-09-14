@@ -97,7 +97,7 @@ DATABASES = {
         'NAME': 'ebdb',
         'USER': 'hills',  # admin or hills?
         'PASSWORD': 'evergreen',
-        'HOST': 'aa41d8yb3k2jjo.cpa0rmdl6ahx.us-west-2.rds.amazonaws.com',
+        'HOST': 'aa6waj6g0kkg9u.cpa0rmdl6ahx.us-west-2.rds.amazonaws.com',
         'PORT': '5432',
         # adding this options.init_command line so that user <--> recipe relationships don't break things...?
         # 'OPTIONS': {
