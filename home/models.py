@@ -130,11 +130,11 @@ class IngredientLine(models.Model):
     # todo add in more fields that are created upon save, based on conversion text parsing of raw_text.
 
     def save(self, *args, **kwargs):
-        if self.raw_text:
-            # make attributes that are the output of parsing the line:
-            parsed = conversions.parse_ingredient_line(self.raw_text)
-            # todo this doesn't work still:
-            self.new_text = parsed['parsed_line']
+        # if self.raw_text:
+        #     # make attributes that are the output of parsing the line:
+        #     parsed = conversions.parse_ingredient_line(self.raw_text)
+        #     # todo this doesn't work still:
+        #     self.new_text = parsed['parsed_line']
 
         super(IngredientLine, self).save(*args, **kwargs)
 
