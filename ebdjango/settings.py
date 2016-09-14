@@ -88,28 +88,22 @@ WSGI_APPLICATION = 'ebdjango.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
 
+# from db import DB
+# conn = DB(dbtype='postgres', dbname='ebdb', username="hills", password="evergreen", hostname="aa41d8yb3k2jjo.cpa0rmdl6ahx.us-west-2.rds.amazonaws.com")
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'ebdb',
         'USER': 'hills',  # admin or hills?
         'PASSWORD': 'evergreen',
-        # 'HOST': 'aa1cr8xv0zx8h6p.cpa0rmdl6ahx.us-west-2.rds.amazonaws.com',
-        'HOST': ' aa41d8yb3k2jjo.cpa0rmdl6ahx.us-west-2.rds.amazonaws.com',
-        # 'HOST': 'aaehhk86lochd0.cpa0rmdl6ahx.us-west-2.rds.amazonaws.com',
-        # 'PORT': '3306',
+        'HOST': 'aa41d8yb3k2jjo.cpa0rmdl6ahx.us-west-2.rds.amazonaws.com',
         'PORT': '5432',
         # adding this options.init_command line so that user <--> recipe relationships don't break things...?
-        'OPTIONS': {
-         "init_command": "SET foreign_key_checks = 0;",
-        },
+        # 'OPTIONS': {
+        #  "init_command": "SET foreign_key_checks = 0;",
+        # },
     }
-    # isntance name: recipereader-db-postgres
-    # database name: rrpostgres
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.sqlite3',
-    #     'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    # }
 }
 
 AUTHENTICATION_BACKENDS = (
