@@ -90,8 +90,8 @@ WSGI_APPLICATION = 'ebdjango.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'ebdb',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'rrpostgres',
         'USER': 'admin',  # admin or hills?
         'PASSWORD': 'evergreen',
         # 'HOST': 'aa1cr8xv0zx8h6p.cpa0rmdl6ahx.us-west-2.rds.amazonaws.com',
