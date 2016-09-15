@@ -107,7 +107,7 @@ def parse_ingredient_line(line):
     for i in range(nrows+1):
         if nrows == 0:
             pd.DataFrame(dict(type='text', name=original_line, original=original_line,
-                              start=0, end=nchars), index='text')
+                              start=0, end=nchars), index=['text'])
         else:
             if i == 0:
                 # look to the beginning of the line to the start of the first pattern (this pattern)
