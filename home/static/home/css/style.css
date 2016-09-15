@@ -41,7 +41,6 @@ _nav .brand-logo {
 }
 
 
-
 input[type="number"] {
   font-size: 14pt;
   &::-webkit-outer-spin-button,
@@ -77,10 +76,6 @@ input::-webkit-inner-spin-button {
     margin-top: 0px;
 }
 
-.highlighted {
-    background-color: #ffff00;
-}
-
 highlighted {
-    background-color: #999900;
+    background-color: #ffff00;
 }
