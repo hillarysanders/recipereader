@@ -90,8 +90,8 @@ def _prep_name_map(name_maps):
     This function preps all the possible pattern strings by augmenting them
     via capitalization, etc. The transforms the dicts into a nicer to handle dataframe.
     """
-    # capitalize stuff:
-    name_maps = _extend_pattern_with_capitalization(name_maps)
+    # # capitalize stuff:
+    # name_maps = _extend_pattern_with_capitalization(name_maps)
     # # add spaces:
     # name_maps = _add_spaces_to_sides(name_maps)
     # coerce to dataframe:
@@ -103,22 +103,22 @@ def _prep_name_map(name_maps):
     return name_maps
 
 
-def _add_spaces_to_sides(name_maps):
-    for i in range(len(name_maps)):
-        name_maps[i]['pattern'] = [' {} '.format(n) for n in name_maps[i]['pattern']]
-    return name_maps
-
-
-def _extend_pattern_with_capitalization(name_maps):
-    for d in name_maps:
-        replacement = d['pattern']
-        capitalized = [el.capitalize() for el in replacement if el != 't']
-        upper = [el.upper() for el in replacement if el != 't']
-        replacement.extend(capitalized)
-        replacement.extend(upper)
-        replacement = list(set(replacement))
-
-    return name_maps
+# def _add_spaces_to_sides(name_maps):
+#     for i in range(len(name_maps)):
+#         name_maps[i]['pattern'] = [' {} '.format(n) for n in name_maps[i]['pattern']]
+#     return name_maps
+#
+#
+# def _extend_pattern_with_capitalization(name_maps):
+#     for d in name_maps:
+#         replacement = d['pattern']
+#         capitalized = [el.capitalize() for el in replacement if el != 't']
+#         upper = [el.upper() for el in replacement if el != 't']
+#         replacement.extend(capitalized)
+#         replacement.extend(upper)
+#         replacement = list(set(replacement))
+#
+#     return name_maps
 
 
 def _extend_number_name_maps(name_maps_numbers, n=1000):
