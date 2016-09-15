@@ -22,6 +22,9 @@ def multiple_replace(pattern_replace_dict, text):
 def clean_line(line):
     # remove periods:
     line = line.replace('. ', ' ')  # doesn't remove e.g. .25 or .5
+    line = line.replace('-', ' ')  # doesn't remove e.g. .25 or .5
+    # make uniform lines:
+    line = line.replace('\r\n', '\n').replace('\r', '\n')
     # add whitespace padding:
     line = ' {} '.format(line)
     # replace () with placeholder:
@@ -58,16 +61,21 @@ def parse_ingredient_line(line='2 and a half egg yolks, whisked'):
     matches = find_number_matches(line=line, name_maps=name_maps_numbers)
     # do the same for volume and units but determine plurality based on nearest number(s) to the left?
 
-    if len(matches)>0:
-        line = multiple_replace(pattern_replace_dict={r.pattern: r.replacement for p, r in matches.iterrows()},
+    if len(matches) > 0:
+        line = multiple_replace(pattern_replace_dict={r.pattern: r.replacement for
+                                                      p, r in matches.iterrows()},
                                 text=line)
 
-    line = re.sub('^ | $', '', line)
     line = line.replace(' _(_ ', '(').replace(' _)_ ', ')')
+    line = re.sub('^ | $', '', line)
+
+    # coerce matches df to dict:
+    matches.index = [str(i) for i in matches.index]
+    matches = matches.to_dict(orient='index')
 
     return dict(original_line=original_line,
                 parsed_line=line,
-                matches=matches.to_dict(orient='index'))
+                matches=matches)
 
 
 def parse_ingredients(lines):

@@ -92,10 +92,46 @@ def add_recipe(request):
     return render(request, 'home/add_recipe.html', context)
 
 
+def get_highlighted_ingredients(recipe, prefix='<highlighted class="highlighted">', postfix='</highlighted>'):
+    ing = recipe.ingredients
+    idx = sorted(ing.keys())
+    highlighted = []
+    for i in idx:
+        line = ing[i]['parsed_line']
+        x = conversions.parse_ingredient_line(line)
+        matches = x['matches']
+
+        positions = sorted([[m['start'], m['end']] for m in matches.values()])
+        h = ''
+        end_ = 0
+        for se in positions:
+            start = se[0]
+            end = se[1]
+            h += line[end_:start]+prefix
+            h += line[start:end]+postfix
+            end_ = end
+        h += line[end:len(line)]
+        highlighted.append(h)
+
+        # todo!! highlights ARE working (yay!) but the placement is off because the match positions refer to the line
+        # todo   with e.g. '_(_' instead of '(' values, etc. I think ideally we want the output dict to contain
+        # todo   start and end values of the final line, not the 'orginal' (actually, the preformatted) original line.
+
+    return highlighted
+
+
 class RecipeDetailView(generic.DetailView):
     # note that this uses a generic.DetailView
     model = Recipe
     template_name = 'home/recipe_detail.html'
+
+    def get_context_data(self, **kwargs):
+        # Call the base implementation first to get a context
+        context = super(RecipeDetailView, self).get_context_data(**kwargs)
+        # Add in a QuerySet of all the books
+        context['foo'] = get_highlighted_ingredients(context['recipe'])
+        # context['foo'] = 'bar' # todo
+        return context
 
 
 def cookbook(request):

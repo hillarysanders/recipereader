@@ -60,3 +60,24 @@ input::-webkit-inner-spin-button {
   max-width: 2560px;
   width: 90%;
 }
+
+.float_left {
+    float: left;
+}
+.margin_10 {
+    margin: 10px;
+}
+.recipe_image img{
+    width: 100%;
+    margin-top: 10px;
+}
+
+.recipe_text {
+    margin: 30px;
+    margin-top: 0px;
+}
+
+
+highlighted {
+    background-color: #999900;
+}

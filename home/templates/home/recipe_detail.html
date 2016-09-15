@@ -28,7 +28,11 @@
         <!--ingredients:-->
         <div class="col s12 m4 l4 recipe_text">
             <em><h5 class="center">Ingredients</h5></em>
-            <pre>{{ recipe.ingredients_text }}</pre>
+            {% for line in foo %}
+                {{line|safe}}
+            <br>
+            {% endfor %}
+
         </div>
 
         <!--directions:-->

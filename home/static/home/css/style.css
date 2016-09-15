@@ -76,3 +76,11 @@ input::-webkit-inner-spin-button {
     margin: 30px;
     margin-top: 0px;
 }
+
+.highlighted {
+    background-color: #ffff00;
+}
+
+highlighted {
+    background-color: #999900;
+}
