@@ -58,3 +58,9 @@ class AddRecipeForm(forms.ModelForm):
         # make recipe name big:
         self.fields['recipe_name'].widget = forms.TextInput(attrs={'style': 'font-size: 30px'})
 
+
+# class RecipeSearch(forms.Form):
+#     search = forms.CharField(max_length=100, required=False)
+#     # engine_type = forms.ChoiceField(choices=ENGINE_TYPE)
+#     # cat_class = forms.ChoiceField(choices=CAT_CLASS)
+#

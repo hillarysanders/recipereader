@@ -24,12 +24,12 @@
 
         </div>
         <div class="row">
-            <p>   {{add_recipe_form.prep_time_hours|as_material:"s5 m2 l2"}}</p>
-            <p> {{add_recipe_form.prep_time_minutes|as_material:"s7 m2 l2"}}</p>
-            <p>   {{add_recipe_form.cook_time_hours|as_material:"s5 m2 l2"}}</p>
-            <p> {{add_recipe_form.cook_time_minutes|as_material:"s7 m2 l2"}}</p>
-            <p>    {{add_recipe_form.ready_in_hours|as_material:"s5 m2 l2"}}</p>
-            <p>  {{add_recipe_form.ready_in_minutes|as_material:"s7 m2 l2"}}</p>
+            <p>   {{add_recipe_form.prep_time_hours|as_material:"s5 m2 l1"}}</p>
+            <p> {{add_recipe_form.prep_time_minutes|as_material:"s7 m2 l1"}}</p>
+            <p>   {{add_recipe_form.cook_time_hours|as_material:"s5 m2 l1"}}</p>
+            <p> {{add_recipe_form.cook_time_minutes|as_material:"s7 m2 l1"}}</p>
+            <p>    {{add_recipe_form.ready_in_hours|as_material:"s5 m2 l1"}}</p>
+            <p>  {{add_recipe_form.ready_in_minutes|as_material:"s7 m2 l1"}}</p>
 
             <p>{{add_recipe_form.description|as_material:"s12"}}</p>
         </div>
@@ -43,8 +43,9 @@
             <div class="col s12 m6 textbox"> TODO (realtime validation textbox) </div>
         </div>
 
-        <br><br>
-        <input type="submit" value="Submit" class="waves-effect waves-light btn col2"/>
+        <input type="submit" id="rsubmitbtn" style='display: none;'/>
+        <label for="rsubmitbtn" class="waves-effect waves-light btn col2">Submit</label>
+
     </form>
 
     {% if add_recipe_form.errors %}
@@ -63,3 +64,30 @@
     {% endif %}
 
 {% endblock %}
+
+
+
+
+<!--Make the crust mixture. Press into a pie pan, but do not bake. Mix the-->
+ <!--lower filling ingredients together. Pour over crust, and bake at 375º for-->
+ <!--30 minutes. Mix the top filling, remove the pie from the oven, and pour-->
+ <!--the top filling gently over the rest. Bake another 5 or so minutes at-->
+ <!--475º.-->
+
+ <!--Crust-->
+ <!--1 1/2 packages graham crackers-->
+ <!--6 tablespoons melted butter-->
+ <!--2 sugar-->
+
+ <!--Lower Filling-->
+ <!--1 8 oz. package of cream cheese-->
+ <!--1 cup sour cream-->
+ <!--2 eggs-->
+ <!--3/4 cups sugar-->
+ <!--1 tsp. vanilla-->
+ <!--1 tsp. lemon juice-->
+
+ <!--Top Filling-->
+ <!--2 cups sour cream-->
+ <!--2 tablespoons sugar-->
+ <!--1/2 tsp. vanilla)-->

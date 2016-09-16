@@ -5,10 +5,22 @@
 
 <h2> My Cookbook </h2>
 
+<nav class="searchnav col2">
+    <div class="nav-wrapper">
+        <form method="get" action="{% url 'home:cookbook' %}">
+
+            <div class="input-field">
+                <input id="search" type="search" name="search">
+                <label for="search"><i class="material-icons">search</i></label>
+                <i class="material-icons">close</i>
+            </div>
+        </form>
+    </div>
+</nav>
+
 {% for recipe in recipes %}
-    <h5>{{recipe.recipe_name|capfirst}}</h5>
+    <h5><a href="{% url 'home:recipe_detail' recipe.id %}">{{recipe.recipe_name|capfirst}}</a></h5>
     {{recipe.description|escape|urlize|linebreaks}}
-    <br>
 {% endfor %}
 
 

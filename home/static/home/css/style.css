@@ -15,6 +15,33 @@ main {
     background: #688396 !important;
 }
 
+
+
+
+
+
+.col1 {
+    background: #ffffe6 !important;
+}
+.col2 {
+    background: #acbfcc !important;
+}
+body {
+    background: #ffffe6;
+}
+a:link {
+color: #445570;
+}
+a:visited {
+color: #445570;
+}
+a:hover {
+color: #667793;
+}
+
+
+
+
 footer.page-footer {
   padding-top: 0px;
 }
@@ -42,7 +69,7 @@ _nav .brand-logo {
 
 
 input[type="number"] {
-  font-size: 14pt;
+  font-size: 12pt;
   &::-webkit-outer-spin-button,
   &::-webkit-inner-spin-button {
     height: 6em;
@@ -79,3 +106,6 @@ input::-webkit-inner-spin-button {
 highlighted {
     background-color: #ffff00;
 }
+
+
+

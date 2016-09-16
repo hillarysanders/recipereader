@@ -7,7 +7,7 @@ from .models import Recipe
 # We need to tell the admin that Question objects should have an admin interface:
 # this class isn't required, it just allows you to order your fields in the admin site interface:
 class RecipeAdmin(admin.ModelAdmin):
-    fields = ('recipe_name', 'description', 'user', 'pub_date', 'ingredients_text', 'instructions_text',
+    fields = ('recipe_name', 'description', 'user', 'ingredients_text', 'instructions_text',
               'num_servings', 'image')
     list_display = ('recipe_name', 'description', 'user')
 

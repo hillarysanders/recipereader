@@ -44,6 +44,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # postgres search:
+    'django.contrib.postgres',
     # materialize form helper: (awesome: https://github.com/florent1933/django-materializecss-form)
     'materialize_forms',
     # homemade apps:
@@ -87,10 +89,8 @@ WSGI_APPLICATION = 'ebdjango.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
-
 # from db import DB
-# conn = DB(dbtype='postgres', dbname='ebdb', username="hills", password="evergreen", hostname="aa41d8yb3k2jjo.cpa0rmdl6ahx.us-west-2.rds.amazonaws.com")
-
+# conn = DB(dbtype='postgres', dbname='ebdb', username="hills", password="evergreen", hostname="aa6waj6g0kkg9u.cpa0rmdl6ahx.us-west-2.rds.amazonaws.com")
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',

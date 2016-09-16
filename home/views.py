@@ -3,12 +3,8 @@ from django.shortcuts import render, render_to_response
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.contrib.auth import authenticate, login
-from django.template import RequestContext
-from django.utils import timezone
-from django.shortcuts import get_object_or_404
-from django.contrib.auth.models import User
 from django.views import generic
-from django.core.files.uploadedfile import SimpleUploadedFile
+from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
 from .models import Recipe
 from .forms import UserForm, LoginForm, AddRecipeForm
 from . import conversions
@@ -67,7 +63,6 @@ def auth_login(request):
 def add_recipe(request):
 
     if request.method == "POST":
-        # add_recipe_form = AddRecipeForm(request.POST)
         add_recipe_form = AddRecipeForm(request.POST, request.FILES)
         if add_recipe_form.is_valid():
             recipe = add_recipe_form.save(commit=False)  # doesn't save the instance yet, since we need to add stuff
@@ -108,10 +103,19 @@ class RecipeDetailView(generic.DetailView):
 
 def cookbook(request):
     user = request.user
-    user_recipes = Recipe.objects.filter(user=user.id)
+    recipes = Recipe.objects.filter(user=user.id).order_by('recipe_name')
+
+    if request.method == 'GET':
+        search_text = request.GET.get('search', None)
+        if search_text:
+            if search_text != '':
+                vector = SearchVector('recipe_name', 'ingredients_text', 'description')
+                query = SearchQuery(search_text)
+                recipes = recipes.annotate(rank=SearchRank(vector, query)).order_by('-rank').filter(rank__gt=0)
+
     context = {
         'user': user,
-        'recipes': user_recipes
+        'recipes': recipes
     }
     return render(request, 'home/cookbook.html', context)
 
