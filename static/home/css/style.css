@@ -15,6 +15,33 @@ main {
     background: #688396 !important;
 }
 
+
+
+
+
+
+.col1 {
+    background: #ffffe6 !important;
+}
+.col2 {
+    background: #acbfcc !important;
+}
+body {
+    background: #ffffe6;
+}
+a:link {
+color: #445570;
+}
+a:visited {
+color: #445570;
+}
+a:hover {
+color: #667793;
+}
+
+
+
+
 footer.page-footer {
   padding-top: 0px;
 }
@@ -30,10 +57,10 @@ _nav .brand-logo {
     border: 3px solid #888899;
 }
 
-.icontxtpush {
- margin-top: -10px;
- margin-bottom: -40px;
-}
+
+
+
+
 
 
 .big_form_input {
@@ -41,9 +68,8 @@ _nav .brand-logo {
 }
 
 
-
 input[type="number"] {
-  font-size: 14pt;
+  font-size: 12pt;
   &::-webkit-outer-spin-button,
   &::-webkit-inner-spin-button {
     height: 6em;
@@ -77,7 +103,9 @@ input::-webkit-inner-spin-button {
     margin-top: 0px;
 }
 
-
 highlighted {
-    background-color: #999900;
+    background-color: #ffff00;
 }
+
+
+

@@ -17,20 +17,30 @@
     <!--Import jQuery before materialize.js-->
     <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
     <script type="text/javascript" src="{% static 'home/js/materialize.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'home/js/style.js' %}"></script>
 
     <main>
-        <nav class="col1">
-            <div class="nav-wrapper">
-                <a href="{% url 'home:index' %}" class="brand-logo ">&nbsp;RecipeReader</a>
-                <ul class="right center">
-                    <li><a href="{% url 'home:add_recipe' %}"><i class="small material-icons icontxtpush">library_add</i>add a
-                        recipe</a></li>
-                    <li><a href="{% url 'home:cookbook' %}"><i class="small material-icons icontxtpush">library_books</i>cookbook</a></li>
-                    <li><a href="#!"><i class="small material-icons icontxtpush">
-                        assignment_ind</i>{{ user.username }}</a></li>
-                </ul>
-            </div>
-        </nav>
+        <div class="navbar-fixed">
+            <nav class="col1">
+                <div class="nav-wrapper">
+                    <a href="{% url 'home:index' %}" class="brand-logo">&nbsp;RecipeReader</a>
+                    <!--change to hide-on-med-and-down for navbar to disappear on medium screens too:-->
+                    <a href="#" data-activates="mobile-demo" class="button-collapse"></a>
+                    <ul id="nav-mobile" class="right center hide-on-med-and-down">
+
+                        <li><a href="{% url 'home:add_recipe' %}">add a recipe</a></li>
+                        <li><a href="{% url 'home:cookbook' %}">cookbook</a></li>
+                        <li><a href="#!">{{ user.username }}</a></li>
+                    </ul>
+                    <ul class="side-nav" id="mobile-demo">
+                        <li><a href="{% url 'home:add_recipe' %}">add a recipe</a></li>
+                        <li><a href="{% url 'home:cookbook' %}">cookbook</a></li>
+                        <li><a href="#!">{{ user.username }}</a></li>
+    ]                </ul>
+                </div>
+            </nav>
+        </div>
+
 
         <div class="container">
             <br>
