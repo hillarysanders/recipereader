@@ -108,4 +108,12 @@ highlighted {
 }
 
 
+body {
+    font-family: 'David Libre', serif;
+}
+nav .brand-logo {
+    font-family: 'Great Vibes', cursive;
+    font-size: 43px;
+    margin-top: 5px;
+}
 

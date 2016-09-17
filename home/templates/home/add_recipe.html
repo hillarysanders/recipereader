@@ -4,7 +4,7 @@
 {% load materialize %}
 
 
-    <h2> Add a Recipe </h2>
+    <h3> Add a Recipe </h3>
 
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
@@ -17,7 +17,7 @@
         <div class="row">
             <p>{{add_recipe_form.num_servings|as_material:"s10 m2 l2"}}</p>
             <!--format this little image upload guy:-->
-            <p>{{add_recipe_form.image|as_material:"s12 m6"}}</p>
+            <p>{{add_recipe_form.image|as_material:"s12 m6"}}<br><i>(Currently broken :P)</i></p>
             <!--{% if add_recipe_form.image %}-->
                 <!--<img src="{{ add_recipe_form.image.url }}" />-->
             <!--{% endif %}-->
