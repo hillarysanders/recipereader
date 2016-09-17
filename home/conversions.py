@@ -104,32 +104,36 @@ def parse_ingredient_line(line):
 
     nrows = len(match_info)
     nchars = len(original_line)
-    for i in range(nrows+1):
-        if nrows == 0:
-            pd.DataFrame(dict(type='text', name=original_line, original=original_line,
-                              start=0, end=nchars), index=['text'])
-        else:
-            if i == 0:
-                # look to the beginning of the line to the start of the first pattern (this pattern)
-                start = 0
-                end = match_info.iloc[i].start
-            elif i >= nrows:
-                # look to the last of the last pattern to the end of the line
-                start = match_info.iloc[i-1]['end']
-                end = nchars
-            else:
-                # look to the end of the last pattern to the start of this pattern
-                start = match_info.iloc[i-1]['end']
-                end = match_info.iloc[i].start
+    if nrows == 0:
+        match_info = pd.DataFrame(dict(type='text', name=original_line, original=original_line,
+                                       start=0, end=nchars), index=['text'])
+    else:
+        for i in range(nrows+1):
+                if i == 0:
+                    # look to the beginning of the line to the start of the first pattern (this pattern)
+                    start = 0
+                    end = match_info.iloc[i].start
+                elif i >= nrows:
+                    # look to the last of the last pattern to the end of the line
+                    start = match_info.iloc[i-1]['end']
+                    end = nchars
+                else:
+                    # look to the end of the last pattern to the start of this pattern
+                    start = match_info.iloc[i-1]['end']
+                    end = match_info.iloc[i].start
 
-            if end > start:
-                text = original_line[start:end]
-                newrow = pd.DataFrame(dict(type='text', name=text, original=text, start=start, end=end),
-                                      index=['text'])
-                match_info = pd.concat([match_info, newrow])
-            elif end < start:
-                raise Warning('End < start??? Indexing got messed up...')
+                if end > start:
+                    text = original_line[start:end]
+                    newrow = pd.DataFrame(dict(type='text', name=text, original=text, start=start, end=end),
+                                          index=['text'])
+                    match_info = pd.concat([match_info, newrow])
+                elif end < start:
+                    raise Warning('End < start??? Indexing got messed up...')
 
+    print(match_info)
+    print('N ROWS: {}'.format(nrows))
+    print(original_line)
+    print('RANGE: {}'.format(range(nrows+1)))
     match_info = match_info.sort_values(by='start')
     match_info.index = [str(i) for i in match_info.start.values]
     print(''.join(match_info.name))
