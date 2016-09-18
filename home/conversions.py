@@ -134,9 +134,10 @@ def parse_ingredient_line(line):
     print('N ROWS: {}'.format(nrows))
     print(original_line)
     print('RANGE: {}'.format(range(nrows+1)))
+    print(''.join(match_info.name))
+
     match_info = match_info.sort_values(by='start')
     match_info.index = [str(i) for i in match_info.start.values]
-    print(''.join(match_info.name))
     # todo how to handle floats? Have to handle number parsing and periods somehow.... Maybe if type=='number' look to
     # todo    the left, if it's a period, then combine that and multiple value by .01. If not, then look to the right.
     # todo    If it's a period or dash and then a number, combine the two by addition....
@@ -146,6 +147,8 @@ def parse_ingredient_line(line):
     # todo    since you can have e.g. "30g." "4lb" phrases all the time.
 
     return match_info.fillna('').to_dict(orient='index')
+
+# todo match to numbers not followed by 'times', other numbers, 
 
 
 def parse_ingredients(x):
