@@ -49,7 +49,6 @@
         <i class="large material-icons">mode_edit</i>
     </a>
     <ul>
-        
         <li><a onclick="popup(event, 'are you sure you want to delete this recipe ({{recipe.recipe_name}})?')"
                class="waves-effect waves-light btn ghostbtn col1" href="{% url 'home:delete_recipe' recipe.id %}">delete recipe</a></li>
         <li><a class="waves-effect waves-light btn ghostbtn col1" href="{% url 'home:edit_recipe' recipe.id %}">edit recipe</a></li>

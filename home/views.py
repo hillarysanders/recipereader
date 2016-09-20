@@ -158,3 +158,6 @@ def cookbook(request):
     return render(request, 'home/cookbook.html', context)
 
 
+def about(request):
+    context = dict()
+    return render(request, 'home/about.html')
