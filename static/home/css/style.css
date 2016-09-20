@@ -140,3 +140,9 @@ footer.page-footer .footer-copyright {
   height: 30px;
   line-height: 35px;
 }
+
+.modal.modal-fixed-footer {
+    padding: 0;
+    height: 30%;
+    max-height: 300px;
+}
