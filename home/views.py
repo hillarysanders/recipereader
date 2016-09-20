@@ -24,10 +24,13 @@ def index(request):
 
 
 def auth_login(request):
+
+    message = error_messages = ''
     if request.method == "POST":
         # if the user clicked the create user submit button:
         if request.POST.get("createUserSubmit"):
             uform = UserForm(data=request.POST)
+            print(uform)
             if uform.is_valid():
                 user = uform.save()
                 # save the new user profile:
@@ -36,7 +39,8 @@ def auth_login(request):
                 login(request, user)
                 return HttpResponseRedirect('/home/')
             else:
-                return HttpResponse('Invalid Inputs. :( Try again? <3')
+                message = 'Invalid inputs. :( Try again? <3'
+                error_messages = uform.errors
         # if the user clicked the login submit button:
         elif request.POST.get("loginSubmit"):
             username = request.POST['username']
@@ -48,17 +52,19 @@ def auth_login(request):
                 return HttpResponseRedirect('/home/')
             else:
                 # Return an 'invalid login' error message.
-                return HttpResponse('Invalid username / password. :( Try again? <3')
+                message = 'Invalid username / password. :( Try again? <3'
 
-    else:
-        createuserform = UserForm()
-        loginform = LoginForm()
 
-        context = {
-            'createuserform': createuserform,
-            'loginform': loginform
-        }
-        return render(request, 'home/login.html', context)
+    createuserform = UserForm()
+    loginform = LoginForm()
+
+    context = {
+        'createuserform': createuserform,
+        'loginform': loginform,
+        'error_messages': error_messages,
+        'message': message
+    }
+    return render(request, 'home/login.html', context)
 
 
 def add_recipe(request):
