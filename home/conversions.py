@@ -189,18 +189,20 @@ def sort_char_keys(d):
     return list(map(str, sorted(map(int, d.keys()))))
 
 
-def get_highlighted_ingredients(recipe):
-    ing = recipe.ingredients
-    idx = sort_char_keys(ing)
+def get_highlighted_ingredients(parsed_text):
+    """
+    :param parsed_text: output of parse_ingredients()
+    """
+    idx = sort_char_keys(parsed_text)
     highlighted = []
     for i in idx:
-        match_dicts = ing[i]
+        match_dicts = parsed_text[i]
         text = ''.join(_add_highlight(match_dicts[k]) for k in sort_char_keys(match_dicts))
         highlighted.append(text)
 
     print(idx)
     print(highlighted)
-    print(pd.DataFrame(ing['0']))
+    print(pd.DataFrame(parsed_text['0']))
     print('_______________________')
     return highlighted
 

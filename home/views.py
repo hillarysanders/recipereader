@@ -1,10 +1,11 @@
 from __future__ import unicode_literals
-from django.shortcuts import render, render_to_response
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.contrib.auth import authenticate, login
 from django.views import generic
+from django.shortcuts import render, get_object_or_404
 from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
+from django.views.generic.edit import UpdateView
 from .models import Recipe
 from .forms import UserForm, LoginForm, AddRecipeForm
 from . import conversions
@@ -67,9 +68,6 @@ def add_recipe(request):
         if add_recipe_form.is_valid():
             recipe = add_recipe_form.save(commit=False)  # doesn't save the instance yet, since we need to add stuff
             recipe.user = request.user
-
-            recipe.ingredients = conversions.parse_ingredients(recipe.ingredients_text)
-            # todo parse and save ingredients and directions here
             recipe.save()
 
             return HttpResponseRedirect('/recipes/detail/{}/'.format(recipe.id))
@@ -78,10 +76,38 @@ def add_recipe(request):
             pass
     else:
         add_recipe_form = AddRecipeForm()
-        add_recipe_form.prep_time = 100
 
     context = {
         'add_recipe_form': add_recipe_form,
+        'update': '',
+        'title': 'Add a Recipe'
+    }
+
+    return render(request, 'home/add_recipe.html', context)
+
+
+def edit_recipe(request, pk):
+
+    recipe = get_object_or_404(Recipe, pk=pk)
+    if request.method == "POST":
+        # instance = recipe tells this that it's an update
+        add_recipe_form = AddRecipeForm(request.POST, request.FILES, instance=recipe)
+        if add_recipe_form.is_valid():
+            recipe = add_recipe_form.save(commit=False)  # doesn't save the instance yet, since we need to add stuff
+            recipe.user = request.user
+            recipe.save()
+
+            return HttpResponseRedirect('/recipes/detail/{}/'.format(recipe.id))
+        else:
+            # no return redirect statement here, as errors will be shown in template below
+            pass
+    else:
+        add_recipe_form = AddRecipeForm(instance=recipe)
+
+    context = {
+        'add_recipe_form': add_recipe_form,
+        'update': 'Update',
+        'title': 'Edit Recipe'
     }
 
     return render(request, 'home/add_recipe.html', context)
@@ -96,8 +122,8 @@ class RecipeDetailView(generic.DetailView):
         # Call the base implementation first to get a context
         context = super(RecipeDetailView, self).get_context_data(**kwargs)
         # Add in a QuerySet of all the books
-        context['foo'] = conversions.get_highlighted_ingredients(context['recipe'])
-        # context['foo'] = 'bar' # todo
+        context['highlighted_ingredients'] = conversions.get_highlighted_ingredients(context['recipe'].ingredients)
+        context['highlighted_instructions'] = conversions.get_highlighted_ingredients(context['recipe'].instructions)
         return context
 
 

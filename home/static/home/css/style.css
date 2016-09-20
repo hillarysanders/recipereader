@@ -26,6 +26,12 @@ main {
 .col2 {
     background: #acbfcc !important;
 }
+.col3 {
+    background: #eeecd9 !important;
+}
+.colaccent {
+    background: #d9e6e2 !important;
+}
 body {
     background: #ffffe6;
 }
@@ -117,3 +123,20 @@ nav .brand-logo {
     margin-top: 5px;
 }
 
+.ghostbtn {
+    color: black;
+    _border: 1px solid grey;
+    padding: 0px 5px 35px 5px;
+    float: left;
+    border-radius: 30px;
+    font-size: 12px;
+    text-transform: none;
+}
+
+
+/*make the page footer smaller:*/
+footer.page-footer .footer-copyright {
+  overflow: hidden;
+  height: 30px;
+  line-height: 35px;
+}

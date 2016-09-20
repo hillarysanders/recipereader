@@ -2,6 +2,8 @@ from __future__ import unicode_literals
 from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.postgres.fields import JSONField
+from django.urls import reverse
+from django.db.models.fields.related import ManyToManyField
 from . import conversions
 
 # Create your models here.
@@ -14,7 +16,7 @@ from . import conversions
 class Recipe(models.Model):
     # TextField is larger than CharField
     recipe_name = models.CharField(max_length=128, default='')
-    description = models.CharField(max_length=1024)
+    description = models.CharField(max_length=1024, default='')
     ingredients_text = models.TextField(max_length=2048*2)
     instructions_text = models.TextField(max_length=2048*4)
     ingredients = JSONField(default=dict)
@@ -37,8 +39,30 @@ class Recipe(models.Model):
     # # on_delete=models.CASCADE means that if a user is deleted his / her recipes will be too.
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
+    def save(self, *args, **kwargs):
+        # parse ingredients and instructions:
+        self.ingredients = conversions.parse_ingredients(self.ingredients_text)
+        self.instructions = conversions.parse_ingredients(self.instructions_text)
+        super(Recipe, self).save(*args, **kwargs)
+
     def __str__(self):
         return self.description
+
+    def to_dict(self):
+        opts = self._meta
+        data = {}
+        for f in opts.concrete_fields + opts.many_to_many:
+            if isinstance(f, ManyToManyField):
+                if self.pk is None:
+                    data[f.name] = []
+                else:
+                    data[f.name] = list(f.value_from_object(self).values_list('pk', flat=True))
+            else:
+                data[f.name] = f.value_from_object(self)
+        return data
+
+    def get_absolute_url(self):
+        return reverse('recipe_detail', kwargs={'pk': self.pk})
 
     def get_all_fields(self):
         """Returns a list of all field names on the instance."""

@@ -4,7 +4,7 @@
 {% load materialize %}
 
 
-    <h3> Add a Recipe </h3>
+    <h3> {{title}} </h3>
 
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
@@ -12,7 +12,7 @@
             <!--{{ f|as_material:"s12" }}-->
         <!--{% endfor %}-->
         <div class="row">
-            <p>{{add_recipe_form.recipe_name|as_material:"s12 m10 l8"}}</p>
+            <p>{{add_recipe_form.recipe_name|as_material:"s12 m8 l6"}}</p>
         </div>
         <div class="row">
             <p>{{add_recipe_form.num_servings|as_material:"s10 m2 l2"}}</p>
@@ -31,19 +31,19 @@
             <p>    {{add_recipe_form.ready_in_hours|as_material:"s5 m2 l1"}}</p>
             <p>  {{add_recipe_form.ready_in_minutes|as_material:"s7 m2 l1"}}</p>
 
-            <p>{{add_recipe_form.description|as_material:"s12"}}</p>
+            <p>{{add_recipe_form.description|as_material:"s12 m8 l6"}}</p>
         </div>
 
         <div class="row">
             <p>{{add_recipe_form.ingredients_text|as_material:"s12 m6"}}</p>
-            <div class="col s12 m6 textbox">  TODO (realtime validation textbox)  </div>
-        </div>
-        <div class="row">
             <p>{{add_recipe_form.instructions_text|as_material:"s12 m6"}}</p>
-            <div class="col s12 m6 textbox"> TODO (realtime validation textbox) </div>
         </div>
+        <!--<div class="row">-->
+            <!--<div class="col s12 m6 textbox"> TODO (realtime validation textbox) </div>-->
+            <!--<div class="col s12 m6 textbox"> TODO (realtime validation textbox) </div>-->
+        <!--</div>-->
 
-        <input type="submit" id="rsubmitbtn" style='display: none;'/>
+        <input type="submit" id="rsubmitbtn" value="{{update}}" style='display: none;'/>
         <label for="rsubmitbtn" class="waves-effect waves-light btn col2">Submit</label>
 
     </form>

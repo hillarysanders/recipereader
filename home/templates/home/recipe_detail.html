@@ -3,33 +3,47 @@
 {% block content %}
 <!--{% load materialize %}-->
 
+<!--buttons for editing, commenting on recipe:-->
+<div class="fixed-action-btn horizontal" style="bottom: 45px; right: 24px;">
+    <a class="btn-floating btn-large col2">
+        <i class="large material-icons">mode_edit</i>
+    </a>
+    <ul>
+        <li><a class="waves-effect waves-light btn ghostbtn col1" href="#!">delete recipe</a></li>
+        <li><a class="waves-effect waves-light btn ghostbtn col1" href="{% url 'home:edit_recipe' recipe.id %}">edit recipe</a></li>
+        <li><a class="waves-effect waves-light btn ghostbtn col1" href="#!">change units</a></li>
+        <li><a class="waves-effect waves-light btn ghostbtn col1" href="#!">change servings</a></li>
+    </ul>
+</div>
+
+
 <h2 class="center"> {{ recipe.recipe_name }} </h2>
 
 <div class="row">
     <div class="col s12 recipe_text">
         <!--recipe image, time took prep / cook / make, description:-->
         <div class="col s12 m4 l4 recipe_image float_left">
-                <div class="col s12 center"><i>serves {{recipe.num_servings }}</i></div>
+            <div class="col s12 center"><i>serves {{recipe.num_servings }}</i></div>
             <div class="col s12 m12 l12">
                 <div class="col s12 m12 l6 float_left margin_10">
                     <div class="col s12">{{ recipe.get_prep_time }}</div>
                     <div class="col s12">{{ recipe.get_cook_time }}</div>
                     <div class="col s12">{{ recipe.get_ready_in_time }}</div>
                 </div>
-                                <i>{{ recipe.description }}</i>
+                <i>{{ recipe.description }}</i>
 
             </div>
 
             {% if recipe.image %}
-                <img src="{{ recipe.image.url }}" />
+            <img src="{{ recipe.image.url }}"/>
             {% endif %}
         </div>
 
         <!--ingredients:-->
         <div class="col s12 m4 l4 recipe_text">
             <em><h5 class="center">Ingredients</h5></em>
-            {% for line in foo %}
-                {{line|safe}}
+            {% for line in highlighted_ingredients %}
+            {{line|safe}}
             <br>
             {% endfor %}
 
@@ -37,32 +51,35 @@
 
         <!--directions:-->
         <em><h5 class="center">Directions</h5></em>
-        <pre>{{ recipe.instructions_text }}</pre>
+            {% for line in highlighted_instructions %}
+            {{line|safe}}
+            <br>
+            {% endfor %}
     </div>
 
 </div>
 <!--{% for field in recipe.get_all_fields %}-->
-    <!--<h5>{{field.label|capfirst}}</h5>-->
-    <!--{{field.value|escape|urlize|linebreaks}}-->
-    <!--<br>-->
+<!--<h5>{{field.label|capfirst}}</h5>-->
+<!--{{field.value|escape|urlize|linebreaks}}-->
+<!--<br>-->
 <!--{% endfor %}-->
 
-        <!--<div class="row">-->
-            <!--<div class="col s12 m3 l2">-->
-                <!--<p>{{recipe.prep_time}}</p>-->
-                <!--<p>{{recipe.prep_time}}</p>-->
-                <!--<p>{{recipe.cook_time}}</p>-->
-                <!--<p>{{recipe.ready_in}}</p>-->
-                <!--<p>{{recipe.num_servings}}</p>-->
-            <!--</div>-->
-            <!--<div class="col s12 m9 l10">-->
-                <!--<p>{{recipe.recipe_name}}</p>-->
-                <!--<p>{{recipe.description}}</p>-->
-                <!--<p>{{recipe.ingredients_text}}</p>-->
-                <!--<p>{{recipe.instructions_text}}</p>-->
-                <!--<p>{{recipe.image}}</p>-->
-            <!--</div>-->
-        <!--</div>-->
+<!--<div class="row">-->
+<!--<div class="col s12 m3 l2">-->
+<!--<p>{{recipe.prep_time}}</p>-->
+<!--<p>{{recipe.prep_time}}</p>-->
+<!--<p>{{recipe.cook_time}}</p>-->
+<!--<p>{{recipe.ready_in}}</p>-->
+<!--<p>{{recipe.num_servings}}</p>-->
+<!--</div>-->
+<!--<div class="col s12 m9 l10">-->
+<!--<p>{{recipe.recipe_name}}</p>-->
+<!--<p>{{recipe.description}}</p>-->
+<!--<p>{{recipe.ingredients_text}}</p>-->
+<!--<p>{{recipe.instructions_text}}</p>-->
+<!--<p>{{recipe.image}}</p>-->
+<!--</div>-->
+<!--</div>-->
 
 
 {% endblock %}
