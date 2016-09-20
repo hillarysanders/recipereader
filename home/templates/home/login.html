@@ -6,10 +6,15 @@
 <div class="container">
 
     <div class="row">
-        <p> {{message}} </p>
-        <p> {{error_messages}} </p>
+        <div class="card-panel">
+          <span class="blue-text text-darken-2">
+              {% for k, v in error_messages.items %}
+                {{v}}
+              {% endfor %}
+          </span>
+        </div>
         <div class="col login_pushdown s12 m10 l8 push-m1 push-l2">
-        <!--<div class="col login_pushdown s12">-->
+            <!--<div class="col login_pushdown s12">-->
 
             <div class="col s12 m6 l6">
                 <center><h4> create an account</h4></center>
@@ -37,11 +42,9 @@
             </div>
 
 
-
             <!--<br><br>-->
             <!--<center><h4>or...</h4></center>-->
             <!--<a class="waves-effect waves-light btn-large col2" href="{% url 'home:index' %}">Skip That Shit</a>-->
-
 
 
         </div>

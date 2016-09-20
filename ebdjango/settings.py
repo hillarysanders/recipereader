@@ -50,7 +50,7 @@ INSTALLED_APPS = [
     'materialize_forms',
     # homemade apps:
     'polls.apps.PollsConfig',
-    'home.apps.HomeConfig',
+    'home.apps.HomeConfig'
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -114,18 +114,19 @@ AUTHENTICATION_BACKENDS = (
 # https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    # because fuck password validation <3
+    # {
+    #     'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+    # },
+    # {
+    #     'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+    # },
+    # {
+    #     'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+    # },
+    # {
+    #     'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+    # },
 ]
 
 
@@ -145,3 +146,4 @@ STATIC_URL = '/static/'
 STATIC_ROOT = 'static'
 MEDIA_ROOT = '/Users/hills/Desktop/code/django-beanstalk/ebdjango/media/'
 MEDIA_URL = '/media/'
+
