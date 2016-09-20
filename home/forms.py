@@ -19,16 +19,14 @@ class UserForm(UserCreationForm):
         self.fields['password2'].help_text = ''
 
         self.fields['username'].widget = forms.TextInput(attrs={'placeholder': ''})
-        self.fields['password1'].widget = forms.TextInput(attrs={'placeholder': ''})
-        self.fields['password2'].widget = forms.TextInput(attrs={'placeholder': ''})
+        self.fields['password1'].widget = forms.TextInput(attrs={'placeholder': '', 'type': 'password'})
+        self.fields['password2'].widget = forms.TextInput(attrs={'placeholder': '', 'type': 'password'})
         self.fields['first_name'].widget = forms.TextInput(attrs={'placeholder': '(optional)'})
         self.fields['last_name'].widget = forms.TextInput(attrs={'placeholder': '(optional)'})
         self.fields['email'].widget = forms.TextInput(attrs={'placeholder': '(optional)'})
 
 
 class LoginForm(forms.ModelForm):
-    # specify password type so that passwords show up as *******, not plaintext
-    password = forms.CharField(widget=forms.PasswordInput)
 
     class Meta:
         model = User
@@ -40,7 +38,8 @@ class LoginForm(forms.ModelForm):
         # then do extra stuff:
         self.fields['username'].help_text = ''
         self.fields['username'].widget = forms.TextInput(attrs={'placeholder': ''})
-        self.fields['password'].widget = forms.TextInput(attrs={'placeholder': ''})
+        self.fields['password'].widget = forms.PasswordInput(attrs={'placeholder': ''})
+
 
 class AddRecipeForm(forms.ModelForm):
     class Meta:

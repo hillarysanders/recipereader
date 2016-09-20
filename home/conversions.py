@@ -156,13 +156,6 @@ def parse_ingredient_line(line):
 
     match_info = match_info.sort_values(by='start')
     match_info.index = [str(i) for i in match_info.start.values]
-    # todo how to handle floats? Have to handle number parsing and periods somehow.... Maybe if type=='number' look to
-    # todo    the left, if it's a period, then combine that and multiple value by .01. If not, then look to the right.
-    # todo    If it's a period or dash and then a number, combine the two by addition....
-    # todo    hm. OR. Add a '[0-9]*\.?[0-9]* type pattern to the start of the pattern above and just add a section
-    # todo    that says, oh, this is a float and not in the index, so just do (float(trim(p)). Hm. That might be best.
-    # todo    probably faster. Include word-numbers ('two') in this above code, just do a pre-search for numeric values,
-    # todo    since you can have e.g. "30g." "4lb" phrases all the time.
 
     return match_info.fillna('').to_dict(orient='index')
 
@@ -206,7 +199,7 @@ def get_highlighted_ingredients(parsed_text):
     print('_______________________')
     return highlighted
 
-#
+
 # def find_number_matches(line, name_maps):
 #     pat = '|'.join(reversed(name_maps.index))
 #     # finds non-overlapping matches to our (sorted!) long joined pattern:

@@ -23,6 +23,16 @@ def index(request):
     return render(request, 'home/index.html', context)
 
 
+def welcome(request):
+    user = request.user  # can this be anonymous?
+    context = {
+        'user': user
+    }
+    # template = loader.get_template('polls/index.html')
+    # return HttpResponse(template.render(context, request))
+    return render(request, 'home/welcome.html', context)
+
+
 def auth_login(request):
 
     error_messages = ''
@@ -37,7 +47,7 @@ def auth_login(request):
                 user.save()
                 # go ahead and login the user:
                 login(request, user)
-                return HttpResponseRedirect('/home/')
+                return HttpResponseRedirect('/welcome/')
             else:
                 message = 'Invalid inputs. :( Try again? <3'
                 error_messages = uform.errors
@@ -49,7 +59,7 @@ def auth_login(request):
             if user is not None:
                 login(request, user)
                 # Redirect to a success page.
-                return HttpResponseRedirect('/home/')
+                return HttpResponseRedirect('/welcome/')
             else:
                 # todo make this into an actual error
                 error_messages = {'message': 'Invalid username / password. Try again?'}
