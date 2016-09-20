@@ -2,21 +2,6 @@
 
 {% block content %}
 <!--{% load materialize %}-->
-
-<!--buttons for editing, commenting on recipe:-->
-<div class="fixed-action-btn horizontal" style="bottom: 45px; right: 24px;">
-    <a class="btn-floating btn-large col2">
-        <i class="large material-icons">mode_edit</i>
-    </a>
-    <ul>
-        <li><a class="waves-effect waves-light btn ghostbtn col1" href="{% url 'home:delete_recipe' recipe.id %}">delete recipe</a></li>
-        <li><a class="waves-effect waves-light btn ghostbtn col1" href="{% url 'home:edit_recipe' recipe.id %}">edit recipe</a></li>
-        <li><a class="waves-effect waves-light btn ghostbtn col1" href="#!">change units</a></li>
-        <li><a class="waves-effect waves-light btn ghostbtn col1" href="#!">change servings</a></li>
-    </ul>
-</div>
-
-
 <h2 class="center"> {{ recipe.recipe_name }} </h2>
 
 <div class="row">
@@ -56,8 +41,24 @@
             <br>
             {% endfor %}
     </div>
-
 </div>
+
+<!--buttons for editing, commenting on recipe:-->
+<div class="fixed-action-btn horizontal" style="bottom: 45px; right: 24px;">
+    <a class="btn-floating btn-large col2">
+        <i class="large material-icons">mode_edit</i>
+    </a>
+    <ul>
+        
+        <li><a onclick="popup(event, 'are you sure you want to delete this recipe ({{recipe.recipe_name}})?')"
+               class="waves-effect waves-light btn ghostbtn col1" href="{% url 'home:delete_recipe' recipe.id %}">delete recipe</a></li>
+        <li><a class="waves-effect waves-light btn ghostbtn col1" href="{% url 'home:edit_recipe' recipe.id %}">edit recipe</a></li>
+        <li><a class="waves-effect waves-light btn ghostbtn col1" href="#!">change units</a></li>
+        <li><a class="waves-effect waves-light btn ghostbtn col1" href="#!">change servings</a></li>
+    </ul>
+</div>
+
+
 <!--{% for field in recipe.get_all_fields %}-->
 <!--<h5>{{field.label|capfirst}}</h5>-->
 <!--{{field.value|escape|urlize|linebreaks}}-->
