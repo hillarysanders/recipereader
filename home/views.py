@@ -25,7 +25,7 @@ def index(request):
 
 def auth_login(request):
 
-    message = error_messages = ''
+    error_messages = ''
     if request.method == "POST":
         # if the user clicked the create user submit button:
         if request.POST.get("createUserSubmit"):
@@ -51,8 +51,8 @@ def auth_login(request):
                 # Redirect to a success page.
                 return HttpResponseRedirect('/home/')
             else:
-                # Return an 'invalid login' error message.
-                message = 'Invalid username / password. :( Try again? <3'
+                # todo make this into an actual error
+                error_messages = {'message': 'Invalid username / password. Try again?'}
 
 
     createuserform = UserForm()
@@ -61,8 +61,7 @@ def auth_login(request):
     context = {
         'createuserform': createuserform,
         'loginform': loginform,
-        'error_messages': error_messages,
-        'message': message
+        'error_messages': error_messages
     }
     return render(request, 'home/login.html', context)
 

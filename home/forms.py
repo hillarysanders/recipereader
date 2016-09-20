@@ -17,12 +17,16 @@ class UserForm(UserCreationForm):
 
         self.fields['username'].help_text = ''
         self.fields['password2'].help_text = ''
+        print(self.fields['password1'])
         self.fields['first_name'].widget = forms.TextInput(attrs={'placeholder': '(optional)'})
         self.fields['last_name'].widget = forms.TextInput(attrs={'placeholder': '(optional)'})
         self.fields['email'].widget = forms.TextInput(attrs={'placeholder': '(optional)'})
 
 
 class LoginForm(forms.ModelForm):
+    # specify password type so that passwords show up as *******, not plaintext
+    password = forms.CharField(widget=forms.PasswordInput)
+
     class Meta:
         model = User
         fields = ["username", "password"]
@@ -32,7 +36,6 @@ class LoginForm(forms.ModelForm):
         super(LoginForm, self).__init__(*args, **kwargs)
         # then do extra stuff:
         self.fields['username'].help_text = ''
-
 
 class AddRecipeForm(forms.ModelForm):
     class Meta:

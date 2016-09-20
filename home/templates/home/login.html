@@ -6,13 +6,15 @@
 <div class="container">
 
     <div class="row">
-        <div class="card-panel">
-          <span class="center red-text text-darken-2">
-              {% for k, v in error_messages.items %}
-                {{v}}
-              {% endfor %}
-          </span>
-        </div>
+        {% if error_messages %}
+            <div class="card-panel">
+              <span class="center red-text text-darken-2">
+                  {% for k, v in error_messages.items %}
+                    {{v}}
+                  {% endfor %}
+              </span>
+            </div>
+        {% endif %}
         <div class="col login_pushdown s12 m10 l8 push-m1 push-l2">
             <!--<div class="col login_pushdown s12">-->
 
@@ -21,7 +23,7 @@
                 <form action="/" method="post">
                     {% csrf_token %}
                     {% for f in createuserform %}
-                    {{ f|as_material:"s12" }}
+                        {{ f|as_material:"s12" }}
                     {% endfor %}
                     <input type="submit" id="cubtn" value="Submit" name="createUserSubmit" style="display: none;"/>
                     <label for="cubtn" class="waves-effect waves-light btn col2">Submit</label>
@@ -34,7 +36,7 @@
                 <form action="/" method="post">
                     {% csrf_token %}
                     {% for f in loginform %}
-                    {{ f|as_material:"s12" }}
+                        {{ f|as_material:"s12" }}
                     {% endfor %}
                     <input type="submit" id="loginbtn" value="Submit" name="loginSubmit" style="display: none;"/>
                     <label for="loginbtn" class="waves-effect waves-light btn col2">Submit</label>
