@@ -5,7 +5,7 @@ from django.contrib.auth import authenticate, login
 from django.views import generic
 from django.shortcuts import render, get_object_or_404
 from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
-from django.views.generic.edit import UpdateView
+from django.contrib import messages
 from .models import Recipe
 from .forms import UserForm, LoginForm, AddRecipeForm
 from . import conversions
@@ -125,6 +125,18 @@ class RecipeDetailView(generic.DetailView):
         context['highlighted_ingredients'] = conversions.get_highlighted_ingredients(context['recipe'].ingredients)
         context['highlighted_instructions'] = conversions.get_highlighted_ingredients(context['recipe'].instructions)
         return context
+
+
+def delete_recipe(request, pk):
+    recipe = get_object_or_404(Recipe, pk=pk)
+    if recipe:
+        context = {
+            'message': 'Your recipe ({}) was successfully deleted.'.format(recipe.recipe_name)
+        }
+        recipe.delete()
+        messages.success(request, "Your recipe was successfully deleted.")
+
+        return render(request, 'home/message.html', context)
 
 
 def cookbook(request):

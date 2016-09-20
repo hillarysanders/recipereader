@@ -9,7 +9,7 @@
         <i class="large material-icons">mode_edit</i>
     </a>
     <ul>
-        <li><a class="waves-effect waves-light btn ghostbtn col1" href="#!">delete recipe</a></li>
+        <li><a class="waves-effect waves-light btn ghostbtn col1" href="{% url 'home:delete_recipe' recipe.id %}">delete recipe</a></li>
         <li><a class="waves-effect waves-light btn ghostbtn col1" href="{% url 'home:edit_recipe' recipe.id %}">edit recipe</a></li>
         <li><a class="waves-effect waves-light btn ghostbtn col1" href="#!">change units</a></li>
         <li><a class="waves-effect waves-light btn ghostbtn col1" href="#!">change servings</a></li>
