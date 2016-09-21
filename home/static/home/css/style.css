@@ -175,8 +175,8 @@ footer.page-footer .footer-copyright {
 /* these two media queries make sure the welcome page looks good on allll the screen sizes */
 @media (min-width: 1250px) {
   .welcome_text {
-    font-size: 28px;
-    margin-top: -240px;
+    font-size: 27px;
+    margin-top: -250px;
   }
   .welcome_circle {
     border: 23px solid #607082;
