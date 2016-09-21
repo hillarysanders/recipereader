@@ -153,8 +153,8 @@ div.nav-wrapper li a:link {
     margin-top: 3px;
     border-radius: 50px;
 }
-li.sidenav_btn a:link {
-    font-size: 32px;
+div.nav-wrapper li.sidenav_btn a:link {
+    font-size: 30px;
     font-family: 'Great Vibes', cursive;
 }
 
