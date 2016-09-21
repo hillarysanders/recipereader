@@ -32,7 +32,7 @@ def welcome(request):
 
 def profile(request):
     # todo add to this view. first need to sup up userProxy model.
-    
+
     user = request.user  # can this be anonymous?
     print(user)
     user_proxy = get_user_proxy(request)

@@ -44,13 +44,13 @@
                 </ul>
 
                 <!-- mobile navbar: -->
-                <ul class="col2 side-nav" id="mobile-demo">
+                <ul class="col2 side-nav center" id="mobile-demo">
                     <li class="col1 sidenav_btn"><a href="{% url 'home:add_recipe' %}">add a recipe</a></li>
                     <li class="col1 sidenav_btn"><a href="{% url 'home:cookbook' %}">cookbook</a></li>
                     <!-- slightly different navbar based on if user is logged in or not:-->
                     {% if user.is_authenticated %}
                         <li class="col1 sidenav_btn"><a href="{% url 'home:profile' %}">{{ user.username }}</a></li>
-                        <li class="col3 sidenav_btn"><a href="{% url 'home:logout_user' %}">logout</a></li>
+                        <li class="grey lighten-1 sidenav_btn"><a href="{% url 'home:logout_user' %}">logout</a></li>
                     {% else %}
                         <li class="col1 sidenav_btn"><a href="{% url 'home:login' %}">login | create account</a></li>
                     {% endif %}

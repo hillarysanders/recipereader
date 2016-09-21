@@ -130,17 +130,32 @@ highlighted {
 }
 
 
+/* page footer */
 /*make the page footer smaller:*/
 footer.page-footer .footer-copyright {
   overflow: hidden;
   height: 30px;
   line-height: 35px;
 }
-
 .modal.modal-fixed-footer {
     padding: 0;
     height: 30%;
     max-height: 300px;
+}
+
+/* main navigation menu: */
+div.nav-wrapper li a:link {
+    font-size: 14px;
+}
+/* side navigation menu: */
+.sidenav_btn {
+    border: 6px solid grey;
+    margin-top: 3px;
+    border-radius: 50px;
+}
+li.sidenav_btn a:link {
+    font-size: 32px;
+    font-family: 'Great Vibes', cursive;
 }
 
 
