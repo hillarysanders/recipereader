@@ -47,7 +47,7 @@ INSTALLED_APPS = [
     # postgres search:
     'django.contrib.postgres',
     # materialize form helper: (awesome: https://github.com/florent1933/django-materializecss-form)
-    # 'materialize_forms',
+    'materialize_forms',
     # homemade apps:
     'polls.apps.PollsConfig',
     'home.apps.HomeConfig'
