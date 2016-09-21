@@ -1,6 +1,7 @@
 # coding=utf8
 from __future__ import unicode_literals
 import re
+import logging
 import pandas as pd
 from .base_conversion_dicts import name_maps_numbers, name_maps_volume, name_maps_weight, name_maps
 
@@ -148,11 +149,11 @@ def parse_ingredient_line(line):
                 elif end < start:
                     raise Warning('End < start??? Indexing got messed up...')
 
-    print(match_info)
-    print('N ROWS: {}'.format(nrows))
-    print(original_line)
-    print('RANGE: {}'.format(range(nrows+1)))
-    print(''.join(match_info.name))
+    logging.debug(match_info)
+    logging.debug('N ROWS: {}'.format(nrows))
+    logging.debug(original_line)
+    logging.debug('RANGE: {}'.format(range(nrows+1)))
+    logging.debug(''.join(match_info.name))
 
     match_info = match_info.sort_values(by='start')
     match_info.index = [str(i) for i in match_info.start.values]
@@ -193,10 +194,10 @@ def get_highlighted_ingredients(parsed_text):
         text = ''.join(_add_highlight(match_dicts[k]) for k in sort_char_keys(match_dicts))
         highlighted.append(text)
 
-    print(idx)
-    print(highlighted)
-    print(pd.DataFrame(parsed_text['0']))
-    print('_______________________')
+    logging.debug(idx)
+    logging.debug(highlighted)
+    logging.debug(pd.DataFrame(parsed_text['0']))
+
     return highlighted
 
 
@@ -213,7 +214,7 @@ def get_highlighted_ingredients(parsed_text):
 #         # grab what actually caused the hit:
 #         pattern = line[start:end]
 #         # grab the relevant dict:
-#         replacement = ' {} '.format(name_maps.loc[pattern, 'name'])  # todo spaces on sides? But then e.g. '2 cups'?...
+#         replacement = ' {} '.format(name_maps.loc[pattern, 'name'])  # todo spaces on sides? But then e.g. '2 cups'?
 #         value = name_maps.loc[pattern, 'value']
 #         out.loc[len(out), :] = [start, end, pattern, replacement, value]
 #

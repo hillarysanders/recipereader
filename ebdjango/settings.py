@@ -147,6 +147,6 @@ STATIC_ROOT = 'static'
 MEDIA_ROOT = '/Users/hills/Desktop/code/django-beanstalk/ebdjango/media/'
 MEDIA_URL = '/media/'
 
-SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
-SESSION_COOKIE_HTTPONLY = True
-SESSION_SAVE_EVERY_REQUEST = True
+# SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
+# SESSION_COOKIE_HTTPONLY = True
+# SESSION_SAVE_EVERY_REQUEST = True

@@ -6,6 +6,7 @@ from django.views import generic
 from django.shortcuts import render, get_object_or_404
 from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
 from django.contrib import messages
+import logging
 from .models import Recipe, UserProxy
 from .forms import UserForm, LoginForm, AddRecipeForm
 from . import conversions
@@ -18,8 +19,6 @@ def index(request):
     context = {
         'user': user
     }
-    # template = loader.get_template('polls/index.html')
-    # return HttpResponse(template.render(context, request))
     return render(request, 'home/index.html', context)
 
 
@@ -28,14 +27,11 @@ def welcome(request):
     context = {
         'user': user
     }
-    # template = loader.get_template('polls/index.html')
-    # return HttpResponse(template.render(context, request))
     return render(request, 'home/welcome.html', context)
 
 
 def logout_user(request):
     logout(request)
-
     return HttpResponseRedirect('/')
 
 
@@ -89,12 +85,13 @@ def auth_login(request):
 
 
 def get_user_proxy(request):
-    print('SESSION KEY: ')
+    print('get_user_proxy():')
+    print('\tSESSION KEY: ')
     print(request.session.session_key)
     # if the session key is None, then they don't have a cookie yet (?), so give em' one.
     if request.session.session_key is None:
         request.session.save()
-    print('SESSION KEY AFTER SAVE: ')
+    print('\tSESSION KEY AFTER SAVE: ')
     print(request.session.session_key)
     logged_in_user = request.user
     if logged_in_user.id is None:
@@ -105,10 +102,40 @@ def get_user_proxy(request):
 
     user_proxy = obj
 
+    # now you need to save the session instance so it can be accessed later
+    print('Has session?')
+    print(request.session.get('has_session'))
+    request.session.modified = True
+    print('\tSESSION KEY: ')
+    print(request.session.session_key)
+    # request.session.save()
+    # print('\tSESSION KEY: ')
+    # print(request.session.session_key)
+
     print(user_proxy)
     print('TYPE:_________')
     print(type(user_proxy))
     return user_proxy
+
+
+def cookbook(request):
+    user_proxy = get_user_proxy(request)
+    print('cookbook view: user proxy:')
+    print(user_proxy)
+    recipes = Recipe.objects.filter(user_proxy=user_proxy).order_by('recipe_name')
+
+    if request.method == 'GET':
+        search_text = request.GET.get('search', None)
+        if search_text:
+            if search_text != '':
+                vector = SearchVector('recipe_name', 'ingredients_text', 'description')
+                query = SearchQuery(search_text)
+                recipes = recipes.annotate(rank=SearchRank(vector, query)).order_by('-rank').filter(rank__gt=0)
+
+    context = {
+        'recipes': recipes
+    }
+    return render(request, 'home/cookbook.html', context)
 
 
 def add_recipe(request):
@@ -133,6 +160,9 @@ def add_recipe(request):
         'update': '',
         'title': 'Add a Recipe'
     }
+
+    print('\tSESSION KEY in ADD_RECIPE VIEW: ')
+    print(request.session.session_key)
 
     return render(request, 'home/add_recipe.html', context)
 
@@ -188,28 +218,6 @@ def delete_recipe(request, pk):
         messages.success(request, "Your recipe was successfully deleted.")
 
         return render(request, 'home/message.html', context)
-
-
-def cookbook(request):
-    user_proxy = get_user_proxy(request)
-    print(user_proxy)
-    print(user_proxy)
-    print(user_proxy)
-    print(user_proxy)
-    recipes = Recipe.objects.filter(user_proxy=user_proxy).order_by('recipe_name')
-
-    if request.method == 'GET':
-        search_text = request.GET.get('search', None)
-        if search_text:
-            if search_text != '':
-                vector = SearchVector('recipe_name', 'ingredients_text', 'description')
-                query = SearchQuery(search_text)
-                recipes = recipes.annotate(rank=SearchRank(vector, query)).order_by('-rank').filter(rank__gt=0)
-
-    context = {
-        'recipes': recipes
-    }
-    return render(request, 'home/cookbook.html', context)
 
 
 def about(request):

@@ -45,6 +45,17 @@ class UserProxy(models.Model):
     # TODO     possibly include note in cookbook template, and maybe modulo that asks if they want to save them.
     # TODO 3) finally, db migrate and push code.
 
+
+
+    # GAHHHH yeah ok it's not working anymore. session is being saved too often.
+    # TODO     # 1) fix that
+    # TODO     # 2) if needed, push and deploy most recent version / commit
+    # TODO     # 3) respond to deiya on gmain
+    # TODO     # 4) do interview
+
+
+
+
     session = models.CharField(max_length=40, blank=True, default='')
 
     def __str__(self):
