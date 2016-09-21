@@ -33,8 +33,13 @@
                 <ul class="right center hide-on-med-and-down">
                     <li><a href="{% url 'home:add_recipe' %}">add a recipe</a></li>
                     <li><a href="{% url 'home:cookbook' %}">cookbook</a></li>
-                    <li><a href="#!">{{ user.username }}</a></li>
-                    <li><a href="{% url 'home:logout_user' %}">logout</a></li>
+
+                    {% if user.is_authenticated %}
+                        <li><a href="#!">{{ user.username }}</a></li>
+                        <li class="col3"><a href="{% url 'home:logout_user' %}">logout</a></li>
+                    {% else %}
+                        <li class="col2"><a href="{% url 'home:login' %}">login | create account</a></li>
+                    {% endif %}
                 </ul>
 
                 <!--mobile navbar:-->
@@ -42,7 +47,6 @@
                     <li><a href="{% url 'home:add_recipe' %}">add a recipe</a></li>
                     <li><a href="{% url 'home:cookbook' %}">cookbook</a></li>
                     <li><a href="#!">{{ user.username }}</a></li>
-
                 </ul>
             </div>
         </nav>
