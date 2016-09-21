@@ -122,7 +122,6 @@ highlighted {
 
 .ghostbtn {
     color: black;
-    _border: 1px solid grey;
     padding: 0px 5px 35px 5px;
     float: left;
     border-radius: 30px;
@@ -150,21 +149,22 @@ footer.page-footer .footer-copyright {
 .welcome_circle {
     width: 70vw;
     height: 70vw;
-    max-width: 900px;
-    max-height: 900px;
+    max-width: 850px;
+    max-height: 850px;
     min-width: 320px;
     min-height: 320px;
     border-radius: 50%;
     border: 2vw solid #607082;
     display: block;
     margin: auto;
-    margin-top: 20px;
+    margin-top: 0px;
     transition: all .25s;
 }
 .welcome {
     font-family: 'Clicker Script', cursive;
     font-size: 11vw;
     margin-top: 3vw;
+    transition: all .5s;
 }
 .welcome_text {
     margin-top: -11vw;
@@ -173,9 +173,16 @@ footer.page-footer .footer-copyright {
     font-size: 2.4vw;
 }
 /* these two media queries make sure the welcome page looks good on allll the screen sizes */
-@media (min-width: 1300px) {
+@media (min-width: 1250px) {
   .welcome_text {
-    font-size: 25px;
+    font-size: 28px;
+    margin-top: -240px;
+  }
+  .welcome_circle {
+    border: 23px solid #607082;
+  }
+  .welcome {
+    font-size: 190px;
   }
 }
 @media (max-width: 500px) {
@@ -188,4 +195,5 @@ footer.page-footer .footer-copyright {
     font-size: 16px;
   }
 }
+
 
