@@ -16,5 +16,5 @@ urlpatterns = [
     url(r'^recipes/edit/(?P<pk>[0-9]+)/$', views.edit_recipe, name='edit_recipe'),
     url(r'^cookbook/$', views.cookbook, name='cookbook'),
     url(r'^about/$', views.about, name='about'),
-
+    url(r'^profile/$', views.profile, name='profile'),
 ]

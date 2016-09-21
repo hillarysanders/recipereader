@@ -143,6 +143,11 @@ footer.page-footer .footer-copyright {
     max-height: 300px;
 }
 
+.sidenav_btn {
+    border: 5px solid grey;
+    margin-top: 2.5px;
+    border-radius: 50px;
+}
 
 
 /*welcome page circle*/

@@ -15,7 +15,7 @@ from . import conversions
 
 
 def index(request):
-    user = request.user  # can this be anonymous?
+    user = request.user
     context = {
         'user': user
     }
@@ -23,11 +23,29 @@ def index(request):
 
 
 def welcome(request):
-    user = request.user  # can this be anonymous?
+    user = request.user
     context = {
         'user': user
     }
     return render(request, 'home/welcome.html', context)
+
+
+def profile(request):
+    # todo add to this view. first need to sup up userProxy model.
+    
+    user = request.user  # can this be anonymous?
+    print(user)
+    user_proxy = get_user_proxy(request)
+    recipes = Recipe.objects.filter(user_proxy=user_proxy)
+    for r in recipes:
+        print(r)
+    print(len(recipes))
+    context = {
+        'user': user,
+        'n_recipes': '1 recipe' if len(recipes) == 1 else '{} recipes'.format(len(recipes)),
+        'most_recent_recipe': str(max([r.pub_date for r in recipes]))[:10]
+    }
+    return render(request, 'home/profile.html', context)
 
 
 def logout_user(request):
