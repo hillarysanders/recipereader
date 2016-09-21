@@ -1,12 +1,12 @@
 from __future__ import unicode_literals
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.views import generic
 from django.shortcuts import render, get_object_or_404
 from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
 from django.contrib import messages
-from .models import Recipe
+from .models import Recipe, UserProxy
 from .forms import UserForm, LoginForm, AddRecipeForm
 from . import conversions
 
@@ -33,8 +33,13 @@ def welcome(request):
     return render(request, 'home/welcome.html', context)
 
 
-def auth_login(request):
+def logout_user(request):
+    logout(request)
 
+    return HttpResponseRedirect('/')
+
+
+def auth_login(request):
     error_messages = ''
     if request.method == "POST":
         # if the user clicked the create user submit button:
@@ -76,13 +81,44 @@ def auth_login(request):
     return render(request, 'home/login.html', context)
 
 
+# def get_or_none(model, *args, **kwargs):
+#     try:
+#         return model.objects.get(*args, **kwargs)
+#     except model.DoesNotExist:
+#         return None
+
+
+def get_user_proxy(request):
+    print('SESSION KEY: ')
+    print(request.session.session_key)
+    # if the session key is None, then they don't have a cookie yet (?), so give em' one.
+    if request.session.session_key is None:
+        request.session.save()
+    print('SESSION KEY AFTER SAVE: ')
+    print(request.session.session_key)
+    logged_in_user = request.user
+    if logged_in_user.id is None:
+        #  no user is logged in:
+        obj, created = UserProxy.objects.get_or_create(session=request.session.session_key, user=None)
+    else:
+        obj, created = UserProxy.objects.get_or_create(user=logged_in_user, session='')
+
+    user_proxy = obj
+
+    print(user_proxy)
+    print('TYPE:_________')
+    print(type(user_proxy))
+    return user_proxy
+
+
 def add_recipe(request):
 
     if request.method == "POST":
         add_recipe_form = AddRecipeForm(request.POST, request.FILES)
         if add_recipe_form.is_valid():
             recipe = add_recipe_form.save(commit=False)  # doesn't save the instance yet, since we need to add stuff
-            recipe.user = request.user
+            # recipe.user = request.user
+            recipe.user_proxy = get_user_proxy(request)
             recipe.save()
 
             return HttpResponseRedirect('/recipes/detail/{}/'.format(recipe.id))
@@ -109,7 +145,7 @@ def edit_recipe(request, pk):
         add_recipe_form = AddRecipeForm(request.POST, request.FILES, instance=recipe)
         if add_recipe_form.is_valid():
             recipe = add_recipe_form.save(commit=False)  # doesn't save the instance yet, since we need to add stuff
-            recipe.user = request.user
+            # recipe.user = request.user
             recipe.save()
 
             return HttpResponseRedirect('/recipes/detail/{}/'.format(recipe.id))
@@ -155,8 +191,12 @@ def delete_recipe(request, pk):
 
 
 def cookbook(request):
-    user = request.user
-    recipes = Recipe.objects.filter(user=user.id).order_by('recipe_name')
+    user_proxy = get_user_proxy(request)
+    print(user_proxy)
+    print(user_proxy)
+    print(user_proxy)
+    print(user_proxy)
+    recipes = Recipe.objects.filter(user_proxy=user_proxy).order_by('recipe_name')
 
     if request.method == 'GET':
         search_text = request.GET.get('search', None)
@@ -167,7 +207,6 @@ def cookbook(request):
                 recipes = recipes.annotate(rank=SearchRank(vector, query)).order_by('-rank').filter(rank__gt=0)
 
     context = {
-        'user': user,
         'recipes': recipes
     }
     return render(request, 'home/cookbook.html', context)

@@ -13,6 +13,47 @@ from . import conversions
 # for datetimes. This tells Django what type of data each field holds.
 
 
+# create session id object to be used only when a user tries to record a recipe but is not logged in.
+# looking in e.g. cookbook will use userproxy object instead of user object.
+# then if they create a user account, the UserProxy instance will be modified to link to a user,
+# instead of None.
+# at some point set it so e.g. if a cookie has become inactive (how long is this?) you delete the UserProxy instance
+# (and therefore, its recipes) if there is no attached user account.
+
+class UserProxy(models.Model):
+    """
+    User proxy model to help enable anonymous browsing
+    When a user registers, create an instance of this.
+    session will = a cookie session, i.e. request.session.session_key
+
+    session is basically data stored on your server that is identified by a session id sent as a cookie to the browser.
+    The browser will send the cookie back containing the session id on all subsequent requests either until the
+    browser is closed or the cookie expires (depending on the expires value that is sent with the cookie header,
+    which you can control from Django with set_expiry
+    """
+    # if a user is logged in, their user = the user. Else, None.
+    user = models.ForeignKey(User, null=True, blank=True, default=None)
+    # if a user is logged in, their session = None. Else, request.session.session_key.
+
+    # TODO TODO TODO site is failing a the moment because null value in column "session" violates not-null constraint,
+    # TODO TODO TODO because when an anonymous user tries to save a recipe, the userproxy instance is created with
+    # TODO TODO TODO request.session.session_key, but it is currently None instead of something.
+    # TODO TODO TODO FIXED in views.py. Not sure if that was the best way to fix it though, prolly should check.
+    # TODO -----------> after checking, next TODOs are:
+    # TODO 1) make sure logout button only shows if user is logged in, and user profile button vice versa
+    # TODO 2) write code so that if you create an account, your recipes'll be saved to it via UserProxy.
+    # TODO     possibly include note in cookbook template, and maybe modulo that asks if they want to save them.
+    # TODO 3) finally, db migrate and push code.
+
+    session = models.CharField(max_length=40, blank=True, default='')
+
+    def __str__(self):
+        if self.user:
+            return str(self.user.username)
+        else:
+            return 'anonymously browsing\n\tsession: {}'.format(self.session)
+
+
 class Recipe(models.Model):
     # TextField is larger than CharField
     recipe_name = models.CharField(max_length=128, default='')
@@ -37,7 +78,8 @@ class Recipe(models.Model):
     pub_date = models.DateTimeField('date published', auto_now_add=True)
     # # each recipe is related to a single user.
     # # on_delete=models.CASCADE means that if a user is deleted his / her recipes will be too.
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    # user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user_proxy = models.ForeignKey(UserProxy, on_delete=models.CASCADE, blank=True, null=True)
 
     def save(self, *args, **kwargs):
         # parse ingredients and instructions:
