@@ -5,6 +5,7 @@
 !.elasticbeanstalk/*.global.yml
 
 *.idea
+*.pyc
 
 # heavy files that will need to be added by hand:
 *.csv
