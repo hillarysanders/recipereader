@@ -3,32 +3,26 @@
 {% block content %}
 {% load materialize %}
 
-<div class="col s12">
-    <div id="welcome_circle_parent">
-        <div id="welcome_circle">
-            <div id="sub_circle" class="col2">
-                <div class="col s12">
-                    <p id="welcome">Welcome!</p>
-                    <div id="welcome_text" class="center">
-                        <div class="col s7">
-                            <p>Welcome to RecipeReader. Save all of your recipes by copy pasting a recipe
-                            from anywhere online. RecipeReader will parse it, save it, and allow you to easily change
-                            servings and units (volume / metric / imperial).
-                            <br><br>
-                            Not only does our text parsing beat other recipe parsing sites' butts, this site
-                            1) it doesn't look like total shit, and 2) you're not begged to share and flicker and twitter and
-                            facebookaroo literally everything you do ever.
-                            <br><br>
-                            On top of all of this: fuck ads. No ads. Because no.
-                            <br><br>
-                            Peace out, and enjoy.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+
+<div class="welcome_circle col2">
+
+    <p class="welcome center">Welcome!</p>
+    <div class="welcome_text center">
+        <div class="col s7">
+            <p class="flow_text">Welcome to RecipeReader. Save recipes by copy pasting a recipe
+                from anywhere. RecipeReader will parse it, save it, and allow you to easily change
+                servings and units (volume / metric / imperial).
+                <br><br>
+                Not only does our text processing beat other recipe sites' butts, this site will
+                never beg you to share and flickr and twitter and facebook literally everything you do ever.
+                <br><br>
+                On top of this: No ads. Because no.
+                <br><br>
+                Peace out, and enjoy.
+            </p>
         </div>
     </div>
+
 </div>
 
 {% endblock %}
