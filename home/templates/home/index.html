@@ -34,6 +34,7 @@
                     <li><a href="{% url 'home:add_recipe' %}">add a recipe</a></li>
                     <li><a href="{% url 'home:cookbook' %}">cookbook</a></li>
 
+                    <!-- slightly different navbar based on if user is logged in or not:-->
                     {% if user.is_authenticated %}
                         <li><a href="#!">{{ user.username }}</a></li>
                         <li class="col3"><a href="{% url 'home:logout_user' %}">logout</a></li>
@@ -42,7 +43,7 @@
                     {% endif %}
                 </ul>
 
-                <!--mobile navbar:-->
+                <!-- mobile navbar: -->
                 <ul class="side-nav" id="mobile-demo">
                     <li><a href="{% url 'home:add_recipe' %}">add a recipe</a></li>
                     <li><a href="{% url 'home:cookbook' %}">cookbook</a></li>

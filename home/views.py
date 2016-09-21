@@ -46,11 +46,19 @@ def auth_login(request):
                 user = uform.save()
                 # save the new user profile:
                 user.save()
+
+                # for now, automatically import session recipes:
+                if request.session.session_key is not None:
+                    user_proxy, created = UserProxy.objects.get_or_create(session=request.session.session_key)
+                    print(user_proxy)
+                    user_proxy.user = user
+                    user_proxy.session = ''
+                    user_proxy.save()
+
                 # go ahead and login the user:
                 login(request, user)
                 return HttpResponseRedirect('/welcome/')
             else:
-                message = 'Invalid inputs. :( Try again? <3'
                 error_messages = uform.errors
         # if the user clicked the login submit button:
         elif request.POST.get("loginSubmit"):
@@ -85,14 +93,10 @@ def auth_login(request):
 
 
 def get_user_proxy(request):
-    print('get_user_proxy():')
-    print('\tSESSION KEY: ')
-    print(request.session.session_key)
     # if the session key is None, then they don't have a cookie yet (?), so give em' one.
     if request.session.session_key is None:
         request.session.save()
-    print('\tSESSION KEY AFTER SAVE: ')
-    print(request.session.session_key)
+
     logged_in_user = request.user
     if logged_in_user.id is None:
         #  no user is logged in:
@@ -103,18 +107,8 @@ def get_user_proxy(request):
     user_proxy = obj
 
     # now you need to save the session instance so it can be accessed later
-    print('Has session?')
-    print(request.session.get('has_session'))
-    request.session.modified = True
-    print('\tSESSION KEY: ')
-    print(request.session.session_key)
-    # request.session.save()
-    # print('\tSESSION KEY: ')
-    # print(request.session.session_key)
+    # request.session.modified = True
 
-    print(user_proxy)
-    print('TYPE:_________')
-    print(type(user_proxy))
     return user_proxy
 
 

@@ -19,6 +19,18 @@
             <!--<div class="col login_pushdown s12">-->
 
             <div class="col s12 m6 l6">
+                <center><h4>login</h4></center>
+                <form action="/" method="post">
+                    {% csrf_token %}
+                    {% for f in loginform %}
+                        {{ f|as_material:"s12" }}
+                    {% endfor %}
+                    <input type="submit" id="loginbtn" value="Submit" name="loginSubmit" style="display: none;"/>
+                    <label for="loginbtn" class="waves-effect waves-light btn col2">Submit</label>
+                </form>
+            </div>
+
+            <div class="col s12 m6 l6">
                 <center><h4> create an account</h4></center>
                 <form action="/" method="post">
                     {% csrf_token %}
@@ -29,18 +41,6 @@
                     <label for="cubtn" class="waves-effect waves-light btn col2">Submit</label>
                 </form>
                 <br>
-            </div>
-
-            <div class="col s12 m6 l6">
-                <center><h4>login</h4></center>
-                <form action="/" method="post">
-                    {% csrf_token %}
-                    {% for f in loginform %}
-                        {{ f|as_material:"s12" }}
-                    {% endfor %}
-                    <input type="submit" id="loginbtn" value="Submit" name="loginSubmit" style="display: none;"/>
-                    <label for="loginbtn" class="waves-effect waves-light btn col2">Submit</label>
-                </form>
             </div>
 
 
