@@ -82,6 +82,16 @@ name_maps_weight = [
          plural='oz.')
 ]
 
+# NOT ACTUALLY A WEIGHT:
+pcs = dict(pattern=['pcs', 'pieces', 'piece', 'dashes', 'dash', 'handfuls', 'handful', 'scoop', 'scoops', 'package',
+                    'package', 'packages', 'bag', 'bags', 'bottle', 'bottles', 'sack', 'sacks',
+                    'box', 'boxes', 'container', 'containers', 'can', 'cans', 'unit', 'units',
+                    'handful', 'handfuls', 'slice', 'slices'],
+           type='unit',
+           sub_type='pcs')
+pcs['name'] = pcs['pattern']
+
+
 # line = '2 cups (12-oz. pkg.) chocolate chips'
 
 
@@ -114,11 +124,11 @@ def _prep_name_map(name_maps):
 
 def _get_name_maps_english_numbers(n=1000):
     """
-    e.g. 'twenty four' to 24.
+    e.g. 'twenty four' = 24.
     :param n:
     :return:
     """
-    name_maps_english_numbers = []
+    name_maps_english_num = []
     for i in range(2, n):
         el = dict(pattern=[num2words(i)], name=str(i), value=float(i))
         if (i % 12) == 0:
@@ -129,27 +139,9 @@ def _get_name_maps_english_numbers(n=1000):
                 # include 'a dozen'
                 el['pattern'].extend(['a dozen'])
 
-        name_maps_english_numbers.extend([el])
+        name_maps_english_num.extend([el])
 
-    return name_maps_english_numbers
-
-
-# def _add_spaces_to_sides(name_maps):
-#     for i in range(len(name_maps)):
-#         name_maps[i]['pattern'] = [' {} '.format(n) for n in name_maps[i]['pattern']]
-#     return name_maps
-#
-#
-# def _extend_pattern_with_capitalization(name_maps):
-#     for d in name_maps:
-#         replacement = d['pattern']
-#         capitalized = [el.capitalize() for el in replacement if el != 't']
-#         upper = [el.upper() for el in replacement if el != 't']
-#         replacement.extend(capitalized)
-#         replacement.extend(upper)
-#         replacement = list(set(replacement))
-#
-#     return name_maps
+    return name_maps_english_num
 
 
 # use num2words:

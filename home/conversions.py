@@ -21,27 +21,28 @@ def handle_unit_plurality(info, match_info, pidx):
 
     # handle unit plurality
     if info.loc[pidx, 'type'] in ['unit']:
-        # was the last number != 1?
-        is_plural = 'unknown'
-        if len(match_info) > 0:
-            if any(match_info.type == 'number'):
-                m = match_info.loc[match_info.type == 'number', 'value'].values
-                if len(m) > 1:
-                    m = m[-1]
-                else:
-                    m = m[0]
-                # if the most recent number was 1:
-                if m == 1:
-                    is_plural = False
-                    info['name'] = info['singular']
-                else:
-                    is_plural = True
-                    info['name'] = info['plural']
-                info['is_plural'] = is_plural
-        # if that didn't work:
-        if is_plural not in [True, False]:
-            # todo raise warning that plurality could not be found...
-            info['name'] = info['original']
+        if info.loc[pidx, 'sub_type'] in ['volume', 'weight']:
+            # was the last number != 1?
+            is_plural = 'unknown'
+            if len(match_info) > 0:
+                if any(match_info.type == 'number'):
+                    m = match_info.loc[match_info.type == 'number', 'value'].values
+                    if len(m) > 1:
+                        m = m[-1]
+                    else:
+                        m = m[0]
+                    # if the most recent number was 1:
+                    if m == 1:
+                        is_plural = False
+                        info['name'] = info['singular']
+                    else:
+                        is_plural = True
+                        info['name'] = info['plural']
+                    info['is_plural'] = is_plural
+            # if that didn't work:
+            if is_plural not in [True, False]:
+                # todo raise warning that plurality could not be found...
+                info['name'] = info['original']
 
     return info
 
@@ -95,6 +96,7 @@ def parse_ingredient_line(line):
             else:
                 # otherwise, the row can be build off of the name_maps objects:
                 pidx = p.replace('.', '\.')
+                pidx = pidx if pidx in name_maps.index else pidx.lower()
                 # todo raise warning if p is still not in the index of name_maps
 
                 info = pd.DataFrame(name_maps.loc[pidx, :]).T
@@ -118,7 +120,7 @@ def parse_ingredient_line(line):
     # what remains will just be tagged as 'text' for now.
     match_info, original_line = insert_text_match_info_rows(match_info=match_info, original_line=original_line)
 
-    ZZZ = match_info.sort_values(by='start')
+    match_info = match_info.sort_values(by='start')
 
     # todo add in sub-pattern flag of some sort
     # types:
