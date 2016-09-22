@@ -9,7 +9,7 @@ from django.contrib import messages
 import logging
 from .models import Recipe, UserProxy
 from .forms import UserForm, LoginForm, AddRecipeForm
-from . import conversions
+from .conversions_utils import get_highlighted_ingredients
 
 # Create your views here.
 
@@ -215,8 +215,8 @@ class RecipeDetailView(generic.DetailView):
         # Call the base implementation first to get a context
         context = super(RecipeDetailView, self).get_context_data(**kwargs)
         # Add in a QuerySet of all the books
-        context['highlighted_ingredients'] = conversions.get_highlighted_ingredients(context['recipe'].ingredients)
-        context['highlighted_instructions'] = conversions.get_highlighted_ingredients(context['recipe'].instructions)
+        context['highlighted_ingredients'] = get_highlighted_ingredients(context['recipe'].ingredients)
+        context['highlighted_instructions'] = get_highlighted_ingredients(context['recipe'].instructions)
         return context
 
 
