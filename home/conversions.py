@@ -62,7 +62,7 @@ def handle_unit_plurality(info, match_info, pidx):
 
 def parse_ingredient_line(line):
     ok_left = '[- \(]'
-    ok_right = '[- \)]'
+    ok_right = '[- \)\.]'
     # sooo... first look for numbers. Then loop through the rest of the text using this code?
     patterns = [(ok_left + '{}' + ok_right + '|^{}' + ok_right + '|' + ok_left + '{}$|^{}$').format(p, p, p, p) for p in name_maps.index]
     pattern = '|'.join(reversed(patterns))
@@ -117,9 +117,6 @@ def parse_ingredient_line(line):
                 info['start'] = start + placement
                 info['end'] = end + placement
                 info['pattern'] = pidx
-
-                if pidx=='containers':
-                    raise AttributeError
 
                 info = handle_unit_plurality(info=info, match_info=match_info, pidx=pidx)
 

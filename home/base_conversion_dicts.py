@@ -133,6 +133,17 @@ name_maps_pcs = [
 #     #      plural='inches'),
 # ]
 
+temperature_patterns = pd.DataFrame(dict(pattern=['ºC', 'ºF', 'º', 'degrees']))
+temperature_patterns['name'] = temperature_patterns['pattern']
+temperature_patterns['type'] = 'temperature'
+time_patterns = pd.DataFrame(dict(pattern=['minutes', 'seconds', 'hours', 'minute', 'second', 'hours']))
+time_patterns['name'] = time_patterns['pattern']
+time_patterns['type'] = 'unit_of_time'
+
+
+def _name_maps_dict_to_df(name_maps):
+    return pd.concat([pd.DataFrame(d) for d in name_maps])
+
 
 def _prep_name_map(name_maps):
     """
@@ -142,12 +153,7 @@ def _prep_name_map(name_maps):
     This function preps all the possible pattern strings by augmenting them
     via capitalization, etc. The transforms the dicts into a nicer to handle dataframe.
     """
-    # # capitalize stuff:
-    # name_maps = _extend_pattern_with_capitalization(name_maps)
-    # # add spaces:
-    # name_maps = _add_spaces_to_sides(name_maps)
-    # coerce to dataframe:
-    name_maps = pd.concat([pd.DataFrame(d) for d in name_maps])
+
     name_maps = name_maps.drop_duplicates('pattern')
 
     # sort by pattern length:
@@ -186,30 +192,32 @@ def _get_name_maps_english_numbers(n=1000):
 # use num2words:
 name_maps_english_numbers = _get_name_maps_english_numbers(n=100)
 # manicure stuff:
-name_maps_english_numbers = _prep_name_map(name_maps_english_numbers)
+name_maps_english_numbers = _prep_name_map(_name_maps_dict_to_df(name_maps_english_numbers))
 name_maps_english_numbers['type'] = 'number'
 name_maps_english_numbers['flags'] = [['english_number'] for i in range(len(name_maps_english_numbers))]
 # name_maps_english_numbers['sub_type'] = '?'
 
 # fractions:
-name_maps_fractions = _prep_name_map(name_maps_fractions)
+name_maps_fractions = _prep_name_map(_name_maps_dict_to_df(name_maps_fractions))
 name_maps_fractions['type'] = 'number'
 name_maps_fractions['flags'] = [['unicode_fraction'] for i in range(len(name_maps_fractions))]
 name_maps_fractions['sub_type'] = 'fraction'
 # volume
-name_maps_volume = _prep_name_map(name_maps_volume)
+name_maps_volume = _prep_name_map(_name_maps_dict_to_df(name_maps_volume))
 name_maps_volume['type'] = 'unit'
 name_maps_volume['sub_type'] = 'volume'
 # weight
-name_maps_weight = _prep_name_map(name_maps_weight)
+name_maps_weight = _prep_name_map(_name_maps_dict_to_df(name_maps_weight))
 name_maps_weight['type'] = 'unit'
 name_maps_weight['sub_type'] = 'weight'
 # non convertible units:
-name_maps_pcs = _prep_name_map(name_maps_pcs)
+name_maps_pcs = _prep_name_map(_name_maps_dict_to_df(name_maps_pcs))
 name_maps_pcs['type'] = 'unit'
 name_maps_pcs['sub_type'] = 'pcs'
 
-name_maps = pd.concat([name_maps_fractions,
+name_maps = pd.concat([_prep_name_map(temperature_patterns),
+                       _prep_name_map(time_patterns),
+                       name_maps_fractions,
                        name_maps_english_numbers,
                        name_maps_volume,
                        name_maps_weight,
