@@ -21,7 +21,6 @@ def handle_unit_plurality(info, match_info, pidx):
 
     # handle unit plurality
     if info.loc[pidx, 'type'] in ['unit']:
-        if info.loc[pidx, 'sub_type'] in ['volume', 'weight']:
             # was the last number != 1?
             is_plural = 'unknown'
             if len(match_info) > 0:
@@ -48,11 +47,10 @@ def handle_unit_plurality(info, match_info, pidx):
 
 
 def parse_ingredient_line(line):
-    # todo add in patterns and treatment for floats, e.g. 2.5 pounds.
-    # todo change number treatment entirely so that it can appear next to words. e.g. 30g.
-    ok_adjoiners = '[- \(]'
+    ok_left = '[- \(]'
+    ok_right = '[- \)]'
     # sooo... first look for numbers. Then loop through the rest of the text using this code?
-    patterns = [(ok_adjoiners + '{}' + ok_adjoiners + '|^{} | {}$').format(p, p, p) for p in name_maps.index]
+    patterns = [(ok_left + '{}' + ok_right + '|^{}' + ok_right + '|' + ok_left + '{}$|^{}$').format(p, p, p, p) for p in name_maps.index]
     pattern = '|'.join(reversed(patterns))
     # prepend this pattern with a pattern for integers, floats, and simple fractions:
     float_pat = '\.?\d/\.?\d|\d+\.?\d+|\d+|\.\d+'
@@ -63,16 +61,17 @@ def parse_ingredient_line(line):
     match_info = pd.DataFrame()
     placement = 0
     while len(line) > 0:
+        print(line)
         match = pattern.search(line)
         if match:
             start = match.start()
             end = match.end()
             p = match.group()
             # first, trim off whitespace / parentheses from the pattern:
-            if re.search(ok_adjoiners+'$', p):
+            if re.search(ok_right+'$', p):
                 p = p[:-1]
                 end -= 1
-            if re.search('^'+ok_adjoiners, p):
+            if re.search('^'+ok_left, p):
                 p = p[1:]
                 start += 1
 

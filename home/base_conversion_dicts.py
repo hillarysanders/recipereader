@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 from num2words import num2words
 import pandas as pd
+import re
 """
 Base conversion dictionaries that conversions.py will use to build nicely formatted conversion objects.
 Not meant to be used directly.
@@ -74,7 +75,7 @@ name_maps_weight = [
     dict(pattern=['milligram', 'mg', 'milligram', 'mg\.'],
          singular='milligram',
          plural='mg'),
-    dict(pattern=['lb', 'pound', 'lbs', 'pounds', 'lb\.', 'lbs\.'],
+    dict(pattern=['lb', 'pound', 'lbs', 'pounds', 'lb\.', 'lbs\.'],  # todo pound cake???
          singular='lb.',
          plural='lbs.'),
     dict(pattern=['oz', 'ounce', 'onze', 'onza', 'oz\.'],
@@ -82,17 +83,48 @@ name_maps_weight = [
          plural='oz.')
 ]
 
-# NOT ACTUALLY A WEIGHT:
-pcs = dict(pattern=['pcs', 'pieces', 'piece', 'dashes', 'dash', 'handfuls', 'handful', 'scoop', 'scoops', 'package',
-                    'package', 'packages', 'bag', 'bags', 'bottle', 'bottles', 'sack', 'sacks',
-                    'box', 'boxes', 'container', 'containers', 'can', 'cans', 'unit', 'units',
-                    'handful', 'handfuls', 'slice', 'slices'],
-           type='unit',
-           sub_type='pcs')
-pcs['name'] = pcs['pattern']
-
-
-# line = '2 cups (12-oz. pkg.) chocolate chips'
+# units that aren't convertible:
+name_maps_pcs = [
+    dict(pattern=['pcs', 'pieces', 'piece'],
+         singular='piece',
+         plural='pieces'),
+    dict(pattern=['dash', 'dashes'],
+         singular='dash',
+         plural='dashes'),
+    dict(pattern=['handful', 'handfuls'],
+         singular='handful',
+         plural='handfuls'),
+    dict(pattern=['spring', 'sprigs'],
+         singular='sprig',
+         plural='sprigs'),
+    dict(pattern=['scoop', 'scoops'],
+         singular='scoop',
+         plural='scoops'),
+    dict(pattern=['package', 'pkg\.', 'pkg', 'packages', 'pkgs', 'pkgs\.'],
+         singular='package',
+         plural='packages'),
+    dict(pattern=['bag', 'bags'],
+         singular='bag',
+         plural='bags'),
+    dict(pattern=['container', 'containers'],
+         singular='container',
+         plural='containers'),
+    dict(pattern=['can', 'cans'],
+         singular='can',
+         plural='cans'),
+    dict(pattern=['unit', 'units'],
+         singular='unit',
+         plural='units'),
+    dict(pattern=['slice', 'slices'],
+         singular='slice',
+         plural='slices'),
+    dict(pattern=['bunch', 'bunches'],
+         singular='bunch',
+         plural='bunches'),
+    # dict(pattern=[],
+    #      singular='',
+    #      plural=''),
+]
 
 
 def _prep_name_map(name_maps):
@@ -164,9 +196,17 @@ name_maps_volume['sub_type'] = 'volume'
 # weight
 name_maps_weight = _prep_name_map(name_maps_weight)
 name_maps_weight['type'] = 'unit'
-name_maps_weight['sub_type'] = 'volume'
+name_maps_weight['sub_type'] = 'weight'
+# non convertible units:
+name_maps_pcs = _prep_name_map(name_maps_pcs)
+name_maps_pcs['type'] = 'unit'
+name_maps_pcs['sub_type'] = 'pcs'
 
-name_maps = pd.concat([name_maps_fractions, name_maps_english_numbers, name_maps_volume, name_maps_weight])
+name_maps = pd.concat([name_maps_fractions,
+                       name_maps_english_numbers,
+                       name_maps_volume,
+                       name_maps_weight,
+                       name_maps_pcs])
 
 
 # sub-types:
