@@ -126,6 +126,13 @@ name_maps_pcs = [
     #      plural=''),
 ]
 
+# name_maps_lengths = [
+#     # hmm. is this really neccessary?
+#     # dict(pattern=['inch', 'inches'],
+#     #      singular='inch',
+#     #      plural='inches'),
+# ]
+
 
 def _prep_name_map(name_maps):
     """

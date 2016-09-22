@@ -24,14 +24,28 @@ def handle_unit_plurality(info, match_info, pidx):
             # was the last number != 1?
             is_plural = 'unknown'
             if len(match_info) > 0:
-                if any(match_info.type == 'number'):
-                    m = match_info.loc[match_info.type == 'number', 'value'].values
-                    if len(m) > 1:
-                        m = m[-1]
+                numeric_idx = match_info.type == 'number'
+                if any(numeric_idx):
+                    number_values = match_info.loc[match_info.type == 'number', 'value'].values
+                    if sum(numeric_idx) > 1:
+                        # todo (low priority) might want to add something to the below that marks this as unsure if e.g.
+                        # todo you have a ['number', 'unit', 'number'] pattern or something.
+
+                        # so usually, we just want the nearest number to the left.
+                        # however, what about e.g. "1 (16oz.) container yogurt"?
+                        # if there is another unit to the left, and then two numbers, take the first number.
+                        if len(match_info) >= 3:
+                            if all(match_info.type.tail(3) == ['number', 'number', 'unit']):
+                                # "1 (16oz.) container yogurt" case
+                                num_value = match_info['value'].iloc[-3]
+                            else:
+                                num_value = number_values[-1]
+                        else:
+                            num_value = number_values[-1]
                     else:
-                        m = m[0]
+                        num_value = number_values[0]
                     # if the most recent number was 1:
-                    if m == 1:
+                    if num_value == 1:
                         is_plural = False
                         info['name'] = info['singular']
                     else:
@@ -103,6 +117,9 @@ def parse_ingredient_line(line):
                 info['start'] = start + placement
                 info['end'] = end + placement
                 info['pattern'] = pidx
+
+                if pidx=='containers':
+                    raise AttributeError
 
                 info = handle_unit_plurality(info=info, match_info=match_info, pidx=pidx)
 
