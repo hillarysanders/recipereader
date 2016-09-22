@@ -115,7 +115,9 @@ class Recipe(models.Model):
         return data
 
     def get_absolute_url(self):
-        return reverse('recipe_detail', kwargs={'pk': self.pk})
+        # todo this should be done via reverse but couldn't get it to work:
+        return "/recipes/detail/{}/".format(self.pk)
+        # return reverse('recipe_detail', args=self.pk)
 
     def get_all_fields(self):
         """Returns a list of all field names on the instance."""
