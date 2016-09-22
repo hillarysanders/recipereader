@@ -1,9 +1,8 @@
 # coding=utf8
 from __future__ import unicode_literals
 import re
-import logging
 import pandas as pd
-from .base_conversion_dicts import name_maps_numbers, name_maps_volume, name_maps_weight, name_maps
+from .base_conversion_dicts import name_maps
 from .conversions_utils import insert_text_match_info_rows, clean_newlines
 
 X = """2 1/4 cups all-purpose flour
@@ -21,7 +20,7 @@ X = """2 1/4 cups all-purpose flour
 def handle_unit_plurality(info, match_info, pidx):
 
     # handle unit plurality
-    if info.loc[pidx, 'type'] in ['volume', 'weight']:
+    if info.loc[pidx, 'type'] in ['unit']:
         # was the last number != 1?
         is_plural = 'unknown'
         if len(match_info) > 0:
@@ -50,14 +49,14 @@ def handle_unit_plurality(info, match_info, pidx):
 def parse_ingredient_line(line):
     # todo add in patterns and treatment for floats, e.g. 2.5 pounds.
     # todo change number treatment entirely so that it can appear next to words. e.g. 30g.
+    ok_adjoiners = '[- \(]'
     # sooo... first look for numbers. Then loop through the rest of the text using this code?
-    patterns = ['[ \(]{}s?[\) $]|^{} | {}$'.format(p, p, p) for p in name_maps.index]
+    patterns = [(ok_adjoiners + '{}' + ok_adjoiners + '|^{} | {}$').format(p, p, p) for p in name_maps.index]
     pattern = '|'.join(reversed(patterns))
     # prepend this pattern with a pattern for integers, floats, and simple fractions:
     float_pat = '\.?\d/\.?\d|\d+\.?\d+|\d+|\.\d+'
     pattern = '|'.join([float_pat, pattern])
     pattern = re.compile(pattern, re.IGNORECASE)
-    # pattern = re.compile(pattern)
 
     original_line = line
     match_info = pd.DataFrame()
@@ -69,10 +68,10 @@ def parse_ingredient_line(line):
             end = match.end()
             p = match.group()
             # first, trim off whitespace / parentheses from the pattern:
-            if re.search('[\) ]$', p):
+            if re.search(ok_adjoiners+'$', p):
                 p = p[:-1]
                 end -= 1
-            if re.search('^[\( ]', p):
+            if re.search('^'+ok_adjoiners, p):
                 p = p[1:]
                 start += 1
 
@@ -81,17 +80,21 @@ def parse_ingredient_line(line):
                 if '/' in p:
                     value = p.split('/')
                     value = float(value[0]) / float(value[1])
+                    flag = 'fraction'
                 else:
                     value = float(p)
+                    if (value % 1) == 0:
+                        flag = 'int'
+                    else:
+                        flag = 'float'
 
                 info = pd.DataFrame(dict(start=start + placement, end=end + placement, name=p,
-                                         original=p, value=value, type='number', pattern=float_pat),
+                                         original=p, value=value, type='number', flags=[[flag]],
+                                         pattern=float_pat),
                                     index=['number'])
             else:
                 # otherwise, the row can be build off of the name_maps objects:
-                # if p isn't in the index of name_maps, it probably has an s on the end:
-                pidx = p if p in name_maps.index else p[:-1]
-                # we want the start and end to stay the same but the pattern to forget the s.
+                pidx = p.replace('.', '\.')
                 # todo raise warning if p is still not in the index of name_maps
 
                 info = pd.DataFrame(name_maps.loc[pidx, :]).T
@@ -111,9 +114,11 @@ def parse_ingredient_line(line):
 
         line = line[end:]
 
+    # for all the text that wasn't tagged above as some special type (number, unit, etc)
+    # what remains will just be tagged as 'text' for now.
     match_info, original_line = insert_text_match_info_rows(match_info=match_info, original_line=original_line)
 
-    match_info = match_info.sort_values(by='start')
+    ZZZ = match_info.sort_values(by='start')
 
     # todo add in sub-pattern flag of some sort
     # types:
@@ -128,11 +133,17 @@ def parse_ingredient_line(line):
     # OTHER
     # - degrees
     # - pre_fraction_integer
+    # - step_number (1., 2., 3....)
+    # - percent, e.g. '2%'
     # UNITS
     # - pcs ('package', 'scoops', etc.)
     # - volume, metric
     # - volume, imperial
     # - weight
+    # TEXT
+    # - ingredient
+    # - header
+    # - text
 
     # todo flag fraction values as 'fraction'
     # todo flag units as 'unit' (value='pcs'), volume and weight = sub_types, type='unit'
