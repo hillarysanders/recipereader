@@ -72,67 +72,72 @@ def find_matches_in_line(line):
     pattern = '|'.join([float_pat, pattern])
     pattern = re.compile(pattern, re.IGNORECASE)
 
-    original_line = line
-    match_info = pd.DataFrame()
-    placement = 0
-    while len(line) > 0:
-        print(line)
-        match = pattern.search(line)
-        if match:
-            start = match.start()
-            end = match.end()
-            p = match.group()
-            # first, trim off whitespace / parentheses from the pattern:
-            if re.search(ok_right+'$', p):
-                p = p[:-1]
-                end -= 1
-            if re.search('^'+ok_left, p):
-                p = p[1:]
-                start += 1
+    # first, see if it's a list line:
+    if re.match(pattern=r'^\s*[0-9]+\.?\s*$', string=line):
+        match_info = pd.DataFrame(dict(start=0, end=len(line), name=line,
+                                       original=line, type='number', sub_type='line_number'),
+                                  index=['number'])
+    else:
+        original_line = line
+        match_info = pd.DataFrame()
+        placement = 0
+        while len(line) > 0:
+            match = pattern.search(line)
+            if match:
+                start = match.start()
+                end = match.end()
+                p = match.group()
+                # first, trim off whitespace / parentheses from the pattern:
+                if re.search(ok_right+'$', p):
+                    p = p[:-1]
+                    end -= 1
+                if re.search('^'+ok_left, p):
+                    p = p[1:]
+                    start += 1
 
-            # if it's a float pattern match, we build the row by hand
-            if re.search(float_pat, p):
-                if '/' in p:
-                    value = p.split('/')
-                    value = float(value[0]) / float(value[1])
-                    sub_type = 'fraction'
-                else:
-                    value = float(p)
-                    if (value % 1) == 0:
-                        sub_type = 'int'
+                # if it's a float pattern match, we build the row by hand
+                if re.search(float_pat, p):
+                    if '/' in p:
+                        value = p.split('/')
+                        value = float(value[0]) / float(value[1])
+                        sub_type = 'fraction'
                     else:
-                        sub_type = 'float'
+                        value = float(p)
+                        if (value % 1) == 0:
+                            sub_type = 'int'
+                        else:
+                            sub_type = 'float'
 
-                info = pd.DataFrame(dict(start=start + placement, end=end + placement, name=p,
-                                         original=p, value=value, type='number', sub_type=sub_type,
-                                         pattern=float_pat),
-                                    index=['number'])
+                    info = pd.DataFrame(dict(start=start + placement, end=end + placement, name=p,
+                                             original=p, value=value, type='number', sub_type=sub_type,
+                                             pattern=float_pat),
+                                        index=['number'])
+                else:
+                    # otherwise, the row can be build off of the name_maps objects:
+                    pidx = p.replace('.', '\.')
+                    pidx = pidx if pidx in name_maps.index else pidx.lower()
+                    # todo raise warning if p is still not in the index of name_maps
+
+                    info = pd.DataFrame(name_maps.loc[pidx, :]).T
+                    info['original'] = p
+                    info['start'] = start + placement
+                    info['end'] = end + placement
+                    info['pattern'] = pidx
+
+                    match_info, info = handle_unit_plurality(info=info, match_info=match_info, pidx=pidx)
+
+                # record the info:
+                placement = info.loc[:, 'end'][0]
+                # todo change this to pd.append?
+                match_info = pd.concat([match_info, info])
             else:
-                # otherwise, the row can be build off of the name_maps objects:
-                pidx = p.replace('.', '\.')
-                pidx = pidx if pidx in name_maps.index else pidx.lower()
-                # todo raise warning if p is still not in the index of name_maps
+                end = len(line)
 
-                info = pd.DataFrame(name_maps.loc[pidx, :]).T
-                info['original'] = p
-                info['start'] = start + placement
-                info['end'] = end + placement
-                info['pattern'] = pidx
+            line = line[end:]
 
-                match_info, info = handle_unit_plurality(info=info, match_info=match_info, pidx=pidx)
-
-            # record the info:
-            placement = info.loc[:, 'end'][0]
-            # todo change this to pd.append?
-            match_info = pd.concat([match_info, info])
-        else:
-            end = len(line)
-
-        line = line[end:]
-
-    # for all the text that wasn't tagged above as some special type (number, unit, etc)
-    # what remains will just be tagged as 'text' for now.
-    match_info, original_line = insert_text_match_info_rows(match_info=match_info, original_line=original_line)
+        # for all the text that wasn't tagged above as some special type (number, unit, etc)
+        # what remains will just be tagged as 'text' for now.
+        match_info, original_line = insert_text_match_info_rows(match_info=match_info, original_line=original_line)
 
     match_info = match_info.sort_values(by='start')
 
@@ -177,7 +182,9 @@ def replace_rows(match_info, idx, new_row):
     return match_info
 
 
-def lookback_from_type_for_type(match_info, hit_type, lookback_type, new_sub_type, dont_skip_over_type='unit', lookback=10):
+def lookback_from_type_for_type(match_info, hit_type, lookback_type, new_sub_type,
+                                dont_skip_over_type='unit', lookback=3):
+    lookback += 1
     idx = match_info.loc[match_info.type == hit_type].index.values
     for i in idx:
         m = match_info.loc[:i, :].tail(lookback)
@@ -236,11 +243,15 @@ def tag_matches_from_line(match_info, line):
     #######################################################################################################
     # tag temperature numbers
     match_info = lookback_from_type_for_type(match_info=match_info, hit_type='temperature', lookback_type='number',
-                                             new_sub_type='temperature_number', dont_skip_over_type='unit', lookback=3)
+                                             new_sub_type='temperature_number', dont_skip_over_type='unit', lookback=2)
     #######################################################################################################
     # tag time numbers
     match_info = lookback_from_type_for_type(match_info=match_info, hit_type='unit_of_time', lookback_type='number',
-                                             new_sub_type='time_number', dont_skip_over_type='unit', lookback=3)
+                                             new_sub_type='time_number', dont_skip_over_type='unit', lookback=2)
+    #######################################################################################################
+    # tag length numbers
+    match_info = lookback_from_type_for_type(match_info=match_info, hit_type='unit_of_length', lookback_type='number',
+                                             new_sub_type='length_number', dont_skip_over_type='unit', lookback=2)
     #######################################################################################################
     # tag percent numbers:
     match_info = lookback_for_type_from_pattern(match_info=match_info, regex_pattern=r'^[ ]?%| percent',

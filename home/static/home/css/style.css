@@ -133,17 +133,26 @@ hi_unit {
 hi_unit_of_time {
     background-color: #ccffee;
 }
+hi_unit_of_length {
+    background-color: #cc00ff;
+}
 hi_temperature {
     background-color: #ff5050;
 }
 
 
-
+hi_line_number {
+    background-color: #cceecc;
+    font-size: 20px;
+}
 hi_temperature_number {
     background-color: red;
 }
+hi_length_number {
+    background-color: #ff00ff;
+}
 hi_time_number {
-    background-color: #aaffcc;
+    background-color: #55ffee;
 }
 hi_percent_number {
     background-color: #11aaff;

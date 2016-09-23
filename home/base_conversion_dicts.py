@@ -126,19 +126,16 @@ name_maps_pcs = [
     #      plural=''),
 ]
 
-# name_maps_lengths = [
-#     # hmm. is this really neccessary?
-#     # dict(pattern=['inch', 'inches'],
-#     #      singular='inch',
-#     #      plural='inches'),
-# ]
-
 temperature_patterns = pd.DataFrame(dict(pattern=['ºC', 'ºF', 'º', 'degrees']))
 temperature_patterns['name'] = temperature_patterns['pattern']
 temperature_patterns['type'] = 'temperature'
 time_patterns = pd.DataFrame(dict(pattern=['minutes', 'seconds', 'hours', 'minute', 'second', 'hours']))
 time_patterns['name'] = time_patterns['pattern']
 time_patterns['type'] = 'unit_of_time'
+length_patterns = pd.DataFrame(dict(pattern=['inch', 'inches', 'centimeter', 'centimeters',
+                                             'millimeter', 'millimeters']))
+length_patterns['name'] = length_patterns['pattern']
+length_patterns['type'] = 'unit_of_length'
 
 
 def _name_maps_dict_to_df(name_maps):
@@ -217,6 +214,7 @@ name_maps_pcs['sub_type'] = 'pcs'
 
 name_maps = pd.concat([_prep_name_map(temperature_patterns),
                        _prep_name_map(time_patterns),
+                       _prep_name_map(length_patterns),
                        name_maps_fractions,
                        name_maps_english_numbers,
                        name_maps_volume,
