@@ -1,5 +1,7 @@
 # coding=utf8
-from __future__ import generators
+from __future__ import generators, unicode_literals
+import pandas as pd
+import re
 
 
 def insert_text_match_info_rows(match_info, original_line):
