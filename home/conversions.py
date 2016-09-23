@@ -266,6 +266,11 @@ def tag_matches_from_line(match_info, line):
                                                 regex_pattern=each_pattern,
                                                 lookback_type='number',
                                                 new_sub_type='each_number', lookback=3)
+    each_pattern = r' of the'
+    match_info = lookback_for_type_from_pattern(match_info=match_info,
+                                                regex_pattern=each_pattern,
+                                                lookback_type='number',
+                                                new_sub_type='each_number', lookback=1)
     # what about 'sprinkle each roll with 1/2 teaspoons sugar'?
 
     # what about number ranges? e.g. 4-5. Both numbers should have the same sub_type. And probably they should be
