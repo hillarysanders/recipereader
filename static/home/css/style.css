@@ -121,17 +121,20 @@ highlighted {
     background-color: #ffff00;
 }
 
+hi_text {
+    background-color: #cccccf;
+}
 hi_number {
     background-color: #ffff00;
 }
 hi_unit {
-    background-color: green;
+    background-color: #ffcc00;
 }
 hi_unit_of_time {
-    background-color: blue;
+    background-color: #50ccff;
 }
 hi_temperature {
-    background-color: red;
+    background-color: #ff5050;
 }
 
 
