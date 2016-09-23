@@ -1,8 +1,9 @@
 import pandas as pd
 import numpy as np
 import logging as log
-# from .utils import most_common
+from .utils import most_common
 # anything above 1 uses num_to_words
+
 
 class UnitConversions:
     """
@@ -14,58 +15,58 @@ class UnitConversions:
     """
     conversions = {
         # MASS
-        'kg': {
-            'mg': 1e+6,
-            'g': 1000.0,
-            'kg': 1.0,
-            'oz': 35.274,
-            'lbs': 2.20462,
-            'st': 0.157473},
-        'g': {
-            'mg': 1000,
-            'g': 1.0,
-            'kg': 1 / 1000.0,
-            'oz': 0.035274,
-            'lbs': 0.00220462,
-            'st': 0.000157473},
-        'mg': {
-            'mg': 1.0,
-            'g': 1e-3,
-            'kg': 1e-6,
-            'oz': 3.5274e-5,
-            'lbs': 2.2046e-6,
-            'st': 1.5747e-7
+        'kilogram': {
+            'milligram': 1e+6,
+            'gram': 1000.0,
+            'kilogram': 1.0,
+            'ounce': 35.274,
+            'pound': 2.20462,
+            'stone': 0.157473},
+        'gram': {
+            'milligram': 1000,
+            'gram': 1.0,
+            'kilogram': 1 / 1000.0,
+            'ounce': 0.035274,
+            'pound': 0.00220462,
+            'stone': 0.000157473},
+        'milligram': {
+            'milligram': 1.0,
+            'gram': 1e-3,
+            'kilogram': 1e-6,
+            'ounce': 3.5274e-5,
+            'pound': 2.2046e-6,
+            'stone': 1.5747e-7
         },
-        'oz': {
-            'mg': 28349.5,
-            'g': 28.3495,
-            'kg': 0.0283495,
-            'oz': 1.0,
-            'lbs': 0.0625,
-            'st': 0.00446429
+        'ounce': {
+            'milligram': 28349.5,
+            'gram': 28.3495,
+            'kilogram': 0.0283495,
+            'ounce': 1.0,
+            'pound': 0.0625,
+            'stone': 0.00446429
         },
-        'lbs': {
-            'mg': 453592.,
-            'g': 453.592,
-            'kg': 0.453592,
-            'oz': 16.0,
-            'lbs': 1.0,
-            'st': 0.0714286
+        'pound': {
+            'milligram': 453592.,
+            'gram': 453.592,
+            'kilogram': 0.453592,
+            'ounce': 16.0,
+            'pound': 1.0,
+            'stone': 0.0714286
         },
-        'st': {
-            'mg': 6.35e+6,
-            'g': 6350.29,
-            'kg': 6.35029,
-            'oz': 224.,
-            'lbs': 14.,
-            'st': 1.
+        'stone': {
+            'milligram': 6.35e+6,
+            'gram': 6350.29,
+            'kilogram': 6.35029,
+            'ounce': 224.,
+            'pound': 14.,
+            'stone': 1.
         },
         # VOLUME:
-        # teaspoon, tablespoon, fluid oz, cup, pint, quart, gallon, liter, milliliter, centiliter
+        # teaspoon, tablespoon, fluid ounce, cup, pint, quart, gallon, liter, milliliter, centiliter
         # US (IMPERIAL) VOLUME:
         'teaspoon': {
             'teaspoon': 1.,
-            'fluid oz': 1./6,
+            'fluid ounce': 1./6,
             'tablespoon': 1/3.,
             'cup': 1./48.,
             'pint': 1./96,
@@ -77,7 +78,7 @@ class UnitConversions:
         },
         'tablespoon': {
             'teaspoon': 3.,
-            'fluid oz': 1./2,
+            'fluid ounce': 1./2,
             'tablespoon': 1.,
             'cup': 1./16,
             'pint': 1./32,
@@ -87,9 +88,9 @@ class UnitConversions:
             'milliliter': 14.7868,
             'centiliter': 1.47868
         },
-        'fluid oz': {
+        'fluid ounce': {
             'teaspoon': 6.,
-            'fluid oz': 1.,
+            'fluid ounce': 1.,
             'tablespoon': 2.,
             'cup': 1./8,
             'pint': 1./16,
@@ -101,7 +102,7 @@ class UnitConversions:
         },
         'cup': {
             'teaspoon': 48.,
-            'fluid oz': 8.,
+            'fluid ounce': 8.,
             'tablespoon': 16.,
             'cup': 1.,
             'pint': 1./2,
@@ -113,7 +114,7 @@ class UnitConversions:
         },
         'pint': {
             'teaspoon': 96.,
-            'fluid oz': 16.,
+            'fluid ounce': 16.,
             'tablespoon': 32.,
             'cup': 2.,
             'pint': 1,
@@ -125,7 +126,7 @@ class UnitConversions:
         },
         'quart': {
             'teaspoon': 192.,
-            'fluid oz': 32.,
+            'fluid ounce': 32.,
             'tablespoon': 64.,
             'cup': 4.,
             'pint': 2,
@@ -138,7 +139,7 @@ class UnitConversions:
         # VOLUME: METRIC
         'gallon': {
             'teaspoon': 768.,
-            'fluid oz': 128.,
+            'fluid ounce': 128.,
             'tablespoon': 256.,
             'cup': 16.,
             'pint': 8.,
@@ -148,9 +149,9 @@ class UnitConversions:
             'milliliter': 3785.41,
             'centiliter': 378.541
         },
-        'ml': {
+        'milliliter': {
             'teaspoon': 0.202884,
-            'fluid oz': 0.033814,
+            'fluid ounce': 0.033814,
             'tablespoon': 0.067628,
             'cup': 0.00422675,
             'pint': 0.00211338,
@@ -160,9 +161,9 @@ class UnitConversions:
             'milliliter': 1.,
             'centiliter': .1
         },
-        'cl': {
+        'centiliter': {
             'teaspoon': 2.02884,
-            'fluid oz': 0.33814,
+            'fluid ounce': 0.33814,
             'tablespoon': 0.67628,
             'cup': .0422675,
             'pint': .0211338,
@@ -172,9 +173,9 @@ class UnitConversions:
             'milliliter': 10.,
             'centiliter': 1.
         },
-        'ltr': {
+        'liter': {
             'teaspoon': 202.884,
-            'fluid oz': 33.814,
+            'fluid ounce': 33.814,
             'tablespoon': 67.628,
             'cup': 4.22675,
             'pint': 2.11338,
@@ -290,24 +291,24 @@ def convert_units(spec_df,
     Example Code:
     .. code-block::
         spec_df = pd.DataFrame(dict(
-            size_unit=['g', 'g', 'kg', 'g', 'kg', 'lbs', 'oz', 'ml'],
+            size_unit=['gram', 'gram', 'kilogram', 'gram', 'kilogram', 'pound', 'ounce', 'milliliter'],
             size=[1000, 1000, 1, 1, 1, 1, 20, 100],
             quantity=[1, 1, 1, 1000, 1, 1, 1, 1],
             price=[10, 11, 9, 12, 12, 5, 10, 10]))
         spec_df['total_size'] = spec_df.size*spec_df.quantity
 
-        # convert units, where the goal unit is 'kg'
-        convert_units(spec_df, size_col='total_size', unit_col='size_unit', wanted_unit='kg', wanted_size=1)
+        # convert units, where the goal unit is 'kilogram'
+        convert_units(spec_df, size_col='total_size', unit_col='size_unit', wanted_unit='kilogram', wanted_size=1)
         # convert units, where the goal unit is the most common unit (wanted_size_unit='most common'):
         convert_units(spec_df, size_col='total_size', unit_col='size_unit', wanted_size=1)
         # convert units, where size and price aren't normalized, just units:
         convert_units(spec_df, size_col='total_size', unit_col='size_unit')
 
         # what if you want to convert both size AND quantity?
-        converted_sizes = convert_units(spec_df, size_col='size', unit_col='size_unit', wanted_unit='g', wanted_size=1000)
+        converted_sizes = convert_units(spec_df, size_col='size', unit_col='size_unit', wanted_unit='gram', wanted_size=1000)
         spec_df = pd.concat([converted_sizes, spec_df], axis=1)
         converted_quantity = convert_units(spec_df, size_col='quantity', unit_col='normalized_size_unit',
-                                           wanted_unit='g', wanted_size=1, price_col='normalized_price')
+                                           wanted_unit='gram', wanted_size=1, price_col='normalized_price')
         spec_df['normalized_price'] = converted_quantity['normalized_normalized_price']
         spec_df['normalized_quantity'] = converted_quantity['normalized_quantity']
 

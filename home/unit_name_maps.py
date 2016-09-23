@@ -64,7 +64,10 @@ name_maps_volume = [
          plural='milliliters'),
     dict(pattern=['centiliter', 'centiliters', 'centilitre', 'centilitres', 'cl', 'cl\.'],
          singular='centiliter',
-         plural='centiliters')
+         plural='centiliters'),
+    dict(pattern=['st\.', 'stone'],
+         singular='stone',
+         plural='st.')
 ]
 
 name_maps_weight = [
@@ -78,7 +81,7 @@ name_maps_weight = [
          singular='milligram',
          plural='mg'),
     dict(pattern=['lb', 'pound', 'lbs', 'pounds', 'lb\.', 'lbs\.'],  # todo pound cake???
-         singular='lb.',
+         singular='pound',
          plural='lbs.'),
     dict(pattern=['oz', 'ounce', 'onze', 'onza', 'oz\.'],
          singular='ounce',
