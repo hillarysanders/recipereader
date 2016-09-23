@@ -128,13 +128,59 @@ hi_number {
     background-color: #ffff00;
 }
 hi_unit {
-    background-color: #ffcc00;
+    background-color: #4090cc;
 }
 hi_unit_of_time {
-    background-color: #50ccff;
+    background-color: #ccffee;
 }
 hi_temperature {
     background-color: #ff5050;
+}
+
+
+
+hi_temperature_number {
+    background-color: red;
+}
+hi_time_number {
+    background-color: #aaffcc;
+}
+hi_percent_number {
+    background-color: #11aaff;
+}
+hi_package_size {
+    background-color: #444499;
+}
+hi_int {
+    background-color: yellow;
+}
+hi_float {
+    background-color: #fff3aa;
+}
+hi_fraction {
+    background-color: #ffcc13;
+}
+hi_int_fraction {
+    background-color: #ffaa00;
+}
+hi_unicode_fraction {
+    background-color: #ffaa33;
+}
+hi_weight {
+    background-color: #4090ff;
+}
+hi_volume {
+    background-color: #4090aa;
+}
+hi_pcs {
+    background-color: #40aacc;
+}
+hi_english_number {
+    background-color: #99aaff;
+}
+hi_each_number {
+    background-color: black;
+    color: white;
 }
 
 
