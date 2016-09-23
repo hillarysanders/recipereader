@@ -61,7 +61,10 @@ name_maps_volume = [
          plural='liters'),
     dict(pattern=['milliliter', 'milliliters', 'millilitre', 'millilitres', 'ml', 'ml\.'],
          singular='milliliter',
-         plural='ml')
+         plural='milliliters'),
+    dict(pattern=['centiliter', 'centiliters', 'centilitre', 'centilitres', 'cl', 'cl\.'],
+         singular='centiliter',
+         plural='centiliters')
 ]
 
 name_maps_weight = [

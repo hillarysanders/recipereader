@@ -18,3 +18,15 @@ def flatten(l):
                 yield sub
         else:
             yield el
+
+
+def most_common(li):
+    """
+    Returns the most common element in a list (mode)
+    :param li: a list
+    :return: most common element in li
+    WARNING: can't handle embedded lists
+    """
+    if not isinstance(li, list):
+        li = list(li)
+    return max(set(li), key=li.count)

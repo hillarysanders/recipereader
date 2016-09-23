@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 import pandas as pd
 import re
-from .base_conversion_dicts import name_maps
+from .unit_name_maps import name_maps
 from .conversions_utils import insert_text_match_info_rows, clean_newlines
 
 X = """2 1/4 cups all-purpose flour
