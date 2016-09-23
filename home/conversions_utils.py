@@ -1,5 +1,5 @@
 # coding=utf8
-from __future__ import unicode_literals
+from __future__ import unicode_literals, generators
 import re
 import logging
 import pandas as pd
@@ -10,7 +10,7 @@ def insert_text_match_info_rows(match_info, original_line):
     nchars = len(original_line)
     if nrows == 0:
         match_info = pd.DataFrame(dict(type='text', name=original_line, original=original_line,
-                                       start=0, end=nchars), index=['text'])
+                                       start=0, end=nchars, sub_type=''), index=['text'])
     else:
         for i in range(nrows+1):
                 if i == 0:
@@ -28,7 +28,8 @@ def insert_text_match_info_rows(match_info, original_line):
 
                 if end > start:
                     text = original_line[start:end]
-                    newrow = pd.DataFrame(dict(type='text', name=text, original=text, start=start, end=end),
+                    newrow = pd.DataFrame(dict(type='text', name=text, original=text, start=start, end=end,
+                                               sub_type=''),
                                           index=['text'])
                     match_info = pd.concat([match_info, newrow])
                 elif end < start:
@@ -55,10 +56,12 @@ def clean_newlines(x):
     return x.replace('\r\n', '\n').replace('\r', '\n')
 
 
-def _add_highlight(match_dict, prefix='<hi_{}>', postfix='</hi_{}>'):
-    t = match_dict['type']
+def _add_highlight(match_dict, type_or_sub_type='type', prefix='<hi_{}>', postfix='</hi_{}>'):
+    print(match_dict)
+    t = match_dict[type_or_sub_type]
     txt = '{}{}{}'.format(prefix.format(t), match_dict['name'], postfix.format(t))
 
+    print(txt)
     return txt
 
 
@@ -66,7 +69,7 @@ def sort_char_keys(d):
     return list(map(str, sorted(map(int, d.keys()))))
 
 
-def get_highlighted_ingredients(parsed_text):
+def get_highlighted_ingredients(parsed_text, type_or_sub_type='type'):
     """
     :param parsed_text: output of parse_ingredients()
     """
@@ -74,7 +77,8 @@ def get_highlighted_ingredients(parsed_text):
     highlighted = []
     for i in idx:
         match_dicts = parsed_text[i]
-        text = ''.join(_add_highlight(match_dicts[k]) for k in sort_char_keys(match_dicts))
+        text = ''.join(_add_highlight(match_dicts[k],
+                                      type_or_sub_type=type_or_sub_type) for k in sort_char_keys(match_dicts))
         highlighted.append(text)
 
     logging.debug(idx)
@@ -82,3 +86,36 @@ def get_highlighted_ingredients(parsed_text):
     logging.debug(pd.DataFrame(parsed_text['0']))
 
     return highlighted
+
+
+def KnuthMorrisPratt(text, pattern):
+
+    '''Yields all starting positions of copies of the pattern in the text.
+    Calling conventions are similar to string.find, but its arguments can be
+    lists or iterators, not just strings, it returns all matches, not just
+    the first one, and it does not need the whole text in memory at once.
+    Whenever it yields, it will have read the text exactly up to and including
+    the match that caused the yield.'''
+
+    # allow indexing into pattern and protect against change during yield
+    pattern = list(pattern)
+
+    # build table of shift amounts
+    shifts = [1] * (len(pattern) + 1)
+    shift = 1
+    for pos in range(len(pattern)):
+        while shift <= pos and pattern[pos] != pattern[pos-shift]:
+            shift += shifts[pos-shift]
+        shifts[pos+1] = shift
+
+    # do the actual search
+    startPos = 0
+    matchLen = 0
+    for c in text:
+        while matchLen == len(pattern) or \
+              matchLen >= 0 and pattern[matchLen] != c:
+            startPos += shifts[matchLen]
+            matchLen -= shifts[matchLen]
+        matchLen += 1
+        if matchLen == len(pattern):
+            yield startPos

@@ -38,6 +38,7 @@ def handle_unit_plurality(info, match_info, pidx):
                             if all(match_info.type.tail(3) == ['number', 'number', 'unit']):
                                 # "1 (16oz.) container yogurt" case
                                 num_value = match_info['value'].iloc[-3]
+                                match_info['sub_type'].iloc[-2] = 'package_size'
                             else:
                                 num_value = number_values[-1]
                         else:
@@ -57,12 +58,12 @@ def handle_unit_plurality(info, match_info, pidx):
                 # todo raise warning that plurality could not be found...
                 info['name'] = info['original']
 
-    return info
+    return match_info, info
 
 
 def find_matches_in_line(line):
     ok_left = '[- \(]'
-    ok_right = '[- \)\.]'
+    ok_right = '[- \)\.,]'
     # sooo... first look for numbers. Then loop through the rest of the text using this code?
     patterns = [(ok_left + '{}' + ok_right + '|^{}' + ok_right + '|' + ok_left + '{}$|^{}$').format(p, p, p, p) for p in name_maps.index]
     pattern = '|'.join(reversed(patterns))
@@ -94,16 +95,16 @@ def find_matches_in_line(line):
                 if '/' in p:
                     value = p.split('/')
                     value = float(value[0]) / float(value[1])
-                    flag = 'fraction'
+                    sub_type = 'fraction'
                 else:
                     value = float(p)
                     if (value % 1) == 0:
-                        flag = 'int'
+                        sub_type = 'int'
                     else:
-                        flag = 'float'
+                        sub_type = 'float'
 
                 info = pd.DataFrame(dict(start=start + placement, end=end + placement, name=p,
-                                         original=p, value=value, type='number', flags=[[flag]],
+                                         original=p, value=value, type='number', sub_type=sub_type,
                                          pattern=float_pat),
                                     index=['number'])
             else:
@@ -118,7 +119,7 @@ def find_matches_in_line(line):
                 info['end'] = end + placement
                 info['pattern'] = pidx
 
-                info = handle_unit_plurality(info=info, match_info=match_info, pidx=pidx)
+                match_info, info = handle_unit_plurality(info=info, match_info=match_info, pidx=pidx)
 
             # record the info:
             placement = info.loc[:, 'end'][0]
@@ -138,12 +139,165 @@ def find_matches_in_line(line):
     return match_info
 
 
+def find_type_pattern(match_info, n, columns, patterns):
+    i = 0
+    n_patterns = len(patterns)
+    while (i+n_patterns) < n:
+        comparison = [match_info.loc[i+j, columns[j]] for j in range(n_patterns)]
+        if patterns == comparison:
+            i += n_patterns
+            yield i
+        else:
+            i += 1
+
+
+def find_fraction_pattern(match_info, n):
+    columns = ['sub_type', 'type', 'sub_type']
+    patterns = ['int', 'text', 'fraction']
+
+    i = 0
+    n_patterns = len(patterns)
+    while (i+n_patterns) < n:
+        comparison = [match_info.loc[i+j, columns[j]] for j in range(n_patterns)]
+        if patterns == comparison and match_info.loc[i+1, 'name'] in [' ', ' and ', ' & ', ' + ']:
+            match = i
+            i += n_patterns
+            yield match
+        else:
+            i += 1
+
+
+def replace_rows(match_info, idx, new_row):
+
+    match_info = match_info.drop(idx)
+    match_info = match_info.append(new_row)
+    match_info = match_info.sort_index()
+    match_info.index = range(len(match_info))
+
+    return match_info
+
+
+def lookback_from_type_for_type(match_info, hit_type, lookback_type, new_sub_type, dont_skip_over_type='unit', lookback=10):
+    idx = match_info.loc[match_info.type == hit_type].index.values
+    for i in idx:
+        m = match_info.loc[:i, :].tail(lookback)
+        # cut off anything before a unit, though:
+        unit_location = m.loc[m.type == dont_skip_over_type].index.max()
+        if isinstance(unit_location, int):
+            m = m.iloc[m.index.get_loc(unit_location):, :]
+
+        is_number = m.type == lookback_type
+        if any(is_number):
+            hit = m.loc[is_number].index[-1]
+            match_info.loc[hit, 'sub_type'] = new_sub_type
+
+    return match_info
+
+
+def lookback_for_type_from_pattern(match_info, regex_pattern, lookback_type, new_sub_type, lookback=4):
+    idx = [i for i in match_info.index if re.match(regex_pattern, match_info.name.loc[i])]
+    for i in idx:
+        m = match_info.loc[:i, :].tail(lookback)
+        is_number = m.type == lookback_type
+        if any(is_number):
+            hit = m.loc[is_number].index[-1]
+            match_info.loc[hit, 'sub_type'] = new_sub_type
+
+    return match_info
+
+
+def lookforward_for_keyword_after_number(match_info, regex_pattern, new_subtype):
+    idx = [i for i in match_info.index if re.match(regex_pattern, match_info.name.loc[i])]
+    for i in idx:
+        if i>0:
+            nidx = match_info.index.get_loc(i)-1
+            if match_info['type'].iloc[nidx]=='number':
+                match_info['sub_type'].iloc[nidx] = 'percent_number'
+
+    return match_info
+
+
 def tag_matches_from_line(match_info, line):
 
     # todo add in sub-pattern flag of some sort
     # types:
     # amount
     # units
+
+    match_info = find_matches_in_line(line=line)
+
+
+    match_info.index = range(len(match_info))
+    n = len(match_info)
+
+    #######################################################################################################
+    # tag fractions
+    fraction_idx = find_fraction_pattern(match_info=match_info, n=n)
+    for i in fraction_idx:
+        idx = [i, i+1, i+2]
+        rows = match_info.loc[idx, :]
+        new_row = pd.DataFrame(dict(start=rows.end.iloc[0],
+                                    end=rows.end.iloc[len(rows)-1],
+                                    name=''.join(rows.name),
+                                    original=''.join(rows.original),
+                                    type='number', sub_type='int_fraction',
+                                    value=sum(rows['value'].iloc[[0, 2]])), index=[i])
+        match_info = replace_rows(match_info=match_info, idx=idx, new_row=new_row)
+    #######################################################################################################
+    # tag temperature numbers
+    match_info = lookback_from_type_for_type(match_info=match_info, hit_type='temperature', lookback_type='number',
+                                             new_sub_type='temperature_number', dont_skip_over_type='unit', lookback=10)
+    #######################################################################################################
+    # tag time numbers
+    match_info = lookback_from_type_for_type(match_info=match_info, hit_type='unit_of_time', lookback_type='number',
+                                             new_sub_type='time_number', dont_skip_over_type='unit', lookback=10)
+    #######################################################################################################
+    # tag percent numbers:
+    match_info = lookforward_for_keyword_after_number(match_info=match_info, regex_pattern=r'^%|%percent',
+                                                      new_subtype='percent_number')
+
+    # tag 'four each' numbers:
+    match_info = lookforward_for_keyword_after_number(match_info=match_info,
+                                                      regex_pattern=r'[, ]each| for each one| pieces each| times',
+                                                      new_subtype='each_number')
+    # what about 4 pieces each?
+    # todo this isn't very specific, might not work / cause errors.
+    match_info = lookback_for_type_from_pattern(match_info=match_info,
+                                                regex_pattern=r'[, ]each| for each one| pieces each| times',
+                                                lookback_type='number',
+                                                new_sub_type='each_number', lookback=3)
+
+    # what about number ranges? e.g. 4-5. Both numbers should have the same sub_type. And probably they should be
+    # joined, in fact. Before any other pattern matching takes place. Hmmmm. This could definitely cause some
+    # sub_type doubling.
+
+
+    # probably sub_types should be tags, instead, so that overlaps are caught....
+
+    # ### list of sub_types:
+    # temperature_number
+    # time_number
+    # int_fraction
+    # percent_number
+    # package_size
+    # int
+    # float
+    # fraction
+    # unicode_fraction
+    # weight
+    # volume
+    # pcs
+    # english_number
+
+    # ### list of types:
+    # temperature
+    # unit_of_time
+    # unit
+    # number
+    # text
+
+    # flag integers vs fractions
+
 
     # sub-types:
     # MULTIPLICATIVE:

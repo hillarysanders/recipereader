@@ -31,15 +31,24 @@
             {{line|safe}}
             <br>
             {% endfor %}
-
+            <br><br>
+            {% for line in subtyped_ingredients %}
+                {{line|safe}}
+                <br>
+            {% endfor %}
         </div>
 
         <!--directions:-->
         <em><h5 class="center">Directions</h5></em>
-            {% for line in highlighted_instructions %}
+        {% for line in highlighted_instructions %}
             {{line|safe}}
             <br>
-            {% endfor %}
+        {% endfor %}
+        <br><br>
+        {% for line in subtyped_instructions %}
+            {{line|safe}}
+            <br>
+        {% endfor %}
     </div>
 </div>
 

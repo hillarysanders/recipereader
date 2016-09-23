@@ -217,6 +217,10 @@ class RecipeDetailView(generic.DetailView):
         # Add in a QuerySet of all the books
         context['highlighted_ingredients'] = get_highlighted_ingredients(context['recipe'].ingredients)
         context['highlighted_instructions'] = get_highlighted_ingredients(context['recipe'].instructions)
+        context['subtyped_ingredients'] = get_highlighted_ingredients(context['recipe'].ingredients,
+                                                                      type_or_sub_type='sub_type')
+        context['subtyped_instructions'] = get_highlighted_ingredients(context['recipe'].instructions,
+                                                                       type_or_sub_type='sub_type')
         return context
 
 

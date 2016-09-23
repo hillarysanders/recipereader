@@ -162,7 +162,7 @@ def _prep_name_map(name_maps):
     del name_maps['pattern_length']
 
     name_maps = name_maps.reset_index(drop=True)
-    name_maps = name_maps.set_index('pattern')
+    name_maps = name_maps.set_index('pattern', drop=False)
 
     return name_maps
 
@@ -194,14 +194,13 @@ name_maps_english_numbers = _get_name_maps_english_numbers(n=100)
 # manicure stuff:
 name_maps_english_numbers = _prep_name_map(_name_maps_dict_to_df(name_maps_english_numbers))
 name_maps_english_numbers['type'] = 'number'
-name_maps_english_numbers['flags'] = [['english_number'] for i in range(len(name_maps_english_numbers))]
+name_maps_english_numbers['sub_type'] = 'english_number'
 # name_maps_english_numbers['sub_type'] = '?'
 
 # fractions:
 name_maps_fractions = _prep_name_map(_name_maps_dict_to_df(name_maps_fractions))
 name_maps_fractions['type'] = 'number'
-name_maps_fractions['flags'] = [['unicode_fraction'] for i in range(len(name_maps_fractions))]
-name_maps_fractions['sub_type'] = 'fraction'
+name_maps_fractions['sub_type'] = 'unicode_fraction'
 # volume
 name_maps_volume = _prep_name_map(_name_maps_dict_to_df(name_maps_volume))
 name_maps_volume['type'] = 'unit'
@@ -222,6 +221,8 @@ name_maps = pd.concat([_prep_name_map(temperature_patterns),
                        name_maps_volume,
                        name_maps_weight,
                        name_maps_pcs])
+
+name_maps = name_maps.fillna(value='')
 
 
 # sub-types:
