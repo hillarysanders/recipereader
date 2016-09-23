@@ -194,25 +194,15 @@ def lookback_from_type_for_type(match_info, hit_type, lookback_type, new_sub_typ
     return match_info
 
 
-def lookback_for_type_from_pattern(match_info, regex_pattern, lookback_type, new_sub_type, lookback=4):
-    idx = [i for i in match_info.index if re.match(regex_pattern, match_info.name.loc[i])]
+def lookback_for_type_from_pattern(match_info, regex_pattern, lookback_type, new_sub_type, lookback=3):
+    lookback += 1
+    idx = [i for i in match_info.index if re.match(regex_pattern, match_info.name.iloc[i])]
     for i in idx:
         m = match_info.loc[:i, :].tail(lookback)
         is_number = m.type == lookback_type
         if any(is_number):
             hit = m.loc[is_number].index[-1]
             match_info.loc[hit, 'sub_type'] = new_sub_type
-
-    return match_info
-
-
-def lookforward_for_keyword_after_number(match_info, regex_pattern, new_subtype):
-    idx = [i for i in match_info.index if re.match(regex_pattern, match_info.name.loc[i])]
-    for i in idx:
-        if i>0:
-            nidx = match_info.index.get_loc(i)-1
-            if match_info['type'].iloc[nidx]=='number':
-                match_info['sub_type'].iloc[nidx] = 'percent_number'
 
     return match_info
 
@@ -246,26 +236,26 @@ def tag_matches_from_line(match_info, line):
     #######################################################################################################
     # tag temperature numbers
     match_info = lookback_from_type_for_type(match_info=match_info, hit_type='temperature', lookback_type='number',
-                                             new_sub_type='temperature_number', dont_skip_over_type='unit', lookback=10)
+                                             new_sub_type='temperature_number', dont_skip_over_type='unit', lookback=3)
     #######################################################################################################
     # tag time numbers
     match_info = lookback_from_type_for_type(match_info=match_info, hit_type='unit_of_time', lookback_type='number',
-                                             new_sub_type='time_number', dont_skip_over_type='unit', lookback=10)
+                                             new_sub_type='time_number', dont_skip_over_type='unit', lookback=3)
     #######################################################################################################
     # tag percent numbers:
-    match_info = lookforward_for_keyword_after_number(match_info=match_info, regex_pattern=r'^%|%percent',
-                                                      new_subtype='percent_number')
+    match_info = lookback_for_type_from_pattern(match_info=match_info, regex_pattern=r'^[ ]?%| percent',
+                                                lookback_type='number', lookback=2, new_sub_type='percent_number')
 
-    # tag 'four each' numbers:
-    match_info = lookforward_for_keyword_after_number(match_info=match_info,
-                                                      regex_pattern=r'[, ]each| for each one| pieces each| times',
-                                                      new_subtype='each_number')
-    # what about 4 pieces each?
+    #######################################################################################################
+    # tag 'for each' numbers:
+    # example: 1/2 cups at a time, or 1 teaspoon each
     # todo this isn't very specific, might not work / cause errors.
+    each_pattern = r'[, ]each| for each one| pieces each| times| at a time'
     match_info = lookback_for_type_from_pattern(match_info=match_info,
-                                                regex_pattern=r'[, ]each| for each one| pieces each| times',
+                                                regex_pattern=each_pattern,
                                                 lookback_type='number',
                                                 new_sub_type='each_number', lookback=3)
+    # what about 'sprinkle each roll with 1/2 teaspoons sugar'?
 
     # what about number ranges? e.g. 4-5. Both numbers should have the same sub_type. And probably they should be
     # joined, in fact. Before any other pattern matching takes place. Hmmmm. This could definitely cause some
@@ -288,6 +278,7 @@ def tag_matches_from_line(match_info, line):
     # volume
     # pcs
     # english_number
+    # each_number
 
     # ### list of types:
     # temperature

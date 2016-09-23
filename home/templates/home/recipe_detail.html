@@ -27,11 +27,6 @@
         <!--ingredients:-->
         <div class="col s12 m4 l4 recipe_text">
             <em><h5 class="center">Ingredients</h5></em>
-            {% for line in highlighted_ingredients %}
-            {{line|safe}}
-            <br>
-            {% endfor %}
-            <br><br>
             {% for line in subtyped_ingredients %}
                 {{line|safe}}
                 <br>
@@ -40,11 +35,6 @@
 
         <!--directions:-->
         <em><h5 class="center">Directions</h5></em>
-        {% for line in highlighted_instructions %}
-            {{line|safe}}
-            <br>
-        {% endfor %}
-        <br><br>
         {% for line in subtyped_instructions %}
             {{line|safe}}
             <br>

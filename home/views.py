@@ -218,9 +218,9 @@ class RecipeDetailView(generic.DetailView):
         context['highlighted_ingredients'] = get_highlighted_ingredients(context['recipe'].ingredients)
         context['highlighted_instructions'] = get_highlighted_ingredients(context['recipe'].instructions)
         context['subtyped_ingredients'] = get_highlighted_ingredients(context['recipe'].ingredients,
-                                                                      type_or_sub_type='sub_type')
+                                                                      type_or_sub_types=['sub_type', 'type'])
         context['subtyped_instructions'] = get_highlighted_ingredients(context['recipe'].instructions,
-                                                                       type_or_sub_type='sub_type')
+                                                                       type_or_sub_types=['sub_type', 'type'])
         return context
 
 

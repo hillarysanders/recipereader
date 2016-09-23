@@ -56,12 +56,12 @@ def clean_newlines(x):
     return x.replace('\r\n', '\n').replace('\r', '\n')
 
 
-def _add_highlight(match_dict, type_or_sub_type='type', prefix='<hi_{}>', postfix='</hi_{}>'):
-    print(match_dict)
-    t = match_dict[type_or_sub_type]
-    txt = '{}{}{}'.format(prefix.format(t), match_dict['name'], postfix.format(t))
+def _add_highlight(match_dict, type_or_sub_types=['type', 'sub_type'], prefix='<hi_{}>', postfix='</hi_{}>'):
+    txt = match_dict['name']
+    for key in type_or_sub_types:
+        t = match_dict[key]
+        txt = '{}{}{}'.format(prefix.format(t), txt, postfix.format(t))
 
-    print(txt)
     return txt
 
 
@@ -69,7 +69,7 @@ def sort_char_keys(d):
     return list(map(str, sorted(map(int, d.keys()))))
 
 
-def get_highlighted_ingredients(parsed_text, type_or_sub_type='type'):
+def get_highlighted_ingredients(parsed_text, type_or_sub_types=['type', 'sub_type']):
     """
     :param parsed_text: output of parse_ingredients()
     """
@@ -78,7 +78,7 @@ def get_highlighted_ingredients(parsed_text, type_or_sub_type='type'):
     for i in idx:
         match_dicts = parsed_text[i]
         text = ''.join(_add_highlight(match_dicts[k],
-                                      type_or_sub_type=type_or_sub_type) for k in sort_char_keys(match_dicts))
+                                      type_or_sub_types=type_or_sub_types) for k in sort_char_keys(match_dicts))
         highlighted.append(text)
 
     logging.debug(idx)

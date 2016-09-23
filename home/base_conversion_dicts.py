@@ -174,8 +174,9 @@ def _get_name_maps_english_numbers(n=1000):
     :return:
     """
     name_maps_english_num = []
-    for i in range(2, n):
-        el = dict(pattern=[num2words(i)], name=str(i), value=float(i))
+    for i in range(1, n):
+        pattern = num2words(i)
+        el = dict(pattern=[pattern], name=pattern, value=float(i))
         if (i % 12) == 0:
             # two dozen, etc...
             el['pattern'].extend(['{} dozen'.format(num2words(i/12))])
