@@ -1,8 +1,5 @@
 # coding=utf8
-from __future__ import unicode_literals
 from num2words import num2words
-import pandas as pd
-import re
 """
 Base conversion dictionaries that conversions.py will use to build nicely formatted conversion objects.
 Not meant to be used directly.

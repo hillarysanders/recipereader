@@ -1,8 +1,5 @@
 # coding=utf8
-from __future__ import unicode_literals
 import re
-import pandas as pd
-from .base_conversion_dicts import name_maps
 from .conversions_utils import insert_text_match_info_rows, clean_newlines
 
 X = """2 1/4 cups all-purpose flour
@@ -18,45 +15,44 @@ X = """2 1/4 cups all-purpose flour
 
 
 def handle_unit_plurality(info, match_info, pidx):
-
     # handle unit plurality
     if info.loc[pidx, 'type'] in ['unit']:
-            # was the last number != 1?
-            is_plural = 'unknown'
-            if len(match_info) > 0:
-                numeric_idx = match_info.type == 'number'
-                if any(numeric_idx):
-                    number_values = match_info.loc[match_info.type == 'number', 'value'].values
-                    if sum(numeric_idx) > 1:
-                        # todo (low priority) might want to add something to the below that marks this as unsure if e.g.
-                        # todo you have a ['number', 'unit', 'number'] pattern or something.
+        # was the last number != 1?
+        is_plural = 'unknown'
+        if len(match_info) > 0:
+            numeric_idx = match_info.type == 'number'
+            if any(numeric_idx):
+                number_values = match_info.loc[match_info.type == 'number', 'value'].values
+                if sum(numeric_idx) > 1:
+                    # todo (low priority) might want to add something to the below that marks this as unsure if e.g.
+                    # todo you have a ['number', 'unit', 'number'] pattern or something.
 
-                        # so usually, we just want the nearest number to the left.
-                        # however, what about e.g. "1 (16oz.) container yogurt"?
-                        # if there is another unit to the left, and then two numbers, take the first number.
-                        if len(match_info) >= 3:
-                            if all(match_info.type.tail(3) == ['number', 'number', 'unit']):
-                                # "1 (16oz.) container yogurt" case
-                                num_value = match_info['value'].iloc[-3]
-                                match_info['sub_type'].iloc[-2] = 'package_size'
-                            else:
-                                num_value = number_values[-1]
+                    # so usually, we just want the nearest number to the left.
+                    # however, what about e.g. "1 (16oz.) container yogurt"?
+                    # if there is another unit to the left, and then two numbers, take the first number.
+                    if len(match_info) >= 3:
+                        if all(match_info.type.tail(3) == ['number', 'number', 'unit']):
+                            # "1 (16oz.) container yogurt" case
+                            num_value = match_info['value'].iloc[-3]
+                            match_info['sub_type'].iloc[-2] = 'package_size'
                         else:
                             num_value = number_values[-1]
                     else:
-                        num_value = number_values[0]
-                    # if the most recent number was 1:
-                    if num_value == 1:
-                        is_plural = False
-                        info['name'] = info['singular']
-                    else:
-                        is_plural = True
-                        info['name'] = info['plural']
-                    info['is_plural'] = is_plural
-            # if that didn't work:
-            if is_plural not in [True, False]:
-                # todo raise warning that plurality could not be found...
-                info['name'] = info['original']
+                        num_value = number_values[-1]
+                else:
+                    num_value = number_values[0]
+                # if the most recent number was 1:
+                if num_value == 1:
+                    is_plural = False
+                    info['name'] = info['singular']
+                else:
+                    is_plural = True
+                    info['name'] = info['plural']
+                info['is_plural'] = is_plural
+        # if that didn't work:
+        if is_plural not in [True, False]:
+            # todo raise warning that plurality could not be found...
+            info['name'] = info['original']
 
     return match_info, info
 
@@ -65,7 +61,8 @@ def find_matches_in_line(line):
     ok_left = '[- \(]'
     ok_right = '[- \)\.,]'
     # sooo... first look for numbers. Then loop through the rest of the text using this code?
-    patterns = [(ok_left + '{}' + ok_right + '|^{}' + ok_right + '|' + ok_left + '{}$|^{}$').format(p, p, p, p) for p in name_maps.index]
+    patterns = [(ok_left + '{}' + ok_right + '|^{}' + ok_right + '|' + ok_left + '{}$|^{}$').format(p, p, p, p) for p in
+                name_maps.index]
     pattern = '|'.join(reversed(patterns))
     # prepend this pattern with a pattern for integers, floats, and simple fractions:
     float_pat = '\.?\d/\.?\d|\d+\.?\d+|\d+|\.\d+'
@@ -88,10 +85,10 @@ def find_matches_in_line(line):
                 end = match.end()
                 p = match.group()
                 # first, trim off whitespace / parentheses from the pattern:
-                if re.search(ok_right+'$', p):
+                if re.search(ok_right + '$', p):
                     p = p[:-1]
                     end -= 1
-                if re.search('^'+ok_left, p):
+                if re.search('^' + ok_left, p):
                     p = p[1:]
                     start += 1
 
@@ -147,9 +144,9 @@ def find_matches_in_line(line):
 def find_type_pattern(match_info, n, columns, patterns, middle_name_matches):
     i = 0
     n_patterns = len(patterns)
-    while (i+n_patterns) < n:
-        comparison = [match_info.loc[i+j, columns[j]] for j in range(n_patterns)]
-        if patterns == comparison and match_info.loc[i+1, 'name'] in middle_name_matches:
+    while (i + n_patterns) < n:
+        comparison = [match_info.loc[i + j, columns[j]] for j in range(n_patterns)]
+        if patterns == comparison and match_info.loc[i + 1, 'name'] in middle_name_matches:
             match = i
             i += n_patterns
             yield match
@@ -174,7 +171,6 @@ def find_type_pattern(match_info, n, columns, patterns, middle_name_matches):
 
 
 def replace_rows(match_info, idx, new_row):
-
     match_info = match_info.drop(idx)
     match_info = match_info.append(new_row)
     match_info = match_info.sort_index()
@@ -215,51 +211,54 @@ def lookback_for_type_from_pattern(match_info, regex_pattern, lookback_type, new
     return match_info
 
 
-def tag_matches_from_line(match_info, line):
+def replace_match_rows_with_aggregate(match_info, hits_gen, type, sub_type):
+    for i in hits_gen:
+        idx = [i, i + 1, i + 2]
+        rows = match_info.loc[idx, :]
+        new_row = pd.DataFrame(dict(start=rows.end.iloc[0],
+                                    end=rows.end.iloc[len(rows) - 1],
+                                    name=''.join(rows.name),
+                                    original=''.join(rows.original),
+                                    type=type, sub_type=sub_type), index=[i])
+        match_info = replace_rows(match_info=match_info, idx=idx, new_row=new_row)
 
+    return match_info
+
+
+def tag_matches_from_line(match_info):
     # todo add in sub-pattern flag of some sort
     # types:
     # amount
     # units
 
-    match_info = find_matches_in_line(line=line)
-
-
     match_info.index = range(len(match_info))
-    n = len(match_info)
 
+    # todo e.g. int_fraction, number_range, and dimension_numbers are all being overwritten.
+    # todo I think we need to redesign this a bit to support tags. Also, it's starting to get slow. --> Bad!
     #######################################################################################################
     # tag fractions
     fraction_idx = find_type_pattern(match_info=match_info, n=len(match_info),
                                      columns=['sub_type', 'type', 'sub_type'],
                                      patterns=['int', 'text', 'fraction'],
                                      middle_name_matches=[' ', ' and ', ' & ', ' + '])
-    for i in fraction_idx:
-        idx = [i, i+1, i+2]
-        rows = match_info.loc[idx, :]
-        new_row = pd.DataFrame(dict(start=rows.end.iloc[0],
-                                    end=rows.end.iloc[len(rows)-1],
-                                    name=''.join(rows.name),
-                                    original=''.join(rows.original),
-                                    type='number', sub_type='int_fraction',
-                                    value=sum(rows['value'].iloc[[0, 2]])), index=[i])
-        match_info = replace_rows(match_info=match_info, idx=idx, new_row=new_row)
+    match_info = replace_match_rows_with_aggregate(match_info=match_info, hits_gen=fraction_idx,
+                                                   type='number', sub_type='int_fraction')
     #######################################################################################################
     # tag ranges:
     range_idx = find_type_pattern(match_info=match_info, n=len(match_info),
                                   columns=['type', 'type', 'type'],
                                   patterns=['number', 'text', 'number'],
                                   middle_name_matches=[' - ', '-', ' to ', '- to '])
-    for i in range_idx:
-        idx = [i, i+1, i+2]
-        rows = match_info.loc[idx, :]
-        new_row = pd.DataFrame(dict(start=rows.end.iloc[0],
-                                    end=rows.end.iloc[len(rows)-1],
-                                    name=''.join(rows.name),
-                                    original=''.join(rows.original),
-                                    type='number', sub_type='number_range',
-                                    value=sum(rows['value'].iloc[[0, 2]])/float(2)), index=[i])
-        match_info = replace_rows(match_info=match_info, idx=idx, new_row=new_row)
+    match_info = replace_match_rows_with_aggregate(match_info=match_info, hits_gen=range_idx,
+                                                   type='number', sub_type='number_range')
+    #######################################################################################################
+    # tag dimensions (e.g. 12x9 inches):
+    dims_idx = find_type_pattern(match_info=match_info, n=len(match_info),
+                                 columns=['type', 'type', 'type'],
+                                 patterns=['number', 'text', 'number'],
+                                 middle_name_matches=[' x ', 'x', ' X ', 'X'])
+    match_info = replace_match_rows_with_aggregate(match_info=match_info, hits_gen=dims_idx,
+                                                   type='number', sub_type='dimension_numbers')
     #######################################################################################################
     # tag temperature numbers
     match_info = lookback_from_type_for_type(match_info=match_info, hit_type='temperature', lookback_type='number',
@@ -276,7 +275,6 @@ def tag_matches_from_line(match_info, line):
     # tag percent numbers:
     match_info = lookback_for_type_from_pattern(match_info=match_info, regex_pattern=r'^[ ]?%| percent',
                                                 lookback_type='number', lookback=2, new_sub_type='percent_number')
-
     #######################################################################################################
     # tag 'for each' numbers:
     # example: 1/2 cups at a time, or 1 teaspoon each
@@ -354,11 +352,10 @@ def tag_matches_from_line(match_info, line):
 
 
 def parse_ingredient_line(line):
-
     match_info = find_matches_in_line(line=line)
-    match_info = tag_matches_from_line(match_info=match_info, line=line)
+    match_info = tag_matches_from_line(match_info=match_info)
 
-    # sort the dataframe:
+    # sort the data frame:
     match_info = match_info.sort_values(by='start')
     # coerce into a dictionary that can be turned into JSON later:
     match_info.index = [str(i) for i in match_info.start.values]

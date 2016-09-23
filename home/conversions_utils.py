@@ -1,8 +1,5 @@
 # coding=utf8
-from __future__ import unicode_literals, generators
-import re
-import logging
-import pandas as pd
+from __future__ import generators
 
 
 def insert_text_match_info_rows(match_info, original_line):
@@ -80,10 +77,6 @@ def get_highlighted_ingredients(parsed_text, type_or_sub_types=['type', 'sub_typ
         text = ''.join(_add_highlight(match_dicts[k],
                                       type_or_sub_types=type_or_sub_types) for k in sort_char_keys(match_dicts))
         highlighted.append(text)
-
-    logging.debug(idx)
-    logging.debug(highlighted)
-    logging.debug(pd.DataFrame(parsed_text['0']))
 
     return highlighted
 
