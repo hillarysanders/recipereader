@@ -55,11 +55,9 @@ def clean_newlines(x):
     return x.replace('\r\n', '\n').replace('\r', '\n')
 
 
-def _add_highlight(match_dict, prefix='<highlighted>', postfix='</highlighted>'):
-    if match_dict['type'] == 'text':
-        txt = match_dict['name']
-    else:
-        txt = '{}{}{}'.format(prefix, match_dict['name'], postfix)
+def _add_highlight(match_dict, prefix='<hi_{}>', postfix='</hi_{}>'):
+    t = match_dict['type']
+    txt = '{}{}{}'.format(prefix.format(t), match_dict['name'], postfix.format(t))
 
     return txt
 

@@ -60,7 +60,7 @@ def handle_unit_plurality(info, match_info, pidx):
     return info
 
 
-def parse_ingredient_line(line):
+def find_matches_in_line(line):
     ok_left = '[- \(]'
     ok_right = '[- \)\.]'
     # sooo... first look for numbers. Then loop through the rest of the text using this code?
@@ -135,6 +135,11 @@ def parse_ingredient_line(line):
 
     match_info = match_info.sort_values(by='start')
 
+    return match_info
+
+
+def tag_matches_from_line(match_info, line):
+
     # todo add in sub-pattern flag of some sort
     # types:
     # amount
@@ -164,12 +169,21 @@ def parse_ingredient_line(line):
     # todo flag units as 'unit' (value='pcs'), volume and weight = sub_types, type='unit'
     # todo run over rows and combine integer followed by ' ' followed by fraction
 
+    return match_info
+
+
+def parse_ingredient_line(line):
+
+    match_info = find_matches_in_line(line=line)
+    match_info = tag_matches_from_line(match_info=match_info, line=line)
+
+    # sort the dataframe:
     match_info = match_info.sort_values(by='start')
+    # coerce into a dictionary that can be turned into JSON later:
     match_info.index = [str(i) for i in match_info.start.values]
+    match_info = match_info.fillna('').to_dict(orient='index')
 
-    return match_info.fillna('').to_dict(orient='index')
-
-# todo match to numbers not followed by 'times', other numbers,
+    return match_info
 
 
 def parse_ingredients(x):

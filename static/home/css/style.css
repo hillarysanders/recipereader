@@ -115,8 +115,23 @@ input::-webkit-inner-spin-button {
     margin-top: 0px;
 }
 
+
+/*highlights for text parsing:*/
 highlighted {
     background-color: #ffff00;
+}
+
+hi_number {
+    background-color: #ffff00;
+}
+hi_unit {
+    background-color: green;
+}
+hi_unit_of_time {
+    background-color: blue;
+}
+hi_temperature {
+    background-color: red;
 }
 
 
