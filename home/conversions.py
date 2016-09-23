@@ -144,32 +144,33 @@ def find_matches_in_line(line):
     return match_info
 
 
-def find_type_pattern(match_info, n, columns, patterns):
+def find_type_pattern(match_info, n, columns, patterns, middle_name_matches):
     i = 0
     n_patterns = len(patterns)
     while (i+n_patterns) < n:
         comparison = [match_info.loc[i+j, columns[j]] for j in range(n_patterns)]
-        if patterns == comparison:
-            i += n_patterns
-            yield i
-        else:
-            i += 1
-
-
-def find_fraction_pattern(match_info, n):
-    columns = ['sub_type', 'type', 'sub_type']
-    patterns = ['int', 'text', 'fraction']
-
-    i = 0
-    n_patterns = len(patterns)
-    while (i+n_patterns) < n:
-        comparison = [match_info.loc[i+j, columns[j]] for j in range(n_patterns)]
-        if patterns == comparison and match_info.loc[i+1, 'name'] in [' ', ' and ', ' & ', ' + ']:
+        if patterns == comparison and match_info.loc[i+1, 'name'] in middle_name_matches:
             match = i
             i += n_patterns
             yield match
         else:
             i += 1
+
+
+# def find_fraction_pattern(match_info, n):
+#     columns = ['sub_type', 'type', 'sub_type']
+#     patterns = ['int', 'text', 'fraction']
+#
+#     i = 0
+#     n_patterns = len(patterns)
+#     while (i+n_patterns) < n:
+#         comparison = [match_info.loc[i+j, columns[j]] for j in range(n_patterns)]
+#         if patterns == comparison and match_info.loc[i+1, 'name'] in [' ', ' and ', ' & ', ' + ']:
+#             match = i
+#             i += n_patterns
+#             yield match
+#         else:
+#             i += 1
 
 
 def replace_rows(match_info, idx, new_row):
@@ -229,7 +230,10 @@ def tag_matches_from_line(match_info, line):
 
     #######################################################################################################
     # tag fractions
-    fraction_idx = find_fraction_pattern(match_info=match_info, n=n)
+    fraction_idx = find_type_pattern(match_info=match_info, n=len(match_info),
+                                     columns=['sub_type', 'type', 'sub_type'],
+                                     patterns=['int', 'text', 'fraction'],
+                                     middle_name_matches=[' ', ' and ', ' & ', ' + '])
     for i in fraction_idx:
         idx = [i, i+1, i+2]
         rows = match_info.loc[idx, :]
@@ -239,6 +243,22 @@ def tag_matches_from_line(match_info, line):
                                     original=''.join(rows.original),
                                     type='number', sub_type='int_fraction',
                                     value=sum(rows['value'].iloc[[0, 2]])), index=[i])
+        match_info = replace_rows(match_info=match_info, idx=idx, new_row=new_row)
+    #######################################################################################################
+    # tag ranges:
+    range_idx = find_type_pattern(match_info=match_info, n=len(match_info),
+                                  columns=['type', 'type', 'type'],
+                                  patterns=['number', 'text', 'number'],
+                                  middle_name_matches=[' - ', '-', ' to ', '- to '])
+    for i in range_idx:
+        idx = [i, i+1, i+2]
+        rows = match_info.loc[idx, :]
+        new_row = pd.DataFrame(dict(start=rows.end.iloc[0],
+                                    end=rows.end.iloc[len(rows)-1],
+                                    name=''.join(rows.name),
+                                    original=''.join(rows.original),
+                                    type='number', sub_type='number_range',
+                                    value=sum(rows['value'].iloc[[0, 2]])/float(2)), index=[i])
         match_info = replace_rows(match_info=match_info, idx=idx, new_row=new_row)
     #######################################################################################################
     # tag temperature numbers
