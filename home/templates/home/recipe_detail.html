@@ -5,10 +5,25 @@
 <h2 class="center"> {{ recipe.recipe_name }} </h2>
 
 <div class="row">
+
+    <div class="center-align servings_box">
+        <form action="." method="post">
+            {% csrf_token %}
+            <!--<a class="btn-floating btn-small col2">-->
+                <!--<i class="small material-icons">mode_edit</i>-->
+            <!--</a>-->
+            <t class="serves_text">servings:</t>
+            {{ servings_form.servings|as_material:"s4 m3 l2" }}
+            <input type="submit" id="servbtn" value="Submit" name="servingsSubmit" style="display: none;"/>
+            <label for="servbtn" class="btn-floating btn-med waves-effect col2 servingbtn">Go</label>
+        </form>
+        <div class="red center-align">{{ form.name.errors }}</div>
+    </div>
+
+
     <div class="col s12 recipe_text">
         <!--recipe image, time took prep / cook / make, description:-->
         <div class="col s12 m4 l4 recipe_image float_left">
-            <div class="col s12 center"><i>serves {{recipe.num_servings }}</i></div>
             <div class="col s12 m12 l12">
                 <div class="col s12 m12 l6 float_left margin_10">
                     <div class="col s12">{{ recipe.get_prep_time }}</div>
@@ -26,16 +41,16 @@
 
         <!--ingredients:-->
         <div class="col s12 m4 l4 recipe_text">
-            <em><h5 class="center">Ingredients</h5></em>
-            {% for line in subtyped_ingredients %}
+            <h5 class="center">Ingredients</h5>
+            {% for line in hi_ingredients %}
                 {{line|safe}}
                 <br>
             {% endfor %}
         </div>
 
         <!--directions:-->
-        <em><h5 class="center">Directions</h5></em>
-        {% for line in subtyped_instructions %}
+        <h5 class="center">Directions</h5>
+        {% for line in hi_instructions %}
             {{line|safe}}
             <br>
         {% endfor %}

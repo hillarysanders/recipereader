@@ -192,6 +192,38 @@ hi_each_number {
     color: white;
 }
 
+.servings_box {
+    width: 200px;
+    height: 50px;
+    margin: auto;
+    margin-top: -20px;
+}
+
+.input_serving {
+    width: 30px !important;
+    font-size: 20px !important;
+    position: relative;
+    left: 85px;
+    bottom: 17px;
+}
+.serves_text {
+    font-size: 16px;
+    position: relative;
+    left: -42px;
+    top: 6px;
+}
+.servingbtn {
+    font-size: 16px;
+    position: relative;
+    left: 5px;
+    top: 5px;
+}
+
+
+
+
+
+
 
 .ghostbtn {
     color: black;

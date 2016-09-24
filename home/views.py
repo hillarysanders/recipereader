@@ -8,7 +8,7 @@ from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
 from django.contrib import messages
 import logging
 from .models import Recipe, UserProxy
-from .forms import UserForm, LoginForm, AddRecipeForm
+from .forms import UserForm, LoginForm, AddRecipeForm, ServingsForm
 from .conversions_utils import get_highlighted_ingredients
 
 # Create your views here.
@@ -173,9 +173,6 @@ def add_recipe(request):
         'title': 'Add a Recipe'
     }
 
-    print('\tSESSION KEY in ADD_RECIPE VIEW: ')
-    print(request.session.session_key)
-
     return render(request, 'home/add_recipe.html', context)
 
 
@@ -206,22 +203,30 @@ def edit_recipe(request, pk):
     return render(request, 'home/add_recipe.html', context)
 
 
-class RecipeDetailView(generic.DetailView):
-    # note that this uses a generic.DetailView
-    model = Recipe
-    template_name = 'home/recipe_detail.html'
+def recipe_detail(request, pk):
+    recipe = get_object_or_404(Recipe, pk=pk)
 
-    def get_context_data(self, **kwargs):
-        # Call the base implementation first to get a context
-        context = super(RecipeDetailView, self).get_context_data(**kwargs)
-        # Add in a QuerySet of all the books
-        context['highlighted_ingredients'] = get_highlighted_ingredients(context['recipe'].ingredients)
-        context['highlighted_instructions'] = get_highlighted_ingredients(context['recipe'].instructions)
-        context['subtyped_ingredients'] = get_highlighted_ingredients(context['recipe'].ingredients,
-                                                                      type_or_sub_types=['sub_type', 'type'])
-        context['subtyped_instructions'] = get_highlighted_ingredients(context['recipe'].instructions,
-                                                                       type_or_sub_types=['sub_type', 'type'])
-        return context
+    context = {
+        'recipe': recipe,
+        'servings_form': ServingsForm(initial={'servings': recipe.num_servings})
+    }
+
+    ingredients = recipe.ingredients
+    instructions = recipe.instructions
+
+    if request.method == "POST":
+        # if the user clicked the create user submit button:
+        if request.POST.get("servingsSubmit"):
+            sform = ServingsForm(data=request.POST)
+            if sform.is_valid():
+                # TODO change recipe numbers to reflect changed servings:
+                # TODO right now doubles the servings. Instead, change the ingredients values
+                context['servings_form'] = ServingsForm(initial={'servings': sform.cleaned_data['servings']*2})
+
+    context['hi_ingredients'] = get_highlighted_ingredients(ingredients, type_or_sub_types=['sub_type', 'type'])
+    context['hi_instructions'] = get_highlighted_ingredients(instructions, type_or_sub_types=['sub_type', 'type'])
+
+    return render(request, 'home/recipe_detail.html', context)
 
 
 def delete_recipe(request, pk):
