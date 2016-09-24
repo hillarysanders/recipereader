@@ -251,7 +251,7 @@ def tag_matches_from_line(match_info):
     range_idx = find_type_pattern(match_info=match_info, n=len(match_info),
                                   columns=['type', 'type', 'type'],
                                   patterns=['number', 'text', 'number'],
-                                  middle_name_matches=[' - ', '-', ' to ', '- to '])
+                                  middle_name_matches=[' - ', '-', ' to ', '- to ', ' or '])
     match_info = replace_match_rows_with_aggregate(match_info=match_info, hits_gen=range_idx,
                                                    type='number', sub_type='number_range')
     #######################################################################################################
@@ -294,13 +294,7 @@ def tag_matches_from_line(match_info):
                                                 new_sub_type='each_number', lookback=1)
     # what about 'sprinkle each roll with 1/2 teaspoons sugar'?
 
-    # what about number ranges? e.g. 4-5. Both numbers should have the same sub_type. And probably they should be
-    # joined, in fact. Before any other pattern matching takes place. Hmmmm. This could definitely cause some
-    # sub_type doubling.
-
-
     # probably sub_types should be tags, instead, so that overlaps are caught....
-
     # ### list of sub_types:
     # temperature_number
     # time_number
@@ -323,33 +317,6 @@ def tag_matches_from_line(match_info):
     # unit
     # number
     # text
-
-    # flag integers vs fractions
-
-
-    # sub-types:
-    # MULTIPLICATIVE:
-    # - fraction
-    # - float
-    # - integer
-    # OTHER
-    # - degrees
-    # - pre_fraction_integer
-    # - step_number (1., 2., 3....)
-    # - percent, e.g. '2%'
-    # UNITS
-    # - pcs ('package', 'scoops', etc.)
-    # - volume, metric
-    # - volume, imperial
-    # - weight
-    # TEXT
-    # - ingredient
-    # - header
-    # - text
-
-    # todo flag fraction values as 'fraction'
-    # todo flag units as 'unit' (value='pcs'), volume and weight = sub_types, type='unit'
-    # todo run over rows and combine integer followed by ' ' followed by fraction
 
     return match_info
 

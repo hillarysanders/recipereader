@@ -13,6 +13,120 @@ class UnitConversions:
     if you can convert from X to Y but not from Y to X, give you suggestions, and warn you
     when conversions do not convert - e.g. if X to Y != 1 / Y to X).
     """
+
+    # types of units:
+    units = dict(mass=['kilogram', 'gram', 'milligram', 'ounce', 'pound', 'stone'],
+                 volume_us=['teaspoon', 'tablespoon', 'fluid ounce', 'cup', 'pint', 'quart', 'gallon'],
+                 volume_metric=['liter', 'milliliter', 'centiliter'],
+                 pcs=['pcs'])
+    # conversions between unit types:
+    conversions_between = {
+        'volume_us': {
+            'mass': {
+                'from': 'cup',
+                'to': 'gram',
+                'conversions': {
+                    'water': 236.59,
+                    'flour': 125.,
+                    'brown sugar': 220.,
+                    'powdered sugar': 110.,
+                    'sugar': 200.,
+                    'milk': 230.,
+                    'cornstarch': 110.,
+                    'cocoa powder': 91.,
+                    'baking powder': 220.,
+                    'baking soda': 220.,
+                    'salt': 288.,
+                    'butter': 220.,
+                    'corn syrup': 310.,
+                    'molasses': 260.,
+                    'honey': 310.,
+                    'oil': 200.
+                }
+            },
+            'volume_metric': {
+                'from': 'cup',
+                'to': 'liter',
+                'conversion': 4.22675
+            }
+        },
+        'volume_metric': {
+            'mass': {
+                'from': 'liter',
+                'to': 'gram',
+                'conversions': {
+                    'water': 1000.,
+                    'flour': 125.*4.22675,
+                    'brown sugar': 220.*4.22675,
+                    'powdered sugar': 110.*4.22675,
+                    'sugar': 200.*4.22675,
+                    'milk': 230.*4.22675,
+                    'cornstarch': 110.*4.22675,
+                    'cocoa powder': 91.*4.22675,
+                    'baking powder': 220.*4.22675,
+                    'baking soda': 220.*4.22675,
+                    'salt': 288.*4.22675,
+                    'butter': 220.*4.22675,
+                    'corn syrup': 310.*4.22675,
+                    'molasses': 260.*4.22675,
+                    'honey': 310.*4.22675,
+                    'oil': 200.*4.22675
+                }
+            },
+            'volume_us': {
+                'from': 'liter',
+                'to': 'cup',
+                'conversion': 0.236588
+            }
+        },
+        'mass': {
+            'volume_us': {
+                'from': 'gram',
+                'to': 'cup',
+                'conversions': {
+                    'water': 1./236.59,
+                    'flour': 1./125.,
+                    'brown sugar': 1./220.,
+                    'powdered sugar': 1./110.,
+                    'sugar': 1./200.,
+                    'milk': 1./230.,
+                    'cornstarch': 1./110.,
+                    'cocoa powder': 1./91.,
+                    'baking powder': 1./220.,
+                    'baking soda': 1./220.,
+                    'salt': 1./288.,
+                    'butter': 1./220.,
+                    'corn syrup': 1./310.,
+                    'molasses': 1./260.,
+                    'honey': 1./310.,
+                    'oil': 1./200.
+                }
+            },
+            'volume_metric': {
+                'from': 'gram',
+                'to': 'liter',
+                'conversions': {
+                    'water': 1./1000.,
+                    'flour': 1./125.*4.22675,
+                    'brown sugar': 1./220.*4.22675,
+                    'powdered sugar': 1./110.*4.22675,
+                    'sugar': 1./200.*4.22675,
+                    'milk': 1./230.*4.22675,
+                    'cornstarch': 1./110.*4.22675,
+                    'cocoa powder': 1./91.*4.22675,
+                    'baking powder': 1./220.*4.22675,
+                    'baking soda': 1./220.*4.22675,
+                    'salt': 1./288.*4.22675,
+                    'butter': 1./220.*4.22675,
+                    'corn syrup': 1./310.*4.22675,
+                    'molasses': 1./260.*4.22675,
+                    'honey': 1./310.*4.22675,
+                    'oil': 1./200.*4.22675
+                }
+            }
+        }
+    }
+    # conversions within unit types:
     conversions = {
         # MASS
         'kilogram': {
@@ -136,7 +250,6 @@ class UnitConversions:
             'milliliter': 946.353,
             'centiliter': 94.6353
         },
-        # VOLUME: METRIC
         'gallon': {
             'teaspoon': 768.,
             'fluid ounce': 128.,
@@ -149,6 +262,7 @@ class UnitConversions:
             'milliliter': 3785.41,
             'centiliter': 378.541
         },
+        # VOLUME: METRIC
         'milliliter': {
             'teaspoon': 0.202884,
             'fluid ounce': 0.033814,
