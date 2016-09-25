@@ -4,7 +4,7 @@ import pandas as pd
 import re
 from .unit_name_maps import name_maps
 from .conversions_utils import insert_text_match_info_rows, clean_newlines
-
+from .utils import Timer
 X = """2 1/4 cups all-purpose flour
 1 teaspoon baking soda
 1 teaspoon salt
@@ -66,7 +66,7 @@ def find_matches_in_line(line):
     # sooo... first look for numbers. Then loop through the rest of the text using this code?
     patterns = [(ok_left + '{}' + ok_right + '|^{}' + ok_right + '|' + ok_left + '{}$|^{}$').format(p, p, p, p) for p in
                 name_maps.index]
-    pattern = '|'.join(reversed(patterns))
+    pattern = '|'.join(patterns)
     # prepend this pattern with a pattern for integers, floats, and simple fractions:
     float_pat = '\.?\d/\.?\d|\d+\.?\d+|\d+|\.\d+'
     pattern = '|'.join([float_pat, pattern])
@@ -214,6 +214,19 @@ def lookback_for_type_from_pattern(match_info, regex_pattern, lookback_type, new
     return match_info
 
 
+def lookforward_for_type_from_pattern(match_info, regex_pattern, lookback_type, new_sub_type, lookback=1):
+    lookback += 1
+    idx = [i for i in match_info.index if re.match(regex_pattern, match_info.name.iloc[i])]
+    for i in idx:
+        m = match_info.loc[i:, :].head(lookback)
+        is_number = m.type == lookback_type
+        if any(is_number):
+            hit = m.loc[is_number].index[-1]
+            match_info.loc[hit, 'sub_type'] = new_sub_type
+
+    return match_info
+
+
 def replace_match_rows_with_aggregate(match_info, hits_gen, type, sub_type):
     for i in hits_gen:
         idx = [i, i + 1, i + 2]
@@ -282,34 +295,50 @@ def tag_matches_from_line(match_info):
     # tag 'for each' numbers:
     # example: 1/2 cups at a time, or 1 teaspoon each
     # todo this isn't very specific, might not work / cause errors.
-    each_pattern = r'[, ]each| for each one| pieces each| times| at a time'
+    each_pattern = r'^[, ]each|^ for each|^ pieces each|^ times|^ at a time'
     match_info = lookback_for_type_from_pattern(match_info=match_info,
                                                 regex_pattern=each_pattern,
                                                 lookback_type='number',
-                                                new_sub_type='each_number', lookback=3)
-    each_pattern = r' of the'
-    match_info = lookback_for_type_from_pattern(match_info=match_info,
-                                                regex_pattern=each_pattern,
-                                                lookback_type='number',
-                                                new_sub_type='each_number', lookback=1)
+                                                new_sub_type='each_number', lookback=2)
+    each_pattern = r'^ for each'
+    match_info = lookforward_for_type_from_pattern(match_info=match_info,
+                                                   regex_pattern=each_pattern,
+                                                   lookback_type='number',
+                                                   new_sub_type='each_number', lookback=1)
     # what about 'sprinkle each roll with 1/2 teaspoons sugar'?
 
+
+    # todo
+
+
     # probably sub_types should be tags, instead, so that overlaps are caught....
-    # ### list of sub_types:
+    # ###### list of sub_types:
+    # ## TEMPERATURE
     # temperature_number
+
+    # ## UNIT OF TIME
     # time_number
+    # ## number
+
+    # # CONVERTIBLE:
     # int_fraction
-    # percent_number
-    # package_size
     # int
     # float
     # fraction
     # unicode_fraction
+    # english_number
+    # range
+
+    # # NOT CONVERTIBLE:
+    # percent_number
+    # package_size
+    # each_number
+    # dimensions
+
+    # ## UNIT
     # weight
     # volume
     # pcs
-    # english_number
-    # each_number
 
     # ### list of types:
     # temperature
@@ -322,8 +351,14 @@ def tag_matches_from_line(match_info):
 
 
 def parse_ingredient_line(line):
-    match_info = find_matches_in_line(line=line)
-    match_info = tag_matches_from_line(match_info=match_info)
+    with Timer(name='MATCHING {}'.format(line)) as t1:
+        match_info = find_matches_in_line(line=line)
+
+    with Timer(name='TAGGING {}'.format(line)) as t2:
+        match_info = tag_matches_from_line(match_info=match_info)
+
+    # match_info = find_matches_in_line(line=line)
+    # match_info = tag_matches_from_line(match_info=match_info)
 
     # sort the data frame:
     match_info = match_info.sort_values(by='start')
@@ -337,5 +372,6 @@ def parse_ingredient_line(line):
 def parse_ingredients(x):
     x = clean_newlines(x)
     lines = x.split('\n')
+
     results_dict = {str(i): parse_ingredient_line(lines[i]) for i in range(len(lines))}
     return results_dict

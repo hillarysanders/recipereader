@@ -5,7 +5,7 @@ from django.contrib.postgres.fields import JSONField
 from django.urls import reverse
 from django.db.models.fields.related import ManyToManyField
 from . import conversions
-
+from .utils import Timer
 # Create your models here.
 # Each model is represented by a class that subclasses django.db.models.Model. Each model has a number of class
 # variables, each of which represents a database field in the model.
@@ -94,14 +94,17 @@ class Recipe(models.Model):
 
     def save(self, *args, **kwargs):
         # parse ingredients and instructions:
-        self.ingredients = conversions.parse_ingredients(self.ingredients_text)
-        self.instructions = conversions.parse_ingredients(self.instructions_text)
+        with Timer(name='Parsing ingredients') as t1:
+            self.ingredients = conversions.parse_ingredients(self.ingredients_text)
+
+        with Timer('Parsing instructions') as t2:
+            self.instructions = conversions.parse_ingredients(self.instructions_text)
         # todo flag numbers in ingredients and instructions that should be multiplied which changing servings:
         # todo: ingredients) all int-fraction, fraction, range, int, and '' sub_type numbers....
         # todo: instructions) all int-fraction, fraction, range, int, and '' sub_type numbers followed by a unit...
         # todo ... but then e.g. 'Add 2 eggs' gets lost. Hm.
         # todo ... also consider to redo type system before developing this.
-        
+
         super(Recipe, self).save(*args, **kwargs)
 
     def __str__(self):

@@ -1,5 +1,6 @@
 import collections
-
+import time
+import numpy as np
 
 def flatten(l):
     """
@@ -30,3 +31,20 @@ def most_common(li):
     if not isinstance(li, list):
         li = list(li)
     return max(set(li), key=li.count)
+
+
+class Timer(object):
+    def __init__(self, verbose=True, name=''):
+        self.verbose = verbose
+        self.name = name
+
+    def __enter__(self):
+        self.start = time.time()
+        return self
+
+    def __exit__(self, *args):
+        self.end = time.time()
+        self.secs = self.end - self.start
+        self.msecs = self.secs * 1000  # milliseconds
+        if self.verbose:
+            print('Elapsed time: {} seconds ({})'.format(np.round(self.secs, 2), self.name[:20]+'...'))
