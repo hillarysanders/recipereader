@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 import pandas as pd
 import re
+import logging
 from .unit_name_maps import name_maps
 from .conversions_utils import insert_text_match_info_rows, clean_newlines
 from .utils import Timer
@@ -20,51 +21,51 @@ X = """2 1/4 cups all-purpose flour
 def handle_unit_plurality(info, match_info, pidx):
     # handle unit plurality
     if info.loc[pidx, 'type'] in ['unit']:
-        if info.loc[pidx, 'multipliable']:
-            # was the last number != 1?
-            is_plural = 'unknown'
-            if len(match_info) > 0:
-                numeric_idx = match_info.type == 'number'
-                if any(numeric_idx):
-                    number_indices = match_info.loc[match_info.type == 'number', :].index.values
-                    number_values = match_info.loc[match_info.type == 'number', 'value'].values
-                    if sum(numeric_idx) > 1:
-                        # todo (low priority) might want to add something to the below that marks this as unsure if e.g.
-                        # todo you have a ['number', 'unit', 'number'] pattern or something.
+        # was the last number != 1?
+        is_plural = 'unknown'
+        if len(match_info) > 0:
+            numeric_idx = match_info.type == 'number'
+            if any(numeric_idx):
+                number_indices = match_info.loc[match_info.type == 'number', :].index.values
+                number_values = match_info.loc[match_info.type == 'number', 'value'].values
+                if sum(numeric_idx) > 1:
+                    # todo (low priority) might want to add something to the below that marks this as unsure if e.g.
+                    # todo you have a ['number', 'unit', 'number'] pattern or something.
 
-                        # so usually, we just want the nearest number to the left.
-                        # however, what about e.g. "1 (16oz.) container yogurt"?
-                        # if there is another unit to the left, and then two numbers, take the first number.
-                        if len(match_info) >= 3:
-                            if all(match_info.type.tail(3) == ['number', 'number', 'unit']):
-                                # "1 (16oz.) container yogurt" case
-                                num_value = match_info['value'].iloc[-3]
-                                match_info['sub_type'].iloc[-2] = 'package_size'
-                                sister_idx = number_indices[-2]
-                            else:
-                                num_value = number_values[-1]
-                                sister_idx = number_indices[-1]
+                    # so usually, we just want the nearest number to the left.
+                    # however, what about e.g. "1 (16oz.) container yogurt"?
+                    # if there is another unit to the left, and then two numbers, take the first number.
+                    if len(match_info) >= 3:
+                        if all(match_info.type.tail(3) == ['number', 'number', 'unit']):
+                            # "1 (16oz.) container yogurt" case
+                            num_value = match_info['value'].iloc[-3]
+                            match_info['sub_type'].iloc[-2] = 'package_size'
+                            match_info['multipliable'].iloc[-2] = False
+                            sister_idx = number_indices[-2]
                         else:
                             num_value = number_values[-1]
                             sister_idx = number_indices[-1]
                     else:
-                        num_value = number_values[0]
-                        sister_idx = number_indices[0]
+                        num_value = number_values[-1]
+                        sister_idx = number_indices[-1]
+                else:
+                    num_value = number_values[0]
+                    sister_idx = number_indices[0]
 
-                    info['sister_idx'] = int(sister_idx)
-                    match_info.loc[sister_idx, 'sister_idx'] = int(info.index.values[0])
-                    # if the most recent number was 1:
-                    if num_value == 1:
-                        is_plural = False
-                        info['name'] = info['singular']
-                    else:
-                        is_plural = True
-                        info['name'] = info['plural']
-                    info['is_plural'] = is_plural
-            # if that didn't work:
-            if is_plural not in [True, False]:
-                # todo raise warning that plurality could not be found...
-                info['name'] = info['original']
+                info['sister_idx'] = int(sister_idx)
+                match_info.loc[sister_idx, 'sister_idx'] = int(info.index.values[0])
+                # if the most recent number was 1:
+                if num_value == 1:
+                    is_plural = False
+                    info['name'] = info['singular']
+                else:
+                    is_plural = True
+                    info['name'] = info['plural']
+                info['is_plural'] = is_plural
+        # if that didn't work:
+        if is_plural not in [True, False]:
+            # todo raise warning that plurality could not be found...
+            info['name'] = info['original']
 
     return match_info, info
 
@@ -210,21 +211,9 @@ def lookback_from_type_for_type(match_info, hit_type, lookback_type, new_sub_typ
 
 def lookback_for_type_from_pattern(match_info, regex_pattern, lookback_type, new_sub_type, lookback=3):
     lookback += 1
-    print(match_info.index)
-    print('MATCH INFO')
-    print(match_info)
-    i = match_info.index[0]
-    print(i)
-    print(match_info.loc[i, 'name'])
-
-    for i in match_info.index:
-        print('{}: "{}"'.format(i, match_info.loc[i, 'name']))
-        print(match_info.loc[i])
-        print(type(match_info.loc[i, 'name']))
-        print('---------------------------------------------------------')
 
     if any(match_info.index.duplicated()):
-        raise AssertionError
+        logging.warning('DUPLICATED INDEX VALUES in match_info.')
     idx = [i for i in match_info.index if re.match(regex_pattern, match_info.loc[i, 'name'])]
     for i in idx:
         m = match_info.loc[:i, :].tail(lookback)
@@ -267,7 +256,8 @@ def replace_match_rows_with_aggregate(match_info, hits_gen, type, sub_type):
                                     end=rows.end.iloc[len(rows) - 1],
                                     name=''.join(rows.name),
                                     original=''.join(rows.original),
-                                    type=type, sub_type=sub_type), index=[start])
+                                    type=type, sub_type=sub_type, sister_idx=rows.sister_idx.iloc[i]),
+                               index=[start])
 
         # first one shouldn't be neccessary:
         match_info.loc[match_info.sister_idx == match_info.index[i], 'sister_idx'] = start
@@ -281,8 +271,6 @@ def replace_match_rows_with_aggregate(match_info, hits_gen, type, sub_type):
 
 def tag_matches_from_line(match_info):
 
-    # todo e.g. int_fraction, number_range, and dimension_numbers are all being overwritten.
-    # todo I think we need to redesign this a bit to support tags. Also, it's starting to get slow. --> Bad!
     #######################################################################################################
     # tag fractions
     fraction_idx = find_type_pattern(match_info=match_info, n=len(match_info),

@@ -7,6 +7,7 @@ Base conversion dictionaries that conversions.py will use to build nicely format
 Not meant to be used directly.
 """
 
+
 def _name_maps_dict_to_df(name_maps):
     return pd.concat([pd.DataFrame(d) for d in name_maps])
 
@@ -24,7 +25,7 @@ def _prep_name_map(name_maps):
 
     # sort by pattern length:
     name_maps['pattern_length'] = [len(p) for p in name_maps.pattern]
-    name_maps = name_maps.sort_values(by=['pattern_length'])
+    name_maps = name_maps.sort_values(by=['pattern_length'], ascending=False)
     del name_maps['pattern_length']
 
     name_maps = name_maps.reset_index(drop=True)
@@ -227,7 +228,7 @@ name_maps_weight['multipliable'] = True
 name_maps_pcs = _prep_name_map(_name_maps_dict_to_df(name_maps_pcs))
 name_maps_pcs['type'] = 'unit'
 name_maps_pcs['sub_type'] = 'pcs'
-name_maps_pcs['multipliable'] = False
+name_maps_pcs['multipliable'] = True
 
 name_maps = pd.concat([_prep_name_map(temperature_patterns),
                        _prep_name_map(time_patterns),
