@@ -131,10 +131,10 @@ hi_number {
 hi_unit {
     background-color: #4090cc;
 }
-hi_unit_of_time {
+hi_time {
     background-color: #ccffee;
 }
-hi_unit_of_length {
+hi_length {
     background-color: #cc00ff;
 }
 hi_temperature {

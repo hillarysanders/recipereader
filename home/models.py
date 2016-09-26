@@ -34,28 +34,6 @@ class UserProxy(models.Model):
     # if a user is logged in, their user = the user. Else, None.
     user = models.ForeignKey(User, null=True, blank=True, default=None)
     # if a user is logged in, their session = None. Else, request.session.session_key.
-
-    # TODO TODO TODO site is failing a the moment because null value in column "session" violates not-null constraint,
-    # TODO TODO TODO because when an anonymous user tries to save a recipe, the userproxy instance is created with
-    # TODO TODO TODO request.session.session_key, but it is currently None instead of something.
-    # TODO TODO TODO FIXED in views.py. Not sure if that was the best way to fix it though, prolly should check.
-    # TODO -----------> after checking, next TODOs are:
-    # TODO 1) make sure logout button only shows if user is logged in, and user profile button vice versa
-    # TODO 2) write code so that if you create an account, your recipes'll be saved to it via UserProxy.
-    # TODO     possibly include note in cookbook template, and maybe modulo that asks if they want to save them.
-    # TODO 3) finally, db migrate and push code.
-
-
-
-    # GAHHHH yeah ok it's not working anymore. session is being saved too often.
-    # TODO     # 1) fix that
-    # TODO     # 2) if needed, push and deploy most recent version / commit
-    # TODO     # 3) respond to deiya on gmain
-    # TODO     # 4) do interview
-
-
-
-
     session = models.CharField(max_length=40, blank=True, default='')
 
     def __str__(self):

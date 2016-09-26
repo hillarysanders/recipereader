@@ -20,42 +20,51 @@ X = """2 1/4 cups all-purpose flour
 def handle_unit_plurality(info, match_info, pidx):
     # handle unit plurality
     if info.loc[pidx, 'type'] in ['unit']:
-        # was the last number != 1?
-        is_plural = 'unknown'
-        if len(match_info) > 0:
-            numeric_idx = match_info.type == 'number'
-            if any(numeric_idx):
-                number_values = match_info.loc[match_info.type == 'number', 'value'].values
-                if sum(numeric_idx) > 1:
-                    # todo (low priority) might want to add something to the below that marks this as unsure if e.g.
-                    # todo you have a ['number', 'unit', 'number'] pattern or something.
+        if info.loc[pidx, 'multipliable']:
+            # was the last number != 1?
+            is_plural = 'unknown'
+            if len(match_info) > 0:
+                numeric_idx = match_info.type == 'number'
+                if any(numeric_idx):
+                    number_indices = match_info.loc[match_info.type == 'number', :].index.values
+                    number_values = match_info.loc[match_info.type == 'number', 'value'].values
+                    if sum(numeric_idx) > 1:
+                        # todo (low priority) might want to add something to the below that marks this as unsure if e.g.
+                        # todo you have a ['number', 'unit', 'number'] pattern or something.
 
-                    # so usually, we just want the nearest number to the left.
-                    # however, what about e.g. "1 (16oz.) container yogurt"?
-                    # if there is another unit to the left, and then two numbers, take the first number.
-                    if len(match_info) >= 3:
-                        if all(match_info.type.tail(3) == ['number', 'number', 'unit']):
-                            # "1 (16oz.) container yogurt" case
-                            num_value = match_info['value'].iloc[-3]
-                            match_info['sub_type'].iloc[-2] = 'package_size'
+                        # so usually, we just want the nearest number to the left.
+                        # however, what about e.g. "1 (16oz.) container yogurt"?
+                        # if there is another unit to the left, and then two numbers, take the first number.
+                        if len(match_info) >= 3:
+                            if all(match_info.type.tail(3) == ['number', 'number', 'unit']):
+                                # "1 (16oz.) container yogurt" case
+                                num_value = match_info['value'].iloc[-3]
+                                match_info['sub_type'].iloc[-2] = 'package_size'
+                                sister_idx = number_indices[-2]
+                            else:
+                                num_value = number_values[-1]
+                                sister_idx = number_indices[-1]
                         else:
                             num_value = number_values[-1]
+                            sister_idx = number_indices[-1]
                     else:
-                        num_value = number_values[-1]
-                else:
-                    num_value = number_values[0]
-                # if the most recent number was 1:
-                if num_value == 1:
-                    is_plural = False
-                    info['name'] = info['singular']
-                else:
-                    is_plural = True
-                    info['name'] = info['plural']
-                info['is_plural'] = is_plural
-        # if that didn't work:
-        if is_plural not in [True, False]:
-            # todo raise warning that plurality could not be found...
-            info['name'] = info['original']
+                        num_value = number_values[0]
+                        sister_idx = number_indices[0]
+
+                    info['sister_idx'] = int(sister_idx)
+                    match_info.loc[sister_idx, 'sister_idx'] = int(info.index.values[0])
+                    # if the most recent number was 1:
+                    if num_value == 1:
+                        is_plural = False
+                        info['name'] = info['singular']
+                    else:
+                        is_plural = True
+                        info['name'] = info['plural']
+                    info['is_plural'] = is_plural
+            # if that didn't work:
+            if is_plural not in [True, False]:
+                # todo raise warning that plurality could not be found...
+                info['name'] = info['original']
 
     return match_info, info
 
@@ -74,13 +83,14 @@ def find_matches_in_line(line):
 
     # first, see if it's a list line:
     if re.match(pattern=r'^\s*[0-9]+\.?\s*$', string=line):
-        match_info = pd.DataFrame(dict(start=0, end=len(line), name=line,
+        match_info = pd.DataFrame(dict(start=0, end=len(line), name=line, multipliable=False,
                                        original=line, type='number', sub_type='line_number'),
-                                  index=['number'])
+                                  index=[0])
     else:
         original_line = line
         match_info = pd.DataFrame()
         placement = 0
+        iter = 0
         while len(line) > 0:
             match = pattern.search(line)
             if match:
@@ -110,8 +120,8 @@ def find_matches_in_line(line):
 
                     info = pd.DataFrame(dict(start=start + placement, end=end + placement, name=p,
                                              original=p, value=value, type='number', sub_type=sub_type,
-                                             pattern=float_pat),
-                                        index=['number'])
+                                             pattern=float_pat, multipliable=True),
+                                        index=[start+placement])
                 else:
                     # otherwise, the row can be build off of the name_maps objects:
                     pidx = p.replace('.', '\.')
@@ -119,19 +129,21 @@ def find_matches_in_line(line):
                     # todo raise warning if p is still not in the index of name_maps
 
                     info = pd.DataFrame(name_maps.loc[pidx, :]).T
+                    info.index = [start + placement]
                     info['original'] = p
                     info['start'] = start + placement
                     info['end'] = end + placement
                     info['pattern'] = pidx
 
-                    match_info, info = handle_unit_plurality(info=info, match_info=match_info, pidx=pidx)
+                    match_info, info = handle_unit_plurality(info=info, match_info=match_info, pidx=start + placement)
 
                 # record the info:
-                placement = info.loc[:, 'end'][0]
+                placement = int(info.loc[:, 'end'])
                 # todo change this to pd.append?
                 match_info = pd.concat([match_info, info])
             else:
                 end = len(line)
+            iter += 1
 
             line = line[end:]
 
@@ -148,8 +160,8 @@ def find_type_pattern(match_info, n, columns, patterns, middle_name_matches):
     i = 0
     n_patterns = len(patterns)
     while (i + n_patterns) < n:
-        comparison = [match_info.loc[i + j, columns[j]] for j in range(n_patterns)]
-        if patterns == comparison and match_info.loc[i + 1, 'name'] in middle_name_matches:
+        comparison = [match_info[columns[j]].iloc[i + j] for j in range(n_patterns)]
+        if patterns == comparison and match_info.iloc[i + 1]['name'] in middle_name_matches:
             match = i
             i += n_patterns
             yield match
@@ -173,42 +185,53 @@ def find_type_pattern(match_info, n, columns, patterns, middle_name_matches):
 #             i += 1
 
 
-def replace_rows(match_info, idx, new_row):
-    match_info = match_info.drop(idx)
-    match_info = match_info.append(new_row)
-    match_info = match_info.sort_index()
-    match_info.index = range(len(match_info))
-
-    return match_info
-
-
 def lookback_from_type_for_type(match_info, hit_type, lookback_type, new_sub_type,
-                                dont_skip_over_type='unit', lookback=3):
+                                dont_skip_over_type='unit', lookback=3, type_or_sub_type='type'):
     lookback += 1
-    idx = match_info.loc[match_info.type == hit_type].index.values
+    idx = match_info.loc[match_info[type_or_sub_type] == hit_type].index.values
     for i in idx:
-        m = match_info.loc[:i, :].tail(lookback)
-        # cut off anything before a unit, though:
-        unit_location = m.loc[m.type == dont_skip_over_type].index.max()
-        if isinstance(unit_location, int):
-            m = m.iloc[m.index.get_loc(unit_location):, :]
 
-        is_number = m.type == lookback_type
-        if any(is_number):
-            hit = m.loc[is_number].index[-1]
-            match_info.loc[hit, 'sub_type'] = new_sub_type
+        m = match_info.loc[:i, :]
+        m = m.drop(m.index[-1])
+        m = m.tail(lookback)
+        if len(m) > 0:
+            # cut off anything before a unit, though:
+            unit_location = m.loc[m.type == dont_skip_over_type].index.max()
+            if isinstance(unit_location, int):
+                m = m.iloc[m.index.get_loc(unit_location):, :]
+
+            is_number = m.type == lookback_type
+            if any(is_number):
+                hit = m.loc[is_number].index[-1]
+                match_info.loc[hit, 'sub_type'] = new_sub_type
 
     return match_info
 
 
 def lookback_for_type_from_pattern(match_info, regex_pattern, lookback_type, new_sub_type, lookback=3):
     lookback += 1
-    idx = [i for i in match_info.index if re.match(regex_pattern, match_info.name.iloc[i])]
+    print(match_info.index)
+    print('MATCH INFO')
+    print(match_info)
+    i = match_info.index[0]
+    print(i)
+    print(match_info.loc[i, 'name'])
+
+    for i in match_info.index:
+        print('{}: "{}"'.format(i, match_info.loc[i, 'name']))
+        print(match_info.loc[i])
+        print(type(match_info.loc[i, 'name']))
+        print('---------------------------------------------------------')
+
+    if any(match_info.index.duplicated()):
+        raise AssertionError
+    idx = [i for i in match_info.index if re.match(regex_pattern, match_info.loc[i, 'name'])]
     for i in idx:
         m = match_info.loc[:i, :].tail(lookback)
         is_number = m.type == lookback_type
         if any(is_number):
-            hit = m.loc[is_number].index[-1]
+            hit = m.loc[is_number]
+            hit = hit.index[-1]
             match_info.loc[hit, 'sub_type'] = new_sub_type
 
     return match_info
@@ -216,13 +239,21 @@ def lookback_for_type_from_pattern(match_info, regex_pattern, lookback_type, new
 
 def lookforward_for_type_from_pattern(match_info, regex_pattern, lookback_type, new_sub_type, lookback=1):
     lookback += 1
-    idx = [i for i in match_info.index if re.match(regex_pattern, match_info.name.iloc[i])]
+    idx = [i for i in match_info.index if re.match(regex_pattern, match_info.loc[i, 'name'])]
     for i in idx:
         m = match_info.loc[i:, :].head(lookback)
         is_number = m.type == lookback_type
         if any(is_number):
-            hit = m.loc[is_number].index[-1]
+            hit = m.loc[is_number].index[0]
             match_info.loc[hit, 'sub_type'] = new_sub_type
+
+    return match_info
+
+
+def replace_rows(match_info, idx, new_row):
+    match_info = match_info.drop(match_info.index[idx])
+    match_info = match_info.append(new_row)
+    match_info = match_info.sort_index()
 
     return match_info
 
@@ -230,24 +261,25 @@ def lookforward_for_type_from_pattern(match_info, regex_pattern, lookback_type, 
 def replace_match_rows_with_aggregate(match_info, hits_gen, type, sub_type):
     for i in hits_gen:
         idx = [i, i + 1, i + 2]
-        rows = match_info.loc[idx, :]
-        new_row = pd.DataFrame(dict(start=rows.end.iloc[0],
+        rows = match_info.iloc[idx, :]
+        start = int(rows.end.iloc[0])
+        new_row = pd.DataFrame(dict(start=start,
                                     end=rows.end.iloc[len(rows) - 1],
                                     name=''.join(rows.name),
                                     original=''.join(rows.original),
-                                    type=type, sub_type=sub_type), index=[i])
+                                    type=type, sub_type=sub_type), index=[start])
+
+        # first one shouldn't be neccessary:
+        match_info.loc[match_info.sister_idx == match_info.index[i], 'sister_idx'] = start
+        match_info.loc[match_info.sister_idx == match_info.index[i+1], 'sister_idx'] = start
+        match_info.loc[match_info.sister_idx == match_info.index[i+2], 'sister_idx'] = start
+
         match_info = replace_rows(match_info=match_info, idx=idx, new_row=new_row)
 
     return match_info
 
 
 def tag_matches_from_line(match_info):
-    # todo add in sub-pattern flag of some sort
-    # types:
-    # amount
-    # units
-
-    match_info.index = range(len(match_info))
 
     # todo e.g. int_fraction, number_range, and dimension_numbers are all being overwritten.
     # todo I think we need to redesign this a bit to support tags. Also, it's starting to get slow. --> Bad!
@@ -278,15 +310,18 @@ def tag_matches_from_line(match_info):
     #######################################################################################################
     # tag temperature numbers
     match_info = lookback_from_type_for_type(match_info=match_info, hit_type='temperature', lookback_type='number',
-                                             new_sub_type='temperature_number', dont_skip_over_type='unit', lookback=2)
+                                             new_sub_type='temperature_number', dont_skip_over_type='unit', lookback=2,
+                                             type_or_sub_type='sub_type')
     #######################################################################################################
     # tag time numbers
-    match_info = lookback_from_type_for_type(match_info=match_info, hit_type='unit_of_time', lookback_type='number',
-                                             new_sub_type='time_number', dont_skip_over_type='unit', lookback=2)
+    match_info = lookback_from_type_for_type(match_info=match_info, hit_type='time', lookback_type='number',
+                                             new_sub_type='time_number', dont_skip_over_type='unit', lookback=2,
+                                             type_or_sub_type='sub_type')
     #######################################################################################################
     # tag length numbers
-    match_info = lookback_from_type_for_type(match_info=match_info, hit_type='unit_of_length', lookback_type='number',
-                                             new_sub_type='length_number', dont_skip_over_type='unit', lookback=2)
+    match_info = lookback_from_type_for_type(match_info=match_info, hit_type='length', lookback_type='number',
+                                             new_sub_type='length_number', dont_skip_over_type='unit', lookback=2,
+                                             type_or_sub_type='sub_type')
     #######################################################################################################
     # tag percent numbers:
     match_info = lookback_for_type_from_pattern(match_info=match_info, regex_pattern=r'^[ ]?%| percent',
@@ -295,7 +330,7 @@ def tag_matches_from_line(match_info):
     # tag 'for each' numbers:
     # example: 1/2 cups at a time, or 1 teaspoon each
     # todo this isn't very specific, might not work / cause errors.
-    each_pattern = r'^[, ]each|^ for each|^ pieces each|^ times|^ at a time'
+    each_pattern = r'^[, ]each|^ for each|^ pieces each|^ times|^ at a time|^ of'
     match_info = lookback_for_type_from_pattern(match_info=match_info,
                                                 regex_pattern=each_pattern,
                                                 lookback_type='number',
@@ -364,6 +399,7 @@ def parse_ingredient_line(line):
     match_info = match_info.sort_values(by='start')
     # coerce into a dictionary that can be turned into JSON later:
     match_info.index = [str(i) for i in match_info.start.values]
+    match_info['multipliable'] = [str(i) for i in match_info.multipliable.values]
     match_info = match_info.fillna('').to_dict(orient='index')
 
     return match_info
@@ -374,4 +410,5 @@ def parse_ingredients(x):
     lines = x.split('\n')
 
     results_dict = {str(i): parse_ingredient_line(lines[i]) for i in range(len(lines))}
+    print(results_dict)
     return results_dict

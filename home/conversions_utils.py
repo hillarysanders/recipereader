@@ -9,7 +9,8 @@ def insert_text_match_info_rows(match_info, original_line):
     nchars = len(original_line)
     if nrows == 0:
         match_info = pd.DataFrame(dict(type='text', name=original_line, original=original_line,
-                                       start=0, end=nchars, sub_type=''), index=['text'])
+                                       start=0, end=nchars, sub_type='', multipliable=False, sister_idx=None),
+                                  index=[0])
     else:
         for i in range(nrows+1):
                 if i == 0:
@@ -28,13 +29,13 @@ def insert_text_match_info_rows(match_info, original_line):
                 if end > start:
                     text = original_line[start:end]
                     newrow = pd.DataFrame(dict(type='text', name=text, original=text, start=start, end=end,
-                                               sub_type=''),
-                                          index=['text'])
+                                               sub_type='', multipliable=False, sister_idx=None),
+                                          index=[start])
                     match_info = pd.concat([match_info, newrow])
                 elif end < start:
                     raise Warning('End < start??? Indexing got messed up...')
 
-    return (match_info, original_line)
+    return match_info, original_line
 
 
 def multiple_replace(pattern_replace_dict, text):

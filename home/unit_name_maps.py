@@ -7,6 +7,55 @@ Base conversion dictionaries that conversions.py will use to build nicely format
 Not meant to be used directly.
 """
 
+def _name_maps_dict_to_df(name_maps):
+    return pd.concat([pd.DataFrame(d) for d in name_maps])
+
+
+def _prep_name_map(name_maps):
+    """
+    a name_map in this file is a list of dictionaries, where each
+    dict shows a bunch of strings (names) that map to its 'true' (chosen) name.
+    e.g. 'T.', 'tablespoon' will all map to 'tbsp.'.
+    This function preps all the possible pattern strings by augmenting them
+    via capitalization, etc. The transforms the dicts into a nicer to handle dataframe.
+    """
+
+    name_maps = name_maps.drop_duplicates('pattern')
+
+    # sort by pattern length:
+    name_maps['pattern_length'] = [len(p) for p in name_maps.pattern]
+    name_maps = name_maps.sort_values(by=['pattern_length'])
+    del name_maps['pattern_length']
+
+    name_maps = name_maps.reset_index(drop=True)
+    name_maps = name_maps.set_index('pattern', drop=False)
+
+    return name_maps
+
+
+def _get_name_maps_english_numbers(n=1000):
+    """
+    e.g. 'twenty four' = 24.
+    :param n:
+    :return:
+    """
+    name_maps_english_num = []
+    for i in range(1, n):
+        pattern = num2words(i)
+        el = dict(pattern=[pattern], name=pattern, value=float(i))
+        if (i % 12) == 0:
+            # two dozen, etc...
+            el['pattern'].extend(['{} dozen'.format(num2words(i/12))])
+
+            if i == 12:
+                # include 'a dozen'
+                el['pattern'].extend(['a dozen'])
+
+        name_maps_english_num.extend([el])
+
+    return name_maps_english_num
+
+
 name_maps_fractions = [
     # don't want to match to... half and half, half chopped, etc
     dict(pattern=['half', 'a half', 'one half', '1/2', '\.5', 'halves', '½'],
@@ -131,65 +180,21 @@ name_maps_pcs = [
     #      plural=''),
 ]
 
-temperature_patterns = pd.DataFrame(dict(pattern=['ºC', 'ºF', 'º', 'degrees']))
+temperature_patterns = pd.DataFrame(dict(pattern=['ºC', 'ºF', 'º', 'degrees'],
+                                         type='unit', sub_type='temperature', multipliable=False))
 temperature_patterns['name'] = temperature_patterns['pattern']
-temperature_patterns['type'] = 'temperature'
-time_patterns = pd.DataFrame(dict(pattern=['minutes', 'seconds', 'hours', 'minute', 'second', 'hours']))
+
+time_patterns = pd.DataFrame(dict(pattern=['minutes', 'seconds', 'hours', 'minute', 'second', 'hours'],
+                                  type='unit', sub_type='time', multipliable=False))
 time_patterns['name'] = time_patterns['pattern']
-time_patterns['type'] = 'unit_of_time'
+
 length_patterns = pd.DataFrame(dict(pattern=['inch', 'inches', 'centimeter', 'centimeters',
-                                             'millimeter', 'millimeters']))
+                                             'millimeter', 'millimeters'],
+                                    type='unit', sub_type='length', multipliable=False))
 length_patterns['name'] = length_patterns['pattern']
-length_patterns['type'] = 'unit_of_length'
 
-
-def _name_maps_dict_to_df(name_maps):
-    return pd.concat([pd.DataFrame(d) for d in name_maps])
-
-
-def _prep_name_map(name_maps):
-    """
-    a name_map in this file is a list of dictionaries, where each
-    dict shows a bunch of strings (names) that map to its 'true' (chosen) name.
-    e.g. 'T.', 'tablespoon' will all map to 'tbsp.'.
-    This function preps all the possible pattern strings by augmenting them
-    via capitalization, etc. The transforms the dicts into a nicer to handle dataframe.
-    """
-
-    name_maps = name_maps.drop_duplicates('pattern')
-
-    # sort by pattern length:
-    name_maps['pattern_length'] = [len(p) for p in name_maps.pattern]
-    name_maps = name_maps.sort_values(by=['pattern_length'])
-    del name_maps['pattern_length']
-
-    name_maps = name_maps.reset_index(drop=True)
-    name_maps = name_maps.set_index('pattern', drop=False)
-
-    return name_maps
-
-
-def _get_name_maps_english_numbers(n=1000):
-    """
-    e.g. 'twenty four' = 24.
-    :param n:
-    :return:
-    """
-    name_maps_english_num = []
-    for i in range(1, n):
-        pattern = num2words(i)
-        el = dict(pattern=[pattern], name=pattern, value=float(i))
-        if (i % 12) == 0:
-            # two dozen, etc...
-            el['pattern'].extend(['{} dozen'.format(num2words(i/12))])
-
-            if i == 12:
-                # include 'a dozen'
-                el['pattern'].extend(['a dozen'])
-
-        name_maps_english_num.extend([el])
-
-    return name_maps_english_num
+percent_patters = pd.DataFrame(dict(pattern=['%', 'percent'], name=['%', 'percent'],
+                                    type='unit', sub_type='percent', multipliable=False))
 
 
 # use num2words:
@@ -198,34 +203,43 @@ name_maps_english_numbers = _get_name_maps_english_numbers(n=100)
 name_maps_english_numbers = _prep_name_map(_name_maps_dict_to_df(name_maps_english_numbers))
 name_maps_english_numbers['type'] = 'number'
 name_maps_english_numbers['sub_type'] = 'english_number'
+name_maps_english_numbers['multipliable'] = True
 # name_maps_english_numbers['sub_type'] = '?'
 
 # fractions:
 name_maps_fractions = _prep_name_map(_name_maps_dict_to_df(name_maps_fractions))
 name_maps_fractions['type'] = 'number'
 name_maps_fractions['sub_type'] = 'unicode_fraction'
+name_maps_fractions['multipliable'] = True
+
 # volume
 name_maps_volume = _prep_name_map(_name_maps_dict_to_df(name_maps_volume))
 name_maps_volume['type'] = 'unit'
 name_maps_volume['sub_type'] = 'volume'
+name_maps_volume['multipliable'] = True
+
 # weight
 name_maps_weight = _prep_name_map(_name_maps_dict_to_df(name_maps_weight))
 name_maps_weight['type'] = 'unit'
 name_maps_weight['sub_type'] = 'weight'
+name_maps_weight['multipliable'] = True
 # non convertible units:
 name_maps_pcs = _prep_name_map(_name_maps_dict_to_df(name_maps_pcs))
 name_maps_pcs['type'] = 'unit'
 name_maps_pcs['sub_type'] = 'pcs'
+name_maps_pcs['multipliable'] = False
 
 name_maps = pd.concat([_prep_name_map(temperature_patterns),
                        _prep_name_map(time_patterns),
                        _prep_name_map(length_patterns),
+                       _prep_name_map(percent_patters),
                        name_maps_fractions,
                        name_maps_english_numbers,
                        name_maps_volume,
                        name_maps_weight,
                        name_maps_pcs])
 
+name_maps['sister_idx'] = None
 name_maps = name_maps.fillna(value='')
 
 
