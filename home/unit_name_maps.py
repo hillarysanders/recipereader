@@ -243,23 +243,58 @@ name_maps = pd.concat([_prep_name_map(temperature_patterns),
 name_maps['sister_idx'] = None
 name_maps = name_maps.fillna(value='')
 
+multipliable = dict(
+    unit=True,
+    number=True,
+    text=False,
+    temperature=False,
+    temperature_number=False,
+    time=False,
+    time_number=False,
+    percent_number=False,
+    package_size=False,
+    each_number=False,
+    dimensions=False,
+    weight=True,
+    volume=True,
+    pcs=True,
+    int_fraction=True,
+    int=True,
+    fraction=True,
+    float=True,
+    unicode_fraction=True,
+    english_number=True,
+    range=True
+)
+    # ###### list of sub_types:
+    # ## TEMPERATURE
+    # temperature_number
 
-# sub-types:
-# MULTIPLICATIVE:
-# - fraction
-# - float
-# - integer
-# OTHER
-# - degrees
-# - pre_fraction_integer
-# - step_number (1., 2., 3....)
-# - percent, e.g. '2%'
-# UNITS
-# - pcs ('package', 'scoops', etc.)
-# - volume, metric
-# - volume, imperial
-# - weight
-# TEXT
-# - ingredient
-# - header
-# - text
+    # ## UNIT OF TIME
+    # time_number
+    # ## number
+
+    # # CONVERTIBLE:
+    # int_fraction
+    # int
+    # float
+    # fraction
+    # unicode_fraction
+    # english_number
+    # range
+
+    # # NOT CONVERTIBLE:
+    # percent_number
+    # package_size
+    # each_number
+    # dimensions
+
+    # ## UNIT
+    # weight
+    # volume
+    # pcs
+
+    # ### list of types:
+    # unit
+    # number
+    # text
