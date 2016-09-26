@@ -40,7 +40,6 @@ def handle_unit_plurality(info, match_info, pidx):
                             # "1 (16oz.) container yogurt" case
                             num_value = match_info['value'].iloc[-3]
                             match_info['sub_type'].iloc[-2] = 'package_size'
-                            match_info['multipliable'].iloc[-2] = False
                             sister_idx = number_indices[-2]
                         else:
                             num_value = number_values[-1]
@@ -84,7 +83,7 @@ def find_matches_in_line(line):
 
     # first, see if it's a list line:
     if re.match(pattern=r'^\s*[0-9]+\.?\s*$', string=line):
-        match_info = pd.DataFrame(dict(start=0, end=len(line), name=line, multipliable=False,
+        match_info = pd.DataFrame(dict(start=0, end=len(line), name=line,
                                        original=line, type='number', sub_type='line_number'),
                                   index=[0])
     else:
@@ -121,7 +120,7 @@ def find_matches_in_line(line):
 
                     info = pd.DataFrame(dict(start=start + placement, end=end + placement, name=p,
                                              original=p, value=value, type='number', sub_type=sub_type,
-                                             pattern=float_pat, multipliable=True),
+                                             pattern=float_pat),
                                         index=[start+placement])
                 else:
                     # otherwise, the row can be build off of the name_maps objects:
@@ -294,7 +293,7 @@ def tag_matches_from_line(match_info):
                                  patterns=['number', 'text', 'number'],
                                  middle_name_matches=[' x ', 'x', ' X ', 'X'])
     match_info = replace_match_rows_with_aggregate(match_info=match_info, hits_gen=dims_idx,
-                                                   type='number', sub_type='dimension_numbers')
+                                                   type='number', sub_type='dimension')
     #######################################################################################################
     # tag temperature numbers
     match_info = lookback_from_type_for_type(match_info=match_info, hit_type='temperature', lookback_type='number',
@@ -312,7 +311,7 @@ def tag_matches_from_line(match_info):
                                              type_or_sub_type='sub_type')
     #######################################################################################################
     # tag percent numbers:
-    match_info = lookback_for_type_from_pattern(match_info=match_info, regex_pattern=r'^[ ]?%| percent',
+    match_info = lookback_for_type_from_pattern(match_info=match_info, regex_pattern=r'^ ?%| percent',
                                                 lookback_type='number', lookback=2, new_sub_type='percent_number')
     #######################################################################################################
     # tag 'for each' numbers:
@@ -387,7 +386,6 @@ def parse_ingredient_line(line):
     match_info = match_info.sort_values(by='start')
     # coerce into a dictionary that can be turned into JSON later:
     match_info.index = [str(i) for i in match_info.start.values]
-    match_info['multipliable'] = [str(i) for i in match_info.multipliable.values]
     match_info = match_info.fillna('').to_dict(orient='index')
 
     return match_info

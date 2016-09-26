@@ -182,20 +182,20 @@ name_maps_pcs = [
 ]
 
 temperature_patterns = pd.DataFrame(dict(pattern=['ºC', 'ºF', 'º', 'degrees'],
-                                         type='unit', sub_type='temperature', multipliable=False))
+                                         type='unit', sub_type='temperature'))
 temperature_patterns['name'] = temperature_patterns['pattern']
 
 time_patterns = pd.DataFrame(dict(pattern=['minutes', 'seconds', 'hours', 'minute', 'second', 'hours'],
-                                  type='unit', sub_type='time', multipliable=False))
+                                  type='unit', sub_type='time'))
 time_patterns['name'] = time_patterns['pattern']
 
 length_patterns = pd.DataFrame(dict(pattern=['inch', 'inches', 'centimeter', 'centimeters',
                                              'millimeter', 'millimeters'],
-                                    type='unit', sub_type='length', multipliable=False))
+                                    type='unit', sub_type='length'))
 length_patterns['name'] = length_patterns['pattern']
 
 percent_patters = pd.DataFrame(dict(pattern=['%', 'percent'], name=['%', 'percent'],
-                                    type='unit', sub_type='percent', multipliable=False))
+                                    type='unit', sub_type='percent'))
 
 
 # use num2words:
@@ -204,31 +204,27 @@ name_maps_english_numbers = _get_name_maps_english_numbers(n=100)
 name_maps_english_numbers = _prep_name_map(_name_maps_dict_to_df(name_maps_english_numbers))
 name_maps_english_numbers['type'] = 'number'
 name_maps_english_numbers['sub_type'] = 'english_number'
-name_maps_english_numbers['multipliable'] = True
 # name_maps_english_numbers['sub_type'] = '?'
 
 # fractions:
 name_maps_fractions = _prep_name_map(_name_maps_dict_to_df(name_maps_fractions))
 name_maps_fractions['type'] = 'number'
 name_maps_fractions['sub_type'] = 'unicode_fraction'
-name_maps_fractions['multipliable'] = True
 
 # volume
 name_maps_volume = _prep_name_map(_name_maps_dict_to_df(name_maps_volume))
 name_maps_volume['type'] = 'unit'
 name_maps_volume['sub_type'] = 'volume'
-name_maps_volume['multipliable'] = True
 
 # weight
 name_maps_weight = _prep_name_map(_name_maps_dict_to_df(name_maps_weight))
 name_maps_weight['type'] = 'unit'
 name_maps_weight['sub_type'] = 'weight'
-name_maps_weight['multipliable'] = True
+
 # non convertible units:
 name_maps_pcs = _prep_name_map(_name_maps_dict_to_df(name_maps_pcs))
 name_maps_pcs['type'] = 'unit'
 name_maps_pcs['sub_type'] = 'pcs'
-name_maps_pcs['multipliable'] = True
 
 name_maps = pd.concat([_prep_name_map(temperature_patterns),
                        _prep_name_map(time_patterns),
@@ -244,17 +240,17 @@ name_maps['sister_idx'] = None
 name_maps = name_maps.fillna(value='')
 
 multipliable = dict(
-    unit=True,
-    number=True,
-    text=False,
     temperature=False,
     temperature_number=False,
+    length=False,
+    length_number=False,
+    percent=False,
+    percent_number=False,
     time=False,
     time_number=False,
-    percent_number=False,
     package_size=False,
     each_number=False,
-    dimensions=False,
+    dimension=False,
     weight=True,
     volume=True,
     pcs=True,
