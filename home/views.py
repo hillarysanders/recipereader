@@ -9,7 +9,7 @@ from django.contrib import messages
 import logging
 from .models import Recipe, UserProxy
 from .forms import UserForm, LoginForm, AddRecipeForm, ServingsForm
-from .conversions_utils import get_highlighted_ingredients
+from .conversions_utils import get_highlighted_ingredients, change_servings
 
 # Create your views here.
 
@@ -221,7 +221,11 @@ def recipe_detail(request, pk):
             if sform.is_valid():
                 # TODO change recipe numbers to reflect changed servings:
                 # TODO right now doubles the servings. Instead, change the ingredients values
-                context['servings_form'] = ServingsForm(initial={'servings': sform.cleaned_data['servings']*2})
+                ingredients = change_servings(x=ingredients, convert_sisterless_numbers=True,
+                                              servings0=recipe.num_servings, servings1=sform.cleaned_data['servings'])
+                # instructions = change_servings(x=instructions, convert_sisterless_numbers=False,
+                #                                servings0=recipe.num_servings, servings1=sform.cleaned_data['servings'])
+                context['servings_form'] = ServingsForm(initial={'servings': sform.cleaned_data['servings']})
 
     context['hi_ingredients'] = get_highlighted_ingredients(ingredients, type_or_sub_types=['sub_type', 'type'])
     context['hi_instructions'] = get_highlighted_ingredients(instructions, type_or_sub_types=['sub_type', 'type'])

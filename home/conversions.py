@@ -169,22 +169,6 @@ def find_type_pattern(match_info, n, columns, patterns, middle_name_matches):
             i += 1
 
 
-# def find_fraction_pattern(match_info, n):
-#     columns = ['sub_type', 'type', 'sub_type']
-#     patterns = ['int', 'text', 'fraction']
-#
-#     i = 0
-#     n_patterns = len(patterns)
-#     while (i+n_patterns) < n:
-#         comparison = [match_info.loc[i+j, columns[j]] for j in range(n_patterns)]
-#         if patterns == comparison and match_info.loc[i+1, 'name'] in [' ', ' and ', ' & ', ' + ']:
-#             match = i
-#             i += n_patterns
-#             yield match
-#         else:
-#             i += 1
-
-
 def lookback_from_type_for_type(match_info, hit_type, lookback_type, new_sub_type,
                                 dont_skip_over_type='unit', lookback=3, type_or_sub_type='type'):
     lookback += 1
@@ -255,7 +239,8 @@ def replace_match_rows_with_aggregate(match_info, hits_gen, type, sub_type):
                                     end=rows.end.iloc[len(rows) - 1],
                                     name=''.join(rows.name),
                                     original=''.join(rows.original),
-                                    type=type, sub_type=sub_type, sister_idx=rows.sister_idx.iloc[i]),
+                                    value='{} {}'.format(rows.value.iloc[0], rows.value.iloc[2]),
+                                    type=type, sub_type=sub_type, sister_idx=rows.sister_idx.iloc[2]),
                                index=[start])
 
         # first one shouldn't be neccessary:
@@ -285,7 +270,7 @@ def tag_matches_from_line(match_info):
                                   patterns=['number', 'text', 'number'],
                                   middle_name_matches=[' - ', '-', ' to ', '- to ', ' or '])
     match_info = replace_match_rows_with_aggregate(match_info=match_info, hits_gen=range_idx,
-                                                   type='number', sub_type='number_range')
+                                                   type='number', sub_type='range')
     #######################################################################################################
     # tag dimensions (e.g. 12x9 inches):
     dims_idx = find_type_pattern(match_info=match_info, n=len(match_info),
