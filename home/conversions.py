@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 import pandas as pd
 import re
 import logging
-from .unit_name_maps import name_maps
+from .unit_name_maps import name_maps, multipliable
 from .conversions_utils import insert_text_match_info_rows, clean_newlines
 from .utils import Timer
 X = """2 1/4 cups all-purpose flour
@@ -21,49 +21,52 @@ X = """2 1/4 cups all-purpose flour
 def handle_unit_plurality(info, match_info, pidx):
     # handle unit plurality
     if info.loc[pidx, 'type'] in ['unit']:
-        # was the last number != 1?
-        is_plural = 'unknown'
-        if len(match_info) > 0:
-            numeric_idx = match_info.type == 'number'
-            if any(numeric_idx):
-                number_indices = match_info.loc[match_info.type == 'number', :].index.values
-                number_values = match_info.loc[match_info.type == 'number', 'value'].values
-                if sum(numeric_idx) > 1:
-                    # todo (low priority) might want to add something to the below that marks this as unsure if e.g.
-                    # todo you have a ['number', 'unit', 'number'] pattern or something.
+        if multipliable[info.loc[pidx, 'sub_type']]:
+            # was the last number != 1?
+            is_plural = 'unknown'
+            if len(match_info) > 0:
+                numeric_idx = match_info.type == 'number'
+                if any(numeric_idx):
+                    number_indices = match_info.loc[match_info.type == 'number', :].index.values
+                    number_values = match_info.loc[match_info.type == 'number', 'value'].values
+                    if sum(numeric_idx) > 1:
+                        # todo (low priority) might want to add something to the below that marks this as unsure if e.g.
+                        # todo you have a ['number', 'unit', 'number'] pattern or something.
 
-                    # so usually, we just want the nearest number to the left.
-                    # however, what about e.g. "1 (16oz.) container yogurt"?
-                    # if there is another unit to the left, and then two numbers, take the first number.
-                    if len(match_info) >= 3:
-                        if all(match_info.type.tail(3) == ['number', 'number', 'unit']):
-                            # "1 (16oz.) container yogurt" case
-                            num_value = match_info['value'].iloc[-3]
-                            match_info['sub_type'].iloc[-2] = 'package_size'
-                            sister_idx = number_indices[-2]
+                        # so usually, we just want the nearest number to the left.
+                        # however, what about e.g. "1 (16oz.) container yogurt"?
+                        # if there is another unit to the left, and then two numbers, take the first number.
+                        if len(match_info) >= 3:
+                            if all(match_info.type.tail(3) == ['number', 'number', 'unit']):
+                                # "1 (16oz.) container yogurt" case
+                                num_value = match_info['value'].iloc[-3]
+                                match_info['sub_type'].iloc[-2] = 'package_size'
+                                sister_idx = number_indices[-2]
+                            else:
+                                num_value = number_values[-1]
+                                sister_idx = number_indices[-1]
                         else:
                             num_value = number_values[-1]
                             sister_idx = number_indices[-1]
                     else:
-                        num_value = number_values[-1]
-                        sister_idx = number_indices[-1]
-                else:
-                    num_value = number_values[0]
-                    sister_idx = number_indices[0]
+                        num_value = number_values[0]
+                        sister_idx = number_indices[0]
 
-                info['sister_idx'] = int(sister_idx)
-                match_info.loc[sister_idx, 'sister_idx'] = int(info.index.values[0])
-                # if the most recent number was 1:
-                if num_value == 1:
-                    is_plural = False
-                    info['name'] = info['singular']
-                else:
-                    is_plural = True
-                    info['name'] = info['plural']
-                info['is_plural'] = is_plural
-        # if that didn't work:
-        if is_plural not in [True, False]:
-            # todo raise warning that plurality could not be found...
+                    info['sister_idx'] = int(sister_idx)
+                    match_info.loc[sister_idx, 'sister_idx'] = int(info.index.values[0])
+                    # if the most recent number was 1:
+                    if num_value == 1:
+                        is_plural = False
+                        info['name'] = info['singular']
+                    else:
+                        is_plural = True
+                        info['name'] = info['plural']
+                    info['is_plural'] = is_plural
+            # if that didn't work:
+            if is_plural not in [True, False]:
+                # todo raise warning that plurality could not be found...
+                info['name'] = info['original']
+        else:
             info['name'] = info['original']
 
     return match_info, info
