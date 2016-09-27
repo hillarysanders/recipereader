@@ -159,19 +159,6 @@ def find_matches_in_line(line):
     return match_info
 
 
-def find_type_pattern(match_info, n, columns, patterns, middle_name_matches):
-    i = 0
-    n_patterns = len(patterns)
-    while (i + n_patterns) < n:
-        comparison = [match_info[columns[j]].iloc[i + j] for j in range(n_patterns)]
-        if patterns == comparison and match_info.iloc[i + 1]['name'] in middle_name_matches:
-            match = i
-            i += n_patterns
-            yield match
-        else:
-            i += 1
-
-
 def lookback_from_type_for_type(match_info, hit_type, lookback_type, new_sub_type,
                                 dont_skip_over_type='unit', lookback=3, type_or_sub_type='type'):
     lookback += 1
@@ -233,16 +220,20 @@ def replace_rows(match_info, idx, new_row):
     return match_info
 
 
-def replace_match_rows_with_aggregate(match_info, hits_gen, type, sub_type):
+def replace_match_rows_with_aggregate(match_info, hits_gen, type, sub_type,
+                                      value_func=lambda val0, val2: '{} {}'.format(val0, val2)):
     for i in hits_gen:
         idx = [i, i + 1, i + 2]
         rows = match_info.iloc[idx, :]
         start = int(rows.end.iloc[0])
+        print('--------------------------')
+        print(sub_type)
+        print(rows)
         new_row = pd.DataFrame(dict(start=start,
                                     end=rows.end.iloc[len(rows) - 1],
                                     name=''.join(rows.name),
                                     original=''.join(rows.original),
-                                    value='{} {}'.format(rows.value.iloc[0], rows.value.iloc[2]),
+                                    value=value_func(rows.value.iloc[0], rows.value.iloc[2]),
                                     type=type, sub_type=sub_type, sister_idx=rows.sister_idx.iloc[2]),
                                index=[start])
 
@@ -256,6 +247,21 @@ def replace_match_rows_with_aggregate(match_info, hits_gen, type, sub_type):
     return match_info
 
 
+def find_type_pattern(match_info, n, columns, patterns, middle_name_matches):
+    i = n-1
+    n_patterns = len(patterns)
+    # need to search backwards so that when rows are replaced, they are replaced back to front
+    # and don't mess up the iloc match placements.
+    while (i - n_patterns + 1) >= 0:
+        comparison = [match_info[columns[j]].iloc[i - n_patterns + 1 + j] for j in range(n_patterns)]
+        if patterns == comparison and match_info.iloc[i - 1]['name'] in middle_name_matches:
+            match = i-2
+            i -= n_patterns
+            yield match
+        else:
+            i -= 1
+
+
 def tag_matches_from_line(match_info):
 
     #######################################################################################################
@@ -265,7 +271,8 @@ def tag_matches_from_line(match_info):
                                      patterns=['int', 'text', 'fraction'],
                                      middle_name_matches=[' ', ' and ', ' & ', ' + '])
     match_info = replace_match_rows_with_aggregate(match_info=match_info, hits_gen=fraction_idx,
-                                                   type='number', sub_type='int_fraction')
+                                                   type='number', sub_type='int_fraction',
+                                                   value_func=lambda x, y: sum([x, y]))
     #######################################################################################################
     # tag ranges:
     range_idx = find_type_pattern(match_info=match_info, n=len(match_info),

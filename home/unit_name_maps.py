@@ -70,13 +70,25 @@ name_maps_fractions = [
          value=.2),
     dict(pattern=['one third', 'a third', '1/3', 'thirds', '⅓'],
          name='⅓',
-         value=float(1) / 3),
+         value=1./3),
     dict(pattern=['one sixth', 'a sixth', '1/6', 'sixths', '⅙'],
          name='⅙',
-         value=float(1) / 6),
+         value=1./6),
+    dict(pattern=['5/6', '⅚'],
+         name='⅚',
+         value=5./6),
     dict(pattern=['one eighth', 'an eighth', '1/8', 'eighths', '⅛'],
          name='⅛',
-         value=float(1) / 8)
+         value=1./8),
+    dict(pattern=['⅜', '3/8'],
+         name='⅜',
+         value=3./8),
+    dict(pattern=['⅔', '2/3'],
+         name='⅔',
+         value=2./3),
+    dict(pattern=['¾', '3/4'],
+         name='¾',
+         value=3./4)
     # dict(pattern=['the whole', 'a whole', 'one'],  # todo protect against e.g. 'one at at time'...
     #      name='1',
     #      value=1.)
@@ -263,6 +275,7 @@ multipliable = dict(
     english_number=True,
     range=True
 )
+
     # ###### list of sub_types:
     # ## TEMPERATURE
     # temperature_number

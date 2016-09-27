@@ -1,8 +1,9 @@
 # coding=utf8
 from __future__ import generators, unicode_literals
-from .unit_name_maps import multipliable
 import pandas as pd
 import re
+from .unit_name_maps import multipliable, name_maps_fractions
+from .utils import which_min
 
 
 def change_servings(x, convert_sisterless_numbers, servings0, servings1):
@@ -55,25 +56,30 @@ def change_servings(x, convert_sisterless_numbers, servings0, servings1):
     return x
 
 
+def number_to_string(value):
+
+    if value % 1 == 0:
+        string = str(int(value))
+    else:
+        fractions = name_maps_fractions.tail(10)
+        integer = int(value)
+        floater = value % 1
+        fraction = fractions.name.iloc[which_min((fractions.value-floater).abs())]
+        if integer == 0:
+            string = str(fraction)
+        else:
+            string = '{}{}'.format(integer, fraction)
+
+    return string
+
+
 def multiply_number(sub_type, number_val, multiplier):
 
-    def int_or_float(string):
-        val = float(string)*multiplier
-        if val % 1 == 0:
-            val = int(val)
-        return val
-
-    if sub_type in ['range', 'int_fraction']:
-        value = [int_or_float(v) for v in number_val.split(' ')]
+    if sub_type in ['range']:
+        name = [number_to_string(float(v)*multiplier) for v in number_val.split(' ')]
+        name = '{} to {}'.format(name[0], name[1])
     else:
-        value = int_or_float(number_val)
-
-    if sub_type == 'range':
-        name = '{} to {}'.format(value[0], value[1])
-    elif sub_type == 'int_fraction':
-        name = '{}'.format(sum(value))
-    else:
-        name = str(value)
+        name = number_to_string(number_val*multiplier)
 
     # todo implement larger method for changing decimal to fraction, and fraction to unicode fraction
     # todo then decide if e.g. certain units should always be converted down. e.g. 3 tps always = 1 tbsp.

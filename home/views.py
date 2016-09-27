@@ -147,6 +147,11 @@ def cookbook(request):
     context = {
         'recipes': recipes
     }
+
+    # all = Recipe.objects.order_by('recipe_name')
+    # for r in all:
+    #     r.save()
+
     return render(request, 'home/cookbook.html', context)
 
 
