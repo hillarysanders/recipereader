@@ -56,7 +56,7 @@ def multiply_number(sub_type, number_val, multiplier):
     if sub_type == 'range':
         name = '{} to {}'.format(value[0], value[1])
     elif sub_type == 'int_fraction':
-        name = ' '.join(value)
+        name = '{} {}'.format(value)
     else:
         name = str(value)
 
