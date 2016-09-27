@@ -29,13 +29,28 @@ def change_servings(x, convert_sisterless_numbers, servings0, servings1):
         df = pd.DataFrame.from_dict(line, orient='index')
         # import pdb; pdb.set_trace()
         # todo case where no sister_idx exists
-        hits = [dict(key=k, number=v['sub_type'], unit=line[str(int(v['sister_idx']))]['sub_type']) for k, v in
-                line.items() if v['type'] == 'number']
+        for k, v in line.items():
+            if v['type'] == 'number':
+                print('key: {}'.format(v['type']))
+                print('sub_type: {}'.format(v['sub_type']))
+                print('sister_idx: "{}"'.format(v.get('sister_idx')))
+
+        foo = [v.get('sister_idx') for k, v in line.items()]
+        print(foo)
+        print(line.keys())
+
+        hits = [dict(key=k,
+                     number=v.get('sub_type'),
+                     unit=line[str(int(v.get('sister_idx')))].get('sub_type')) for k, v in
+                line.items() if (v['type'] == 'number' and v.get('sister_idx')!='')]
         for hit in hits:
             if multipliable[hit['number']] and multipliable[hit['unit']]:
-                line[hit['key']]['name'] = multiply_number(number_val=line[hit['key']]['value'],
-                                                           sub_type=line[hit['key']]['sub_type'],
-                                                           multiplier=multiplier)
+                if hit.get('sister_idx') == '':
+                    print('WARNING: SISTER IDX WAS NONE')
+                else:
+                    line[hit['key']]['name'] = multiply_number(number_val=line[hit['key']]['value'],
+                                                               sub_type=line[hit['key']]['sub_type'],
+                                                               multiplier=multiplier)
 
     return x
 
@@ -56,7 +71,7 @@ def multiply_number(sub_type, number_val, multiplier):
     if sub_type == 'range':
         name = '{} to {}'.format(value[0], value[1])
     elif sub_type == 'int_fraction':
-        name = '{} {}'.format(value[0], value[1])
+        name = '{}'.format(sum(value))
     else:
         name = str(value)
 
