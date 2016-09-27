@@ -251,6 +251,7 @@ multipliable = dict(
     package_size=False,
     each_number=False,
     dimension=False,
+    line_number=False,
     weight=True,
     volume=True,
     pcs=True,
