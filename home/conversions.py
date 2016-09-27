@@ -226,9 +226,9 @@ def replace_match_rows_with_aggregate(match_info, hits_gen, type, sub_type,
         idx = [i, i + 1, i + 2]
         rows = match_info.iloc[idx, :]
         start = int(rows.end.iloc[0])
-        print('--------------------------')
-        print(sub_type)
-        print(rows)
+        # print('--------------------------')
+        # print(sub_type)
+        # print(rows)
         new_row = pd.DataFrame(dict(start=start,
                                     end=rows.end.iloc[len(rows) - 1],
                                     name=''.join(rows.name),
@@ -391,5 +391,5 @@ def parse_ingredients(x):
     lines = x.split('\n')
 
     results_dict = {str(i): parse_ingredient_line(lines[i]) for i in range(len(lines))}
-    print(results_dict)
+
     return results_dict

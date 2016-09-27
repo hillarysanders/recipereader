@@ -30,15 +30,11 @@ def change_servings(x, convert_sisterless_numbers, servings0, servings1):
         df = pd.DataFrame.from_dict(line, orient='index')
         # import pdb; pdb.set_trace()
         # todo case where no sister_idx exists
-        for k, v in line.items():
-            if v['type'] == 'number':
-                print('key: {}'.format(v['type']))
-                print('sub_type: {}'.format(v['sub_type']))
-                print('sister_idx: "{}"'.format(v.get('sister_idx')))
-
-        foo = [v.get('sister_idx') for k, v in line.items()]
-        print(foo)
-        print(line.keys())
+        # for k, v in line.items():
+            # if v['type'] == 'number':
+            #     print('key: {}'.format(v['type']))
+            #     print('sub_type: {}'.format(v['sub_type']))
+            #     print('sister_idx: "{}"'.format(v.get('sister_idx')))
 
         hits = [dict(key=k,
                      number=v.get('sub_type'),
@@ -81,8 +77,9 @@ def multiply_number(sub_type, number_val, multiplier):
     else:
         name = number_to_string(number_val*multiplier)
 
-    # todo implement larger method for changing decimal to fraction, and fraction to unicode fraction
-    # todo then decide if e.g. certain units should always be converted down. e.g. 3 tps always = 1 tbsp.
+    # TODO improve this so that before number is converted into a string, its sister unit is checked.
+    # TODO if the number is bigger than the sister unit's conversion limit, then convert into the sister unit's
+    # TODO favorite sister (tsp --> tbsp) and re-name everything to say, e.g. '2 tablespoons and 1/2 teaspoons sugar'.
 
     return name
 
