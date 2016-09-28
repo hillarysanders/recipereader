@@ -209,7 +209,6 @@ length_patterns['name'] = length_patterns['pattern']
 percent_patters = pd.DataFrame(dict(pattern=['%', 'percent'], name=['%', 'percent'],
                                     type='unit', sub_type='percent'))
 
-
 # use num2words:
 name_maps_english_numbers = _get_name_maps_english_numbers(n=100)
 # manicure stuff:

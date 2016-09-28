@@ -142,8 +142,7 @@ def find_matches_in_line(line):
 
                 # record the info:
                 placement = int(info.loc[:, 'end'])
-                # todo change this to pd.append?
-                match_info = pd.concat([match_info, info])
+                match_info = match_info.append(info, ignore_index=False)
             else:
                 end = len(line)
             iter += 1
@@ -282,6 +281,16 @@ def tag_matches_from_line(match_info):
     match_info = replace_match_rows_with_aggregate(match_info=match_info, hits_gen=range_idx,
                                                    type='number', sub_type='range')
     #######################################################################################################
+    # # tag spaces as spaces:
+    #
+    # # tag multi-unit ingredients (e.g. 3 tablespoons plus 1 teaspoon sugar
+    # range_idx = find_type_pattern(match_info=match_info, n=len(match_info),
+    #                               columns=['type', 'sub_type', 'type', 'type', 'type', 'sub_type', 'type'],
+    #                               patterns=['number', 'space', 'unit', 'text', 'number', 'space', 'unit'],
+    #                               middle_name_matches=[' plus ', ' and ', ' & '])
+    # match_info = replace_match_rows_with_aggregate(match_info=match_info, hits_gen=range_idx,
+    #                                                type='number', sub_type='range')
+    #######################################################################################################
     # tag dimensions (e.g. 12x9 inches):
     dims_idx = find_type_pattern(match_info=match_info, n=len(match_info),
                                  columns=['type', 'type', 'type'],
@@ -290,24 +299,12 @@ def tag_matches_from_line(match_info):
     match_info = replace_match_rows_with_aggregate(match_info=match_info, hits_gen=dims_idx,
                                                    type='number', sub_type='dimension')
     #######################################################################################################
-    # tag temperature numbers
-    match_info = lookback_from_type_for_type(match_info=match_info, hit_type='temperature', lookback_type='number',
-                                             new_sub_type='temperature_number', dont_skip_over_type='unit', lookback=2,
-                                             type_or_sub_type='sub_type')
-    #######################################################################################################
-    # tag time numbers
-    match_info = lookback_from_type_for_type(match_info=match_info, hit_type='time', lookback_type='number',
-                                             new_sub_type='time_number', dont_skip_over_type='unit', lookback=2,
-                                             type_or_sub_type='sub_type')
-    #######################################################################################################
-    # tag length numbers
-    match_info = lookback_from_type_for_type(match_info=match_info, hit_type='length', lookback_type='number',
-                                             new_sub_type='length_number', dont_skip_over_type='unit', lookback=2,
-                                             type_or_sub_type='sub_type')
-    #######################################################################################################
-    # tag percent numbers:
-    match_info = lookback_for_type_from_pattern(match_info=match_info, regex_pattern=r'^ ?%| percent',
-                                                lookback_type='number', lookback=2, new_sub_type='percent_number')
+    # tag numbers that go with odd unit types:
+    for unit_type in ['temperature', 'time', 'length', 'percent']:
+        match_info = lookback_from_type_for_type(match_info=match_info, hit_type=unit_type, lookback_type='number',
+                                                 new_sub_type='{}_number'.format(unit_type), dont_skip_over_type='unit',
+                                                 lookback=2, type_or_sub_type='sub_type')
+        # temperature_number, time_number, and length_number, percent_number
     #######################################################################################################
     # tag 'for each' numbers:
     # example: 1/2 cups at a time, or 1 teaspoon each
@@ -317,12 +314,14 @@ def tag_matches_from_line(match_info):
                                                 regex_pattern=each_pattern,
                                                 lookback_type='number',
                                                 new_sub_type='each_number', lookback=2)
-    each_pattern = r'^ for each'
-    match_info = lookforward_for_type_from_pattern(match_info=match_info,
-                                                   regex_pattern=each_pattern,
-                                                   lookback_type='number',
-                                                   new_sub_type='each_number', lookback=1)
+    # each_pattern = r'^ for each'
+    # match_info = lookforward_for_type_from_pattern(match_info=match_info,
+    #                                                regex_pattern=each_pattern,
+    #                                                lookback_type='number',
+    #                                                new_sub_type='each_number', lookback=1)
     # what about 'sprinkle each roll with 1/2 teaspoons sugar'?
+
+
 
 
     # todo
