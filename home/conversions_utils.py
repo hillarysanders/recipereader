@@ -80,6 +80,7 @@ def multiply_number(sub_type, number_val, multiplier):
     # TODO improve this so that before number is converted into a string, its sister unit is checked.
     # TODO if the number is bigger than the sister unit's conversion limit, then convert into the sister unit's
     # TODO favorite sister (tsp --> tbsp) and re-name everything to say, e.g. '2 tablespoons and 1/2 teaspoons sugar'.
+    # TODO ALSO - plurality needs to be dealt with when servings are changed.
 
     return name
 

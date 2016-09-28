@@ -134,46 +134,34 @@ class UnitConversions:
             'gram': 1000.0,
             'kilogram': 1.0,
             'ounce': 35.274,
-            'pound': 2.20462,
-            'stone': 0.157473},
+            'pound': 2.20462
+        },
         'gram': {
             'milligram': 1000,
             'gram': 1.0,
             'kilogram': 1 / 1000.0,
             'ounce': 0.035274,
-            'pound': 0.00220462,
-            'stone': 0.000157473},
+            'pound': 0.00220462},
         'milligram': {
             'milligram': 1.0,
             'gram': 1e-3,
             'kilogram': 1e-6,
             'ounce': 3.5274e-5,
-            'pound': 2.2046e-6,
-            'stone': 1.5747e-7
+            'pound': 2.2046e-6
         },
         'ounce': {
             'milligram': 28349.5,
             'gram': 28.3495,
             'kilogram': 0.0283495,
             'ounce': 1.0,
-            'pound': 0.0625,
-            'stone': 0.00446429
+            'pound': 0.0625
         },
         'pound': {
             'milligram': 453592.,
             'gram': 453.592,
             'kilogram': 0.453592,
             'ounce': 16.0,
-            'pound': 1.0,
-            'stone': 0.0714286
-        },
-        'stone': {
-            'milligram': 6.35e+6,
-            'gram': 6350.29,
-            'kilogram': 6.35029,
-            'ounce': 224.,
-            'pound': 14.,
-            'stone': 1.
+            'pound': 1.0
         },
         # VOLUME:
         # teaspoon, tablespoon, fluid ounce, cup, pint, quart, gallon, liter, milliliter, centiliter
