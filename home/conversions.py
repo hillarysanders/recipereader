@@ -95,7 +95,7 @@ def find_matches_in_line(line):
     # first, see if it's a list line:
     if re.match(pattern=r'^\s*[0-9]+\.?\s*$', string=line):
         match_info = pd.DataFrame(dict(start=0, end=len(line), name=line,
-                                       original=line, type='number', sub_type='line_number'),
+                                       original=line, type='text', sub_type='line_number'),
                                   index=[0])
     else:
         original_line = line
