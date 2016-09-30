@@ -2,54 +2,187 @@
 from __future__ import generators, unicode_literals
 import pandas as pd
 import re
+import numpy as np
 from .unit_name_maps import multipliable, name_maps_fractions
 from .utils import which_min
+from .unit_conversion_matrices import CONVERSION_FACTORS
 
 
-def change_servings(x, convert_sisterless_numbers, servings0, servings1):
+def change_servings(match_info, amounts, convert_sisterless_numbers, servings0, servings1):
 
     multiplier = float(servings1) / float(servings0)
     if multiplier == 1.:
+        return match_info
+
+    # now, merge any amounts that are meant to be together:
+    side_by_side_idx = (amounts.start.iloc[1:]-1) == (amounts.end.iloc[:-1])
+    side_by_side_idx = reversed(side_by_side_idx.index[side_by_side_idx].values)
+    for i in side_by_side_idx:
+        if match_info['sub_type'].iloc[i-1] == 'plus':
+            i_pre = amounts.index[amounts.index.get_loc(i)-1]
+            to_merge = amounts.loc[[i_pre, i], :]
+            new_row = to_merge.iloc[0, :]
+            new_row.end = to_merge.end.iloc[1]
+            new_row.plus_name = match_info['name'].iloc[i-1]
+            conversion_float = CONVERSION_FACTORS.conversions[to_merge.unit_name.iloc[1]][new_row.unit_name]
+            new_row.number_value += to_merge.number_value.iloc[1]*conversion_float
+            replace_rows(amounts, idx=[i_pre, i], new_row=new_row, by_iloc=False)
+
+            # now, multiply values by appropriate servings *
+            # then, if value unit crosses threshold, create multi_unit or different unit amount name
+            # then, replace unit names with their singular or plural names based on new number value
+
+            # BUT... we want to be able to handle plurality WITHOUT doing all this conversion stuff.
+            # conversion stuff should only be required if servings are being changed.
+            # ERGO....
+            # This function should stop above, at around 410, and update unit names.
+            # Then create function to create text from amounts and match_info data frames.
+            # THEN if servings are changed, merge appropirate amounts and update the number values.
+
+    for amount in amounts.iterrows():
+        both_multipliable = multipliable[amount['number_sub_type']] and multipliable[amount['unit_sub_type']]
+        sisterless_number = amount.get('unit') == np.nan and not convert_sisterless_numbers
+        if both_multipliable or sisterless_number:
+            amount.number_name = multiply_number(number_val=amount.number_value,
+                                                 sub_type=amount.number_sub_type,
+                                                 multiplier=multiplier)
+            amount.number_value *= multiplier
+
+    return amount
+
+
+def df_get(df, iloc, col):
+    try:
+        x = df.iloc[iloc][col]
         return x
+    except IndexError or KeyError:
+        return None
 
-    for line_number, line in x.items():
-        idx = line.keys()
 
-        # for each number:
-            # if convert_sisterless_numbers:
-                # if sister exists:
-                    # yield sub_type, and sub_type of sister
-                # else:
-                    # yield sub_type
-            # else:
-                # if sister exists:
-                    # yield sub_type, and sub_type of sister
-                # else:
-                    # don't yield
+def find_sequence(match_info, n, columns, patterns):
+    i = n - 1
+    n_patterns = len(patterns)
+    # need to search backwards so that when rows are replaced, they are replaced back to front
+    # and don't mess up the iloc match placements.
+    while (i - n_patterns + 1) >= 0:
+        comparison = [match_info[columns[j]].iloc[i - n_patterns + 1 + j] for j in range(n_patterns)]
+        if patterns == comparison:
+            match = i - n_patterns + 1
+            i -= n_patterns
+            yield range(match, match + n_patterns)
+        else:
+            i -= 1
 
-        df = pd.DataFrame.from_dict(line, orient='index')
-        # import pdb; pdb.set_trace()
-        # todo case where no sister_idx exists
-        # for k, v in line.items():
-            # if v['type'] == 'number':
-            #     print('key: {}'.format(v['type']))
-            #     print('sub_type: {}'.format(v['sub_type']))
-            #     print('sister_idx: "{}"'.format(v.get('sister_idx')))
 
-        hits = [dict(key=k,
-                     number=v.get('sub_type'),
-                     unit=line[str(int(v.get('sister_idx')))].get('sub_type')) for k, v in
-                line.items() if (v['type'] == 'number' and v.get('sister_idx')!='')]
-        for hit in hits:
-            if multipliable[hit['number']] and multipliable[hit['unit']]:
-                if hit.get('sister_idx') == '':
-                    print('WARNING: SISTER IDX WAS NONE')
-                else:
-                    line[hit['key']]['name'] = multiply_number(number_val=line[hit['key']]['value'],
-                                                               sub_type=line[hit['key']]['sub_type'],
-                                                               multiplier=multiplier)
+def lookback_from_type_for_type(match_info, hit_type, lookback_type, new_sub_type,
+                                dont_skip_over_type='unit', lookback=3, type_or_sub_type='type'):
+    lookback += 1
+    idx = match_info.loc[match_info[type_or_sub_type] == hit_type].index.values
+    for i in idx:
 
-    return x
+        m = match_info.loc[:i, :]
+        m = m.drop(m.index[-1])
+        m = m.tail(lookback)
+        if len(m) > 0:
+            # cut off anything before a unit, though:
+            unit_location = m.loc[m.type == dont_skip_over_type].index.max()
+            if isinstance(unit_location, int):
+                m = m.iloc[m.index.get_loc(unit_location):, :]
+
+            is_number = m.type == lookback_type
+            if any(is_number):
+                hit = m.loc[is_number].index[-1]
+                match_info.loc[hit, 'sub_type'] = new_sub_type
+
+    return match_info
+
+
+def lookback_for_type_from_pattern(match_info, regex_pattern, lookback_type, new_sub_type, lookback=3):
+    lookback += 1
+
+    if any(match_info.index.duplicated()):
+        logging.warning('DUPLICATED INDEX VALUES in match_info.')
+    idx = [i for i in match_info.index if re.match(regex_pattern, match_info.loc[i, 'name'])]
+    for i in idx:
+        m = match_info.loc[:i, :].tail(lookback)
+        is_number = m.type == lookback_type
+        if any(is_number):
+            hit = m.loc[is_number]
+            hit = hit.index[-1]
+            match_info.loc[hit, 'sub_type'] = new_sub_type
+
+    return match_info
+
+
+def lookforward_for_type_from_pattern(match_info, regex_pattern, lookback_type, new_sub_type, lookback=1):
+    lookback += 1
+    idx = [i for i in match_info.index if re.match(regex_pattern, match_info.loc[i, 'name'])]
+    for i in idx:
+        m = match_info.loc[i:, :].head(lookback)
+        is_number = m.type == lookback_type
+        if any(is_number):
+            hit = m.loc[is_number].index[0]
+            match_info.loc[hit, 'sub_type'] = new_sub_type
+
+    return match_info
+
+
+def replace_rows(match_info, idx, new_row, by_iloc=True):
+    if by_iloc:
+        match_info = match_info.drop(match_info.index[idx])
+    else:
+        match_info = match_info.drop(idx)
+    match_info = match_info.append(new_row)
+    match_info = match_info.sort_index()
+
+    return match_info
+
+
+def replace_match_rows_with_aggregate(match_info, hits_gen, type, sub_type,
+                                      value_func=lambda val0, val2: '{} {}'.format(val0, val2)):
+    for i in hits_gen:
+        idx = [i, i + 1, i + 2]
+        rows = match_info.iloc[idx, :]
+        start = int(rows.end.iloc[0])
+        # print('--------------------------')
+        # print(sub_type)
+        # print(rows)
+        new_row = pd.DataFrame(dict(start=start,
+                                    end=rows.end.iloc[len(rows) - 1],
+                                    name=''.join(rows.name),
+                                    original=''.join(rows.original),
+                                    value=value_func(rows.value.iloc[0], rows.value.iloc[2]),
+                                    type=type, sub_type=sub_type, sister_idx=rows.sister_idx.iloc[2]),
+                               index=[start])
+
+        # first one shouldn't be neccessary:
+        match_info.loc[match_info.sister_idx == match_info.index[i], 'sister_idx'] = start
+        match_info.loc[match_info.sister_idx == match_info.index[i+1], 'sister_idx'] = start
+        match_info.loc[match_info.sister_idx == match_info.index[i+2], 'sister_idx'] = start
+
+        match_info = replace_rows(match_info=match_info, idx=idx, new_row=new_row)
+
+    return match_info
+
+
+def find_type_pattern(match_info, n, columns, patterns, middle_name_matches=None, middle_i_subtract=1):
+    i = n-1
+    n_patterns = len(patterns)
+    # need to search backwards so that when rows are replaced, they are replaced back to front
+    # and don't mess up the iloc match placements.
+    while (i - n_patterns + 1) >= 0:
+        comparison = [match_info[columns[j]].iloc[i - n_patterns + 1 + j] for j in range(n_patterns)]
+        if patterns == comparison:
+            if middle_name_matches is not None:
+                if not match_info.iloc[i - middle_i_subtract]['name'] in middle_name_matches:
+                    i -= 1
+                    continue
+
+            match = i-n_patterns+1
+            i -= n_patterns
+            yield match
+        else:
+            i -= 1
 
 
 def number_to_string(value):
@@ -83,32 +216,6 @@ def multiply_number(sub_type, number_val, multiplier):
     # TODO ALSO - plurality needs to be dealt with when servings are changed.
 
     return name
-
-
-
-# multipliable = dict(
-#     temperature=False,
-#     temperature_number=False,
-#     length=False,
-#     length_number=False,
-#     percent=False,
-#     percent_number=False,
-#     time=False,
-#     time_number=False,
-#     package_size=False,
-#     each_number=False,
-#     dimension=False,
-#     weight=True,
-#     volume=True,
-#     pcs=True,
-#     int_fraction=True,
-#     int=True,
-#     fraction=True,
-#     float=True,
-#     unicode_fraction=True,
-#     english_number=True,
-#     range=True
-# )
 
 
 def insert_text_match_info_rows(match_info, original_line):
@@ -190,35 +297,3 @@ def get_highlighted_ingredients(parsed_text, type_or_sub_types=['type', 'sub_typ
 
     return highlighted
 
-
-def KnuthMorrisPratt(text, pattern):
-
-    '''Yields all starting positions of copies of the pattern in the text.
-    Calling conventions are similar to string.find, but its arguments can be
-    lists or iterators, not just strings, it returns all matches, not just
-    the first one, and it does not need the whole text in memory at once.
-    Whenever it yields, it will have read the text exactly up to and including
-    the match that caused the yield.'''
-
-    # allow indexing into pattern and protect against change during yield
-    pattern = list(pattern)
-
-    # build table of shift amounts
-    shifts = [1] * (len(pattern) + 1)
-    shift = 1
-    for pos in range(len(pattern)):
-        while shift <= pos and pattern[pos] != pattern[pos-shift]:
-            shift += shifts[pos-shift]
-        shifts[pos+1] = shift
-
-    # do the actual search
-    startPos = 0
-    matchLen = 0
-    for c in text:
-        while matchLen == len(pattern) or \
-              matchLen >= 0 and pattern[matchLen] != c:
-            startPos += shifts[matchLen]
-            matchLen -= shifts[matchLen]
-        matchLen += 1
-        if matchLen == len(pattern):
-            yield startPos

@@ -141,7 +141,12 @@ hi_temperature {
     background-color: #ff5050;
 }
 
-
+hi_spacer {
+    background-color: #77ff88;
+}
+hi_plus {
+    background-color: red;
+}
 hi_line_number {
     background-color: #cceecc;
     font-size: 20px;
@@ -158,8 +163,11 @@ hi_time_number {
 hi_percent_number {
     background-color: #11aaff;
 }
-hi_package_size {
+hi_package_number {
     background-color: #444499;
+}
+hi_package {
+    background-color: #4444cc;
 }
 hi_int {
     background-color: yellow;
@@ -186,7 +194,7 @@ hi_pcs {
     background-color: #40aacc;
 }
 hi_english_number {
-    background-color: #99aaff;
+    background-color: #ff7000;
 }
 hi_each_number {
     background-color: black;

@@ -259,10 +259,11 @@ multipliable = dict(
     percent_number=False,
     time=False,
     time_number=False,
-    package_size=False,
     each_number=False,
     dimension=False,
     line_number=False,
+    package=False,
+    package_number=False,
     weight=True,
     volume=True,
     pcs=True,
@@ -294,7 +295,7 @@ multipliable = dict(
 
     # # NOT CONVERTIBLE:
     # percent_number
-    # package_size
+    # package_number
     # each_number
     # dimensions
 
