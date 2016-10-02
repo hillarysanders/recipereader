@@ -3,52 +3,104 @@ from __future__ import generators, unicode_literals
 import pandas as pd
 import re
 import numpy as np
-from .unit_name_maps import multipliable, name_maps_fractions
+from .unit_name_maps import multipliable, name_maps_fractions, name_maps
 from .utils import which_min
 from .unit_conversion_matrices import CONVERSION_FACTORS
 
 
-def change_servings(match_info, amounts, convert_sisterless_numbers, servings0, servings1):
+def update_plurality(match_info, amounts):
+    for i in amounts.index[~amounts.isnull().unit_idx]:
+        row = amounts.loc[i, :]
+        # a number is plural if it is 1, or is a fraction whose numerator is one.
+        # therefore:
+        if row.number_sub_type == 'range':
+            number_name = number_to_string(float(row.number_value.split(' ')[-1]))
+        else:
+            number_name = row.number_name
 
-    multiplier = float(servings1) / float(servings0)
-    if multiplier == 1.:
-        return match_info
+        column = get_plurality(number_name=number_name)
 
-    # now, merge any amounts that are meant to be together:
-    side_by_side_idx = (amounts.start.iloc[1:]-1) == (amounts.end.iloc[:-1])
-    side_by_side_idx = reversed(side_by_side_idx.index[side_by_side_idx].values)
-    for i in side_by_side_idx:
-        if match_info['sub_type'].iloc[i-1] == 'plus':
-            i_pre = amounts.index[amounts.index.get_loc(i)-1]
-            to_merge = amounts.loc[[i_pre, i], :]
-            new_row = to_merge.iloc[0, :]
-            new_row.end = to_merge.end.iloc[1]
-            new_row.plus_name = match_info['name'].iloc[i-1]
-            conversion_float = CONVERSION_FACTORS.conversions[to_merge.unit_name.iloc[1]][new_row.unit_name]
-            new_row.number_value += to_merge.number_value.iloc[1]*conversion_float
-            replace_rows(amounts, idx=[i_pre, i], new_row=new_row, by_iloc=False)
+        if not multipliable[row['unit_sub_type']]:
+            unit_name = row['unit_name']
+        else:
+            unit_name = name_maps.loc[row['unit_pattern'], column]
 
-            # now, multiply values by appropriate servings *
-            # then, if value unit crosses threshold, create multi_unit or different unit amount name
-            # then, replace unit names with their singular or plural names based on new number value
+        # unit_name = name_maps.loc[row['unit_pattern'], :].get(column)
+        # if unit_name is None or unit_name == '':
+        #     unit_name = row['unit_name']
+        match_info['name'].iloc[int(row['unit_idx'])] = unit_name
 
-            # BUT... we want to be able to handle plurality WITHOUT doing all this conversion stuff.
-            # conversion stuff should only be required if servings are being changed.
-            # ERGO....
-            # This function should stop above, at around 410, and update unit names.
-            # Then create function to create text from amounts and match_info data frames.
-            # THEN if servings are changed, merge appropirate amounts and update the number values.
+    return match_info
 
-    for amount in amounts.iterrows():
-        both_multipliable = multipliable[amount['number_sub_type']] and multipliable[amount['unit_sub_type']]
-        sisterless_number = amount.get('unit') == np.nan and not convert_sisterless_numbers
-        if both_multipliable or sisterless_number:
-            amount.number_name = multiply_number(number_val=amount.number_value,
-                                                 sub_type=amount.number_sub_type,
-                                                 multiplier=multiplier)
-            amount.number_value *= multiplier
+
+def get_plurality(number_name):
+    if re.match('^(one|a |1/|⅛|⅙|⅓|⅕|¼|½|1$)', number_name, flags=re.IGNORECASE):
+        return 'singular'
+    else:
+        return 'plural'
+
+
+def multiply_amount(amount, convert_to=None, multiplier=None):
+    unit_name = name_maps.loc[amount.unit_pattern, 'singular']
+    if multiplier is None and convert_to is not None:
+        multiplier = CONVERSION_FACTORS.conversions[unit_name][convert_to]
+    elif convert_to is None and multiplier is not None:
+        # just changing servings, not units:
+        convert_to = unit_name
+    else:
+        print('PROBLEM: Exactly 1 of the two (convert_to and multiplier) arguments should be None.')
+        return amount
+
+    amount.number_name = multiply_number(number_val=amount.number_value,
+                                         sub_type=amount.number_sub_type,
+                                         multiplier=multiplier)
+    if isinstance(amount.number_value, str):
+        split = amount.number_value.split(' ')
+        amount.number_value = ' '.join([str(float(n)*multiplier) for n in split])
+    else:
+        amount.number_value *= multiplier
+
+    amount.unit_pattern = convert_to
+    # amount.unit_name = convert_to
+    amount.unit_name = 'FOOOO'  # todo placeholder just for now
 
     return amount
+
+
+def json_dict_to_df(d):
+    amounts = pd.DataFrame.from_dict(d, orient='index')
+    amounts.index = [int(i) for i in amounts.index]
+    amounts = amounts.sort_index(axis=0)
+    amounts = amounts.replace('', value=np.nan)
+    return amounts
+
+
+def df_to_json_ready_dict(df):
+    df = df.sort_index(axis=0)
+    df.index = [str(i) for i in df.index]
+
+    # todo
+    # todo
+    # todo
+    # todo
+    # todo
+    # todo
+
+    # todo duplicated indices (from inserts) are lost on to_dict
+    # could hack around this by adding placeholder indices and then parsing those out on read.
+    # e.g. add random ABCDEF uuid to all duplicates.
+    # then on read (json_dict_to_df above) remove letters.
+    # THEN order by 1) 'order' and 2) index.
+
+    # todo
+    # todo
+    # todo
+    # todo
+    # todo
+    # todo
+
+    df = df.fillna('').to_dict(orient='index')
+    return df
 
 
 def df_get(df, iloc, col):
@@ -187,8 +239,8 @@ def find_type_pattern(match_info, n, columns, patterns, middle_name_matches=None
 
 def number_to_string(value):
 
-    if value % 1 == 0:
-        string = str(int(value))
+    if np.abs(np.abs((value % 1)-.5)-.5) < .05:
+        string = str(int(np.round(value)))
     else:
         fractions = name_maps_fractions.tail(10)
         integer = int(value)
@@ -290,7 +342,7 @@ def get_highlighted_ingredients(parsed_text, type_or_sub_types=['type', 'sub_typ
     idx = sort_char_keys(parsed_text)
     highlighted = []
     for i in idx:
-        match_dicts = parsed_text[i]
+        match_dicts = parsed_text[i]['match_info']
         text = ''.join(_add_highlight(match_dicts[k],
                                       type_or_sub_types=type_or_sub_types) for k in sort_char_keys(match_dicts))
         highlighted.append(text)

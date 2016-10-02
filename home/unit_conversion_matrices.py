@@ -126,6 +126,108 @@ class UnitConversions:
             }
         }
     }
+
+    # if you have fewer than MIN unit values, then convert to smaller_unit
+    # if you have over or equal to MAX unit values, then covert to larger_unit
+    thresholds = {
+        'milligram': {
+            'min': -np.Inf,
+            'smaller_unit': None,
+            'max': 1000.,
+            'larger_unit': 'gram'
+        },
+        'gram': {
+            'min': 1.,
+            'smaller_unit': 'milligram',
+            'max': 1000.,
+            'larger_unit': 'kilogram'
+        },
+        'kilogram': {
+            'min': 1.,
+            'smaller_unit': 'gram',
+            'max': np.Inf,
+            'larger_unit': None
+        },
+        'ounce': {
+            'min': -np.Inf,
+            'smaller_unit': None,
+            'max': 16.,
+            'larger_unit': 'pound'
+        },
+        'pound': {
+            'min': 1.,
+            'smaller_unit': 'ounce',
+            'max': np.Inf,
+            'larger_unit': None
+        },
+        'fluid ounce': {
+            'min': -np.Inf,
+            'smaller_unit': None,
+            'max': 8.,
+            'larger_unit': 'cup'
+        },
+        'teaspoon': {
+            'min': -np.Inf,
+            'smaller_unit': None,
+            'max': 3.,
+            'larger_unit': 'tablespoon'
+        },
+        'tablespoon': {
+            'min': 1.,
+            'smaller_unit': 'teaspoon',
+            'max': 8,
+            'larger_unit': 'cup'
+        },
+        'cup': {
+            'min': 1./8,
+            'smaller_unit': 'tablespoon',
+            # usually people like to stay in cups over pints / quarts
+            'max': np.Inf,
+            'larger_unit': None
+        },
+        'pint': {
+            'min': 1.,
+            'smaller_unit': 'cup',
+            'max': 2,
+            'larger_unit': 'quart'
+        },
+        'quart': {
+            'min': 1.,
+            'smaller_unit': 'cup',
+            'max': 4.,
+            'larger_unit': 'gallon'
+        },
+        'gallon': {
+            'min': 1.,
+            'smaller_unit': 'cup',
+            'max': np.Inf,
+            'larger_unit': None
+        },
+        'milliliter': {
+            'min': -np.Inf,
+            'smaller_unit': None,
+            'max': 1000.,
+            'larger_unit': 'liter'
+        },
+        'centiliter': {
+            'min': 1.,
+            'smaller_unit': 'milliliter',
+            'max': 100.,
+            'larger_unit': 'liter'
+        },
+        'liter': {
+            'min': 1.,
+            'smaller_unit': 'milliliter',
+            'max': np.Inf,
+            'larger_unit': None
+        },
+        'pcs': {
+            'min': -np.Inf,
+            'smaller_unit': None,
+            'max': np.Inf,
+            'larger_unit': None
+        }
+    }
     # conversions within unit types:
     conversions = {
         # MASS

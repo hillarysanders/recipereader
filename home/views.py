@@ -9,7 +9,8 @@ from django.contrib import messages
 import logging
 from .models import Recipe, UserProxy
 from .forms import UserForm, LoginForm, AddRecipeForm, ServingsForm
-from .conversions_utils import get_highlighted_ingredients, change_servings
+from .conversions_utils import get_highlighted_ingredients
+from .conversions import change_servings
 
 # Create your views here.
 
@@ -148,9 +149,9 @@ def cookbook(request):
         'recipes': recipes
     }
 
-    # all = Recipe.objects.order_by('recipe_name')
-    # for r in all:
-    #     r.save()
+    all = Recipe.objects.order_by('recipe_name')
+    for r in all:
+        r.save()
 
     return render(request, 'home/cookbook.html', context)
 
@@ -226,7 +227,8 @@ def recipe_detail(request, pk):
             if sform.is_valid():
                 # TODO change recipe numbers to reflect changed servings:
                 # TODO right now doubles the servings. Instead, change the ingredients values
-                ingredients = change_servings(x=ingredients, convert_sisterless_numbers=True,
+                ingredients = change_servings(ingredients=ingredients,
+                                              convert_sisterless_numbers=True,
                                               servings0=recipe.num_servings, servings1=sform.cleaned_data['servings'])
                 # instructions = change_servings(x=instructions, convert_sisterless_numbers=False,
                 #                                servings0=recipe.num_servings, servings1=sform.cleaned_data['servings'])

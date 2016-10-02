@@ -3,10 +3,10 @@ from __future__ import unicode_literals
 import pandas as pd
 import numpy as np
 import re
-import logging
-from .unit_name_maps import name_maps
+from .unit_name_maps import name_maps, multipliable
 from . import conversions_utils as conv_utils
 from . import utils
+from .unit_conversion_matrices import CONVERSION_FACTORS
 
 X = """2 1/4 cups all-purpose flour
 1 teaspoon baking soda
@@ -18,66 +18,6 @@ X = """2 1/4 cups all-purpose flour
 2 large eggs
 2 cups (12-oz. pkg.) NESTLÉ® TOLL HOUSE® Semi-Sweet Chocolate Morsels
 1 cup chopped nuts"""
-
-
-# def handle_unit_plurality(info, match_info, pidx):
-#     """
-#     THIS CURRENTLY DOESN'T WORK GREAT BECAUSE IT TOTALLY IGNORES TEXT, SO IT CAN SKIP OVER A LOT. e.g.:
-#     "Put 16 apples in the pot. Package up each piece of butter."
-#     IS CHANGED TO:
-#     "Put 16 apples in the pot. Packages up each pieces of butter."
-#     """
-#     # handle unit plurality
-#     if info.loc[pidx, 'type'] in ['unit']:
-#         if multipliable[info.loc[pidx, 'sub_type']]:
-#             # was the last number != 1?
-#             is_plural = 'unknown'
-#             if len(match_info) > 0:
-#                 numeric_idx = match_info.type == 'number'
-#                 if any(numeric_idx):
-#                     number_indices = match_info.loc[match_info.type == 'number', :].index.values
-#                     number_values = match_info.loc[match_info.type == 'number', 'value'].values
-#                     if sum(numeric_idx) > 1:
-#                         # todo (low priority) might want to add something to the below that marks this as unsure if e.g.
-#                         # todo you have a ['number', 'unit', 'number'] pattern or something.
-#
-#                         # so usually, we just want the nearest number to the left.
-#                         # however, what about e.g. "1 (16oz.) container yogurt"?
-#                         # if there is another unit to the left, and then two numbers, take the first number.
-#                         if len(match_info) >= 3:
-#                             if all(match_info.type.tail(3) == ['number', 'number', 'unit']):
-#                                 # "1 (16oz.) container yogurt" case
-#                                 num_value = match_info['value'].iloc[-3]
-#                                 match_info['sub_type'].iloc[-2] = 'package_number'
-#                                 sister_idx = number_indices[-2]
-#                             else:
-#                                 num_value = number_values[-1]
-#                                 sister_idx = number_indices[-1]
-#                         else:
-#                             num_value = number_values[-1]
-#                             sister_idx = number_indices[-1]
-#                     else:
-#                         num_value = number_values[0]
-#                         sister_idx = number_indices[0]
-#
-#                     info['sister_idx'] = int(sister_idx)
-#                     match_info.loc[sister_idx, 'sister_idx'] = int(info.index.values[0])
-#                     # if the most recent number was 1:
-#                     if num_value == 1:
-#                         is_plural = False
-#                         info['name'] = info['singular']
-#                     else:
-#                         is_plural = True
-#                         info['name'] = info['plural']
-#                     info['is_plural'] = is_plural
-#             # if that didn't work:
-#             if is_plural not in [True, False]:
-#                 # todo raise warning that plurality could not be found...
-#                 info['name'] = info['original']
-#         else:
-#             info['name'] = info['original']
-#
-#     return match_info, info
 
 
 def find_matches_in_line(line):
@@ -131,7 +71,7 @@ def find_matches_in_line(line):
 
                     info = pd.DataFrame(dict(start=start + placement, end=end + placement, name=p,
                                              original=p, value=value, type='number', sub_type=sub_type,
-                                             pattern=float_pat),
+                                             order=np.nan),
                                         index=[start + placement])
                 else:
                     # otherwise, the row can be build off of the name_maps objects:
@@ -195,7 +135,7 @@ def tag_matches_from_line(match_info):
                                        middle_name_matches=None)
     for i in idx:
         match_info['sub_type'].iloc[i + 2] = 'package_number'
-        match_info['sub_type'].iloc[i + 3] = 'package_unit'
+        match_info['sub_type'].iloc[i + 3] = 'package'
     # e.g. "1 (16 oz.) package"
     idx = conv_utils.find_type_pattern(match_info=match_info, n=len(match_info),
                                        columns=['type', 'type', 'type', 'sub_type', 'type', 'type', 'sub_type'],
@@ -203,7 +143,7 @@ def tag_matches_from_line(match_info):
                                        middle_name_matches=None)
     for i in idx:
         match_info['sub_type'].iloc[i + 2] = 'package_number'
-        match_info['sub_type'].iloc[i + 4] = 'package_unit'
+        match_info['sub_type'].iloc[i + 4] = 'package'
     #######################################################################################################
     idx = conv_utils.find_type_pattern(match_info=match_info, n=len(match_info),
                                        columns=['type', 'type', 'type'],
@@ -211,7 +151,12 @@ def tag_matches_from_line(match_info):
                                        middle_name_matches=[' - ', '-', ' to ', '- to ', ' or '])
     match_info = conv_utils.replace_match_rows_with_aggregate(match_info=match_info, hits_gen=idx,
                                                               type='number', sub_type='range')
-
+    idx = conv_utils.find_type_pattern(match_info=match_info, n=len(match_info),
+                                       columns=['type', 'type', 'type'],
+                                       patterns=['number', 'spacer', 'number'],
+                                       middle_name_matches=[' - ', '-', ' to ', '- to ', ' or '])
+    match_info = conv_utils.replace_match_rows_with_aggregate(match_info=match_info, hits_gen=idx,
+                                                              type='number', sub_type='range')
     # # tag multi-unit ingredients (e.g. 3 tablespoons plus 1 teaspoon sugar
     # range_idx = find_type_pattern(match_info=match_info, n=len(match_info),
     #                               columns=['type', 'sub_type', 'type', 'type', 'type', 'sub_type', 'type'],
@@ -254,7 +199,7 @@ def get_amounts(match_info):
     numbers_idx = utils.which(match_info.type.values == 'number')
     amounts = pd.DataFrame(columns=['number_name', 'number_value', 'number_sub_type',
                                     'unit_name', 'unit_sub_type', 'unit_idx', 'unit_pattern',
-                                    'separator', 'start', 'end', 'plus_name'],
+                                    'separator', 'start', 'end', 'plus_name', 'add_on'],
                            index=numbers_idx)
     if len(numbers_idx) > 0:
         amounts.number_value = match_info.value.iloc[numbers_idx].values
@@ -272,6 +217,7 @@ def get_amounts(match_info):
                 else:
                     end = i + 1
                 if conv_utils.df_get(next_two, 1, 'type') == 'unit':
+                    # print('UNIT PATTERN {}'.format( next_two.pattern.iloc[1]))
                     amounts.loc[i, 'unit_name'] = next_two.name.iloc[1]
                     amounts.loc[i, 'unit_pattern'] = next_two.pattern.iloc[1]
                     amounts.loc[i, 'unit_sub_type'] = next_two.sub_type.iloc[1]
@@ -281,27 +227,120 @@ def get_amounts(match_info):
     return amounts
 
 
-def update_plurality(match_info, amounts):
-    for i in amounts.index[~amounts.isnull().unit_idx]:
-        row = amounts.loc[i, :]
-        # a number is plural if it is 1, or is a fraction whose numerator is one.
-        # therefore:
-        if row.number_sub_type == 'range':
-            number_name = conv_utils.number_to_string(float(row.number_value.split(' ')[-1]))
-        else:
-            number_name = row.number_name
+def change_servings_line(line, convert_sisterless_numbers, multiplier):
 
-        if re.match('^(one|a |1/|⅛|⅙|⅓|⅕|¼|½|1$)', number_name, flags=re.IGNORECASE):
-            column = 'singular'
-        else:
-            column = 'plural'
+    # TODO yay, it's working although there's obviously still some conversion bugs! :) See the difference between
+    # TODO cinnamon rolls before and after conversion on the local site.
+    # TODO After those bugs are fixed, work on cleaning up a bunch on uneccesary data and computation.
 
-        unit_name = name_maps.loc[row['unit_pattern'], column]
-        if unit_name == '':
-            unit_name = row['unit_name']
-        match_info['name'].iloc[row['unit_idx']] = unit_name
+    amounts = conv_utils.json_dict_to_df(line['amounts'])
+    match_info = conv_utils.json_dict_to_df(line['match_info'])
 
-    return match_info
+    if len(amounts) > 0:
+        # now, merge any amounts that are meant to be together:
+        side_by_side_idx = (amounts['start'].iloc[1:] - 1) == (amounts['end'].iloc[:-1])
+        side_by_side_idx = reversed(side_by_side_idx.index[side_by_side_idx].values)
+        for i in side_by_side_idx:
+            if match_info['sub_type'].iloc[i - 1] == 'plus':
+                i_pre = amounts.index[amounts.index.get_loc(i) - 1]
+                to_merge = amounts.loc[[i_pre, i], :]
+                new_row = to_merge.iloc[0, :]
+                new_row.end = to_merge.end.iloc[1]
+                new_row.plus_name = match_info['name'].iloc[i - 1]
+                conversion_float = CONVERSION_FACTORS.conversions[to_merge.unit_name.iloc[1]][new_row.unit_name]
+                new_row.number_value += to_merge.number_value.iloc[1] * conversion_float
+                conv_utils.replace_rows(amounts, idx=[i_pre, i], new_row=new_row, by_iloc=False)
+
+        for aidx in amounts.index:
+            amount = amounts.loc[aidx, :]
+            both_multipliable = multipliable.get(amount['number_sub_type']) and multipliable.get(
+                amount['unit_sub_type'])
+            # print(amount.get('unit'))
+            sisterless_number = amount.get('unit') == np.nan and convert_sisterless_numbers
+            if both_multipliable or sisterless_number:
+                amount = conv_utils.multiply_amount(amount=amount, convert_to=None, multiplier=multiplier)
+
+                # if value is below unit's threshold, convert to that unit.
+                # if value is above unit's threshold, conver to that unit.
+                if amount.number_sub_type != 'range':
+                    unit_name = name_maps.loc[amount.unit_pattern, 'singular']
+                    if amount.number_value < CONVERSION_FACTORS.thresholds[unit_name]['min']:
+                        convert_to = CONVERSION_FACTORS.thresholds[unit_name]['smaller_unit']
+                        amount = conv_utils.multiply_amount(amount=amount, convert_to=convert_to, multiplier=None)
+                    elif amount.number_value >= CONVERSION_FACTORS.thresholds[unit_name]['max']:
+                        convert_to = CONVERSION_FACTORS.thresholds[unit_name]['larger_unit']
+                        amount = conv_utils.multiply_amount(amount=amount, convert_to=convert_to, multiplier=None)
+
+                    # now, if decimal is below threshold, create a secondary amount:
+                    decimal = amount.number_value % 1
+                    unit_name = name_maps.loc[amount.unit_pattern, 'singular']
+                    if 0 < decimal < CONVERSION_FACTORS.thresholds[unit_name]['min']:
+                        convert_to = CONVERSION_FACTORS.thresholds[unit_name]['smaller_unit']
+                        dec_multiplier = CONVERSION_FACTORS.conversions[unit_name][convert_to]
+                        add_value = conv_utils.multiply_number(sub_type=amount.number_sub_type,
+                                                               number_val=decimal,
+                                                               multiplier=dec_multiplier)
+                        add_unit_name = name_maps.loc[convert_to, conv_utils.get_plurality(add_value)]
+                        amount['number_value'] = float(int(amount.number_value))
+                        amount['number_name'] = str(int(amount.number_value))
+
+                        insert_text_idx = match_info.end.iloc[amount.end]
+                        # mi_row = pd.DataFrame(dict(), index=amount.start)
+                        # todo instead of doing add on, make new match_info rows and insert them into match_info???
+                        # dealeo is: you want to be able to change servings, and then STILL be able to do things
+                        # like change units to metric.
+
+                        add_on_start_end = match_info.loc[amount.start:amount.end, 'end'].iloc[-1]
+                        mi_row = pd.DataFrame(dict(start=add_on_start_end, end=add_on_start_end,
+                                                   order=[0, 1, 2, 3],
+                                                   type=['plus', 'number', 'spacer', 'unit'],
+                                                   pattern=[np.nan, np.nan, np.nan, convert_to],
+                                                   sub_type=[np.nan, amount.number_sub_type,
+                                                             np.nan, amount.unit_sub_type],
+                                                   value=[np.nan, dec_multiplier * decimal, np.nan, np.nan],
+                                                   original='',
+                                                   name=[' plus ', add_value, ' ', add_unit_name]),
+                                              index=[add_on_start_end, add_on_start_end,
+                                                     add_on_start_end, add_on_start_end])
+                        match_info = match_info.append(mi_row)
+
+                if amount.unit_idx != np.nan:
+                    match_info['name'].iloc[int(amount.unit_idx)] = name_maps.loc[amount.unit_pattern, 'singular']
+                    match_info['pattern'].iloc[int(amount.unit_idx)] = amount.unit_pattern
+                match_info['name'].iloc[amount.start] = amount.number_name
+                match_info['value'].iloc[amount.start] = amount.number_value
+
+    if 'order' not in match_info.columns:
+        match_info.loc[:, 'order'] = -1
+    match_info.loc[:, 'order'].replace(to_replace='', value=-1, inplace=True)
+
+    match_info = match_info.sort_values(by='order', ascending=True, na_position='first')
+    match_info = match_info.sort_index()
+
+    new_amounts = get_amounts(match_info)
+    match_info = conv_utils.update_plurality(match_info, new_amounts)
+
+    if ' or so ' in match_info.name.values:
+        print(''.join(match_info.name))
+        import pdb; pdb.set_trace()
+    # coerce into a dictionary that can be turned into JSON later:
+    match_info.index = [i for i in match_info.start.values]
+    match_info = conv_utils.df_to_json_ready_dict(match_info)
+    new_amounts = conv_utils.df_to_json_ready_dict(new_amounts)
+
+    return dict(match_info=match_info, amounts=new_amounts)
+
+
+def change_servings(ingredients, convert_sisterless_numbers, servings0, servings1):
+    multiplier = float(servings1) / float(servings0)
+    if multiplier == 1.:
+        return ingredients
+
+    results_dict = {str(i): change_servings_line(ingredients[i], multiplier=multiplier,
+                                                 convert_sisterless_numbers=convert_sisterless_numbers) for i in
+                    ingredients.keys()}
+
+    return results_dict
 
 
 def parse_ingredient_line(line):
@@ -318,13 +357,14 @@ def parse_ingredient_line(line):
     match_info = match_info.sort_values(by='start')
 
     amounts = get_amounts(match_info)
-    match_info = update_plurality(match_info, amounts)
+    match_info = conv_utils.update_plurality(match_info, amounts)
 
     # coerce into a dictionary that can be turned into JSON later:
-    match_info.index = [str(i) for i in match_info.start.values]
-    match_info = match_info.fillna('').to_dict(orient='index')
+    match_info.index = [i for i in match_info.start.values]
+    match_info = conv_utils.df_to_json_ready_dict(match_info)
+    amounts = conv_utils.df_to_json_ready_dict(amounts)
 
-    return match_info
+    return dict(match_info=match_info, amounts=amounts)
 
 
 def parse_ingredients(x):
