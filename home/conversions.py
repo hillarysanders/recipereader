@@ -190,8 +190,13 @@ def tag_matches_from_line(match_info):
     match_info = conv_utils.lookback_for_type_from_pattern(match_info=match_info,
                                                            regex_pattern=each_pattern,
                                                            lookback_type='number',
-                                                           new_sub_type='each_number', lookback=2)
+                                                           dont_skip_over_type='text',
+                                                           new_sub_type='each_number', lookback=3)
 
+    # todo maybe this should be applied to amounts, since e.g. you can have:
+    # number spacer unit ' at a time'
+    # number unit ' at a time'
+    # number ' at a time'
     return match_info
 
 

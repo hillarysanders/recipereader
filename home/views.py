@@ -233,7 +233,7 @@ def recipe_detail(request, pk):
                                               servings1=sform.cleaned_data['servings'])
 
                 instructions = change_servings(ingredients=instructions,
-                                               convert_sisterless_numbers=False,
+                                               convert_sisterless_numbers=True,
                                                servings0=recipe.num_servings,
                                                servings1=sform.cleaned_data['servings'])
                 context['servings_form'] = ServingsForm(initial={'servings': sform.cleaned_data['servings']})

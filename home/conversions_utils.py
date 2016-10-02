@@ -35,6 +35,7 @@ def update_plurality(match_info, amounts):
 
 def get_plurality(number_name):
     if re.match('^(one|a |1/|⅛|⅙|⅓|⅕|¼|½|1$)', number_name, flags=re.IGNORECASE):
+        # note that this won't match to 1 1/2 cups, which is good.
         return 'singular'
     else:
         return 'plural'
@@ -86,27 +87,6 @@ def df_to_json_ready_dict(df):
         df.loc[:, 'order'] = np.nan
     df.index = ['_'.join([str(i), str(df.order.get(i))]) for i in df.index]
 
-    # todo
-    # todo
-    # todo
-    # todo
-    # todo
-    # todo
-
-    # todo duplicated indices (from inserts) are lost on to_dict
-    # could hack around this by adding placeholder indices and then parsing those out on read.
-    # e.g. add random ABCDEF uuid to all duplicates.
-    # then on read (json_dict_to_df above) remove letters.
-    # THEN order by 1) 'order' and 2) index.
-    # or maybe start and then order?
-
-    # todo
-    # todo
-    # todo
-    # todo
-    # todo
-    # todo
-
     df = df.fillna('').to_dict(orient='index')
     return df
 
@@ -157,14 +137,21 @@ def lookback_from_type_for_type(match_info, hit_type, lookback_type, new_sub_typ
     return match_info
 
 
-def lookback_for_type_from_pattern(match_info, regex_pattern, lookback_type, new_sub_type, lookback=3):
+def lookback_for_type_from_pattern(match_info, regex_pattern, lookback_type, new_sub_type, lookback=3,
+                                   dont_skip_over_type='text'):
     lookback += 1
 
     if any(match_info.index.duplicated()):
-        logging.warning('DUPLICATED INDEX VALUES in match_info.')
+        print('WARNING: DUPLICATED INDEX VALUES in match_info.')
     idx = [i for i in match_info.index if re.match(regex_pattern, match_info.loc[i, 'name'])]
     for i in idx:
         m = match_info.loc[:i, :].tail(lookback)
+
+        # cut off anything before a unit, though:
+        unit_location = m.loc[m.type == dont_skip_over_type].index.max()
+        if isinstance(unit_location, int):
+            m = m.iloc[m.index.get_loc(unit_location):, :]
+
         is_number = m.type == lookback_type
         if any(is_number):
             hit = m.loc[is_number]
