@@ -229,9 +229,13 @@ def recipe_detail(request, pk):
                 # TODO right now doubles the servings. Instead, change the ingredients values
                 ingredients = change_servings(ingredients=ingredients,
                                               convert_sisterless_numbers=True,
-                                              servings0=recipe.num_servings, servings1=sform.cleaned_data['servings'])
-                # instructions = change_servings(x=instructions, convert_sisterless_numbers=False,
-                #                                servings0=recipe.num_servings, servings1=sform.cleaned_data['servings'])
+                                              servings0=recipe.num_servings,
+                                              servings1=sform.cleaned_data['servings'])
+
+                instructions = change_servings(ingredients=instructions,
+                                               convert_sisterless_numbers=False,
+                                               servings0=recipe.num_servings,
+                                               servings1=sform.cleaned_data['servings'])
                 context['servings_form'] = ServingsForm(initial={'servings': sform.cleaned_data['servings']})
 
     context['hi_ingredients'] = get_highlighted_ingredients(ingredients, type_or_sub_types=['sub_type', 'type'])

@@ -41,7 +41,10 @@ def get_plurality(number_name):
 
 
 def multiply_amount(amount, convert_to=None, multiplier=None):
-    unit_name = name_maps.loc[amount.unit_pattern, 'singular']
+    unit_name = name_maps['singular'].get(str(amount.unit_pattern))
+    if unit_name is None:
+        unit_name = 'pcs'
+
     if multiplier is None and convert_to is not None:
         multiplier = CONVERSION_FACTORS.conversions[unit_name][convert_to]
     elif convert_to is None and multiplier is not None:
@@ -67,9 +70,10 @@ def multiply_amount(amount, convert_to=None, multiplier=None):
     return amount
 
 
-def json_dict_to_df(d):
-    amounts = pd.DataFrame.from_dict(d, orient='index')
-    amounts.index = [int(i) for i in amounts.index]
+def json_dict_to_df(df):
+
+    amounts = pd.DataFrame.from_dict(df, orient='index')
+    amounts.index = [int(i.split('_')[0]) for i in amounts.index]
     amounts = amounts.sort_index(axis=0)
     amounts = amounts.replace('', value=np.nan)
     return amounts
@@ -77,7 +81,10 @@ def json_dict_to_df(d):
 
 def df_to_json_ready_dict(df):
     df = df.sort_index(axis=0)
-    df.index = [str(i) for i in df.index]
+
+    if 'order' not in df.columns and len(df) > 0:
+        df.loc[:, 'order'] = np.nan
+    df.index = ['_'.join([str(i), str(df.order.get(i))]) for i in df.index]
 
     # todo
     # todo
@@ -91,6 +98,7 @@ def df_to_json_ready_dict(df):
     # e.g. add random ABCDEF uuid to all duplicates.
     # then on read (json_dict_to_df above) remove letters.
     # THEN order by 1) 'order' and 2) index.
+    # or maybe start and then order?
 
     # todo
     # todo
@@ -207,7 +215,7 @@ def replace_match_rows_with_aggregate(match_info, hits_gen, type, sub_type,
                                     type=type, sub_type=sub_type, sister_idx=rows.sister_idx.iloc[2]),
                                index=[start])
 
-        # first one shouldn't be neccessary:
+        # first one shouldn't be necessary:
         match_info.loc[match_info.sister_idx == match_info.index[i], 'sister_idx'] = start
         match_info.loc[match_info.sister_idx == match_info.index[i+1], 'sister_idx'] = start
         match_info.loc[match_info.sister_idx == match_info.index[i+2], 'sister_idx'] = start
@@ -343,8 +351,11 @@ def get_highlighted_ingredients(parsed_text, type_or_sub_types=['type', 'sub_typ
     highlighted = []
     for i in idx:
         match_dicts = parsed_text[i]['match_info']
-        text = ''.join(_add_highlight(match_dicts[k],
-                                      type_or_sub_types=type_or_sub_types) for k in sort_char_keys(match_dicts))
+        if not isinstance(match_dicts, pd.DataFrame):
+            match_dicts = json_dict_to_df(match_dicts)
+
+        text = ''.join(_add_highlight(match_dicts.iloc[k, :],
+                                      type_or_sub_types=type_or_sub_types) for k in range(len(match_dicts)))
         highlighted.append(text)
 
     return highlighted

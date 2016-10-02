@@ -229,9 +229,7 @@ def get_amounts(match_info):
 
 def change_servings_line(line, convert_sisterless_numbers, multiplier):
 
-    # TODO yay, it's working although there's obviously still some conversion bugs! :) See the difference between
-    # TODO cinnamon rolls before and after conversion on the local site.
-    # TODO After those bugs are fixed, work on cleaning up a bunch on uneccesary data and computation.
+    # TODO work on cleaning up a bunch on uneccesary data and computation.
 
     amounts = conv_utils.json_dict_to_df(line['amounts'])
     match_info = conv_utils.json_dict_to_df(line['match_info'])
@@ -253,66 +251,66 @@ def change_servings_line(line, convert_sisterless_numbers, multiplier):
 
         for aidx in amounts.index:
             amount = amounts.loc[aidx, :]
-            both_multipliable = multipliable.get(amount['number_sub_type']) and multipliable.get(
-                amount['unit_sub_type'])
-            # print(amount.get('unit'))
-            sisterless_number = amount.get('unit') == np.nan and convert_sisterless_numbers
-            if both_multipliable or sisterless_number:
+            both_multipliable = multipliable.get(amount['number_sub_type']) and multipliable.get(amount['unit_sub_type'])
+            sisterless_number = not isinstance(amount.get('unit_pattern'), str) and convert_sisterless_numbers
+
+            if both_multipliable is True or sisterless_number:
                 amount = conv_utils.multiply_amount(amount=amount, convert_to=None, multiplier=multiplier)
 
                 # if value is below unit's threshold, convert to that unit.
                 # if value is above unit's threshold, conver to that unit.
-                if amount.number_sub_type != 'range':
-                    unit_name = name_maps.loc[amount.unit_pattern, 'singular']
-                    if amount.number_value < CONVERSION_FACTORS.thresholds[unit_name]['min']:
-                        convert_to = CONVERSION_FACTORS.thresholds[unit_name]['smaller_unit']
-                        amount = conv_utils.multiply_amount(amount=amount, convert_to=convert_to, multiplier=None)
-                    elif amount.number_value >= CONVERSION_FACTORS.thresholds[unit_name]['max']:
-                        convert_to = CONVERSION_FACTORS.thresholds[unit_name]['larger_unit']
-                        amount = conv_utils.multiply_amount(amount=amount, convert_to=convert_to, multiplier=None)
+                if not sisterless_number:
+                    if amount.number_sub_type != 'range':
+                        unit_name = name_maps.loc[amount.unit_pattern, 'singular']
+                        if amount.number_value < CONVERSION_FACTORS.thresholds[unit_name]['min']:
+                            convert_to = CONVERSION_FACTORS.thresholds[unit_name]['smaller_unit']
+                            amount = conv_utils.multiply_amount(amount=amount, convert_to=convert_to, multiplier=None)
+                        elif amount.number_value >= CONVERSION_FACTORS.thresholds[unit_name]['max']:
+                            convert_to = CONVERSION_FACTORS.thresholds[unit_name]['larger_unit']
+                            amount = conv_utils.multiply_amount(amount=amount, convert_to=convert_to, multiplier=None)
 
-                    # now, if decimal is below threshold, create a secondary amount:
-                    decimal = amount.number_value % 1
-                    unit_name = name_maps.loc[amount.unit_pattern, 'singular']
-                    if 0 < decimal < CONVERSION_FACTORS.thresholds[unit_name]['min']:
-                        convert_to = CONVERSION_FACTORS.thresholds[unit_name]['smaller_unit']
-                        dec_multiplier = CONVERSION_FACTORS.conversions[unit_name][convert_to]
-                        add_value = conv_utils.multiply_number(sub_type=amount.number_sub_type,
-                                                               number_val=decimal,
-                                                               multiplier=dec_multiplier)
-                        add_unit_name = name_maps.loc[convert_to, conv_utils.get_plurality(add_value)]
-                        amount['number_value'] = float(int(amount.number_value))
-                        amount['number_name'] = str(int(amount.number_value))
+                        # now, if decimal is below threshold, create a secondary amount:
+                        decimal = amount.number_value % 1
+                        unit_name = name_maps.loc[amount.unit_pattern, 'singular']
+                        if 0 < decimal < CONVERSION_FACTORS.thresholds[unit_name]['min']:
+                            convert_to = CONVERSION_FACTORS.thresholds[unit_name]['smaller_unit']
+                            dec_multiplier = CONVERSION_FACTORS.conversions[unit_name][convert_to]
+                            add_value = conv_utils.multiply_number(sub_type=amount.number_sub_type,
+                                                                   number_val=decimal,
+                                                                   multiplier=dec_multiplier)
+                            add_unit_name = name_maps.loc[convert_to, conv_utils.get_plurality(add_value)]
+                            amount['number_value'] = float(int(amount.number_value))
+                            amount['number_name'] = str(int(amount.number_value))
 
-                        insert_text_idx = match_info.end.iloc[amount.end]
-                        # mi_row = pd.DataFrame(dict(), index=amount.start)
-                        # todo instead of doing add on, make new match_info rows and insert them into match_info???
-                        # dealeo is: you want to be able to change servings, and then STILL be able to do things
-                        # like change units to metric.
+                            insert_text_idx = match_info.end.iloc[amount.end]
+                            # mi_row = pd.DataFrame(dict(), index=amount.start)
+                            # todo instead of doing add on, make new match_info rows and insert them into match_info???
+                            # dealeo is: you want to be able to change servings, and then STILL be able to do things
+                            # like change units to metric.
 
-                        add_on_start_end = match_info.loc[amount.start:amount.end, 'end'].iloc[-1]
-                        mi_row = pd.DataFrame(dict(start=add_on_start_end, end=add_on_start_end,
-                                                   order=[0, 1, 2, 3],
-                                                   type=['plus', 'number', 'spacer', 'unit'],
-                                                   pattern=[np.nan, np.nan, np.nan, convert_to],
-                                                   sub_type=[np.nan, amount.number_sub_type,
-                                                             np.nan, amount.unit_sub_type],
-                                                   value=[np.nan, dec_multiplier * decimal, np.nan, np.nan],
-                                                   original='',
-                                                   name=[' plus ', add_value, ' ', add_unit_name]),
-                                              index=[add_on_start_end, add_on_start_end,
-                                                     add_on_start_end, add_on_start_end])
-                        match_info = match_info.append(mi_row)
+                            add_on_start_end = match_info.loc[amount.start:amount.end, 'end'].iloc[-1]
+                            mi_row = pd.DataFrame(dict(start=add_on_start_end, end=add_on_start_end,
+                                                       order=[0, 1, 2, 3],
+                                                       type=['plus', 'number', 'spacer', 'unit'],
+                                                       pattern=[np.nan, np.nan, np.nan, convert_to],
+                                                       sub_type=[np.nan, amount.number_sub_type,
+                                                                 np.nan, amount.unit_sub_type],
+                                                       value=[np.nan, dec_multiplier * decimal, np.nan, np.nan],
+                                                       original='',
+                                                       name=[' plus ', add_value, ' ', add_unit_name]),
+                                                  index=[add_on_start_end, add_on_start_end,
+                                                         add_on_start_end, add_on_start_end])
+                            match_info = match_info.append(mi_row)
 
-                if amount.unit_idx != np.nan:
+                if not sisterless_number:
                     match_info['name'].iloc[int(amount.unit_idx)] = name_maps.loc[amount.unit_pattern, 'singular']
                     match_info['pattern'].iloc[int(amount.unit_idx)] = amount.unit_pattern
                 match_info['name'].iloc[amount.start] = amount.number_name
                 match_info['value'].iloc[amount.start] = amount.number_value
 
     if 'order' not in match_info.columns:
-        match_info.loc[:, 'order'] = -1
-    match_info.loc[:, 'order'].replace(to_replace='', value=-1, inplace=True)
+        match_info.loc[:, 'order'] = np.nan
+    match_info.loc[:, 'order'].replace(to_replace='', value=np.nan, inplace=True)
 
     match_info = match_info.sort_values(by='order', ascending=True, na_position='first')
     match_info = match_info.sort_index()
@@ -325,10 +323,10 @@ def change_servings_line(line, convert_sisterless_numbers, multiplier):
         # import pdb; pdb.set_trace()
     # coerce into a dictionary that can be turned into JSON later:
     match_info.index = [i for i in match_info.start.values]
-    match_info = conv_utils.df_to_json_ready_dict(match_info)
-    new_amounts = conv_utils.df_to_json_ready_dict(new_amounts)
+    # match_info = conv_utils.df_to_json_ready_dict(match_info)
+    # new_amounts = conv_utils.df_to_json_ready_dict(new_amounts)
 
-    return dict(match_info=match_info, amounts=new_amounts)
+    return dict(match_info=match_info, amounts=amounts)
 
 
 def change_servings(ingredients, convert_sisterless_numbers, servings0, servings1):

@@ -77,11 +77,6 @@ class Recipe(models.Model):
 
         with Timer('Parsing instructions') as t2:
             self.instructions = conversions.parse_ingredients(self.instructions_text)
-        # todo flag numbers in ingredients and instructions that should be multiplied which changing servings:
-        # todo: ingredients) all int-fraction, fraction, range, int, and '' sub_type numbers....
-        # todo: instructions) all int-fraction, fraction, range, int, and '' sub_type numbers followed by a unit...
-        # todo ... but then e.g. 'Add 2 eggs' gets lost. Hm.
-        # todo ... also consider to redo type system before developing this.
 
         super(Recipe, self).save(*args, **kwargs)
 
