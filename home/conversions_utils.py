@@ -151,7 +151,11 @@ def insert_rows_if_amount_decimal_crosses_threshold(amount, amounts, match_info,
         # todo don't think this line is needed:
         add_unit_name = name_maps.loc[convert_to, get_plurality_from_string(add_number_name)]
 
-        add_on_start_end = match_info.loc[amount.name:amount.end, 'end'].iloc[-1]
+        # the new index will be a little past the start of the second to last phrase, since
+        # with characters, start and end indices overlap (so we don't want the start of the insert
+        # to go over the end of the last phrase, since that will also cause the insert to go over the beginning
+        # of the next. Also could just do minus.
+        add_on_start_end = float(match_info.loc[amount.name:amount.end, 'end'].tail(2).iloc[0])
         new_dec_number = np.round(dec_multiplier * decimal, round)
         mi_row = pd.DataFrame(dict(pattern=[np.nan, np.nan, np.nan, convert_to],
                                    # start=add_on_start_end, end=add_on_start_end,
@@ -162,20 +166,23 @@ def insert_rows_if_amount_decimal_crosses_threshold(amount, amounts, match_info,
                                    original='',
                                    name=[' plus ', add_number_name, ' ', add_unit_name]),
                               index=[add_on_start_end + .01, add_on_start_end + .02,
-                                     add_on_start_end + .04, add_on_start_end + .03])
-        match_info = match_info.append(mi_row)
+                                     add_on_start_end + .03, add_on_start_end + .04])
 
-        # modify the amounts dataframe so it contains two amounts, now:
+        # modify the amounts  dataframe so it contains two amounts, now:
         amount_new_row = pd.DataFrame(dict(number_value=new_dec_number,
                                            number_sub_type='unicode_fraction',
                                            unit_sub_type=amount.unit_sub_type,
-                                           unit_idx=add_on_start_end + .03,
-                                           end=add_on_start_end + .03,
+                                           unit_idx=add_on_start_end + .04,
+                                           end=add_on_start_end + .04,
                                            unit_pattern=convert_to), index=[add_on_start_end + .02])
-        amounts = amounts.append(amount_new_row)
+        # import pdb; pdb.set_trace()
 
         # modify the original amount row so that it's just an int now:
         amount.number_value = int(amount.number_value)
+
+        # final prep:
+        match_info = match_info.append(mi_row)
+        amounts = amounts.append(amount_new_row)
 
     return match_info, amounts, amount
 

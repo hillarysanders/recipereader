@@ -222,7 +222,7 @@ def get_amounts(match_info):
         for i in numbers_idx:
             # get the number and the following two phrases (if they exist)
             next_two = match_info.loc[i:, :].head(3)
-            # initialize the start and end locations:
+            # initialize the end location:
             amounts.loc[i, 'end'] = i
             if len(next_two) > 1:
                 if conv_utils.df_get(next_two, 1, 'type') == 'spacer':
@@ -283,9 +283,6 @@ def change_servings_line(line, convert_sisterless_numbers, multiplier):
                         )
                 amounts.loc[amount.name, :] = amount
 
-        # optional...
-        amounts = amounts.sort_index()
-
         # now the multiplication has happened, giv em' some aftercare :P
         for aidx in amounts.index:
             amount = amounts.loc[aidx, :]
@@ -294,9 +291,11 @@ def change_servings_line(line, convert_sisterless_numbers, multiplier):
                                                                                     multiplier=1.)
             match_info.loc[amount.name, 'value'] = amount.number_value
 
+    # optional...
+    amounts = amounts.sort_index()
     match_info = match_info.sort_index()
-    match_info = conv_utils.update_plurality(match_info, amounts)
 
+    match_info = conv_utils.update_plurality(match_info, amounts)
     return dict(match_info=match_info, amounts=amounts)
 
 
