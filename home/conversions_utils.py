@@ -8,32 +8,44 @@ from .utils import which_min
 from .unit_conversion_matrices import CONVERSION_FACTORS
 
 
-def update_plurality(match_info, amounts):
+def update_plurality(match_info, amounts, replace_name=True):
     for i in amounts.index[~amounts.isnull().unit_idx]:
         row = amounts.loc[i, :]
-        # a number is plural if it is 1, or is a fraction whose numerator is one.
-        # therefore:
-        if row.number_sub_type == 'range':
-            number_name = number_to_string(float(row.number_value.split(' ')[-1]))
-        else:
-            number_name = row.number_name
+        if multipliable[row['unit_sub_type']]:
+            if row.number_sub_type == 'range':
+                number_name = number_to_string(float(row.number_value.split(' ')[-1]))
+            else:
+                number_name = number_to_string(row.number_value)
+                if replace_name:
+                    match_info.loc[row.name, 'name'] = number_name
 
-        column = get_plurality(number_name=number_name)
-
-        if not multipliable[row['unit_sub_type']]:
-            unit_name = row['unit_name']
-        else:
+            column = get_plurality_from_string(number_name=number_name)
             unit_name = name_maps.loc[row['unit_pattern'], column]
-
-        # unit_name = name_maps.loc[row['unit_pattern'], :].get(column)
-        # if unit_name is None or unit_name == '':
-        #     unit_name = row['unit_name']
-        match_info['name'].iloc[int(row['unit_idx'])] = unit_name
+            match_info.loc[row['unit_idx'], 'name'] = unit_name
 
     return match_info
 
 
-def get_plurality(number_name):
+def number_to_string(value):
+
+    if np.abs(np.abs((value % 1) - .5) - .5) < .05:
+        string = str(int(np.round(value)))
+    else:
+        fractions = name_maps_fractions.tail(10)
+        integer = int(value)
+        floater = value % 1
+        fraction = fractions.name.iloc[which_min((fractions.value - floater).abs())]
+        if integer == 0:
+            string = str(fraction)
+        else:
+            string = '{}{}'.format(integer, fraction)
+
+    return string
+
+
+def get_plurality_from_string(number_name):
+    # a number is singular if it is 1, or is a fraction whose numerator is one.
+    # therefore:
     if re.match('^(one|a |1/|⅛|⅙|⅓|⅕|¼|½|1$)', number_name, flags=re.IGNORECASE):
         # note that this won't match to 1 1/2 cups, which is good.
         return 'singular'
@@ -41,40 +53,152 @@ def get_plurality(number_name):
         return 'plural'
 
 
+def multiply_number_to_str(sub_type, number_val, multiplier=1.):
+    if sub_type in ['range']:
+        name = [number_to_string(float(v) * multiplier) for v in number_val.split(' ')]
+        name = '{} to {}'.format(name[0], name[1])
+    else:
+        name = number_to_string(number_val * multiplier)
+
+    # TODO improve this so that before number is converted into a string, its sister unit is checked.
+    # TODO if the number is bigger than the sister unit's conversion limit, then convert into the sister unit's
+    # TODO favorite sister (tsp --> tbsp) and re-name everything to say, e.g. '2 tablespoons and 1/2 teaspoons sugar'.
+    # TODO ALSO - plurality needs to be dealt with when servings are changed.
+
+    return name
+
+
 def multiply_amount(amount, convert_to=None, multiplier=None):
-    unit_name = name_maps['singular'].get(str(amount.unit_pattern))
-    if unit_name is None:
-        unit_name = 'pcs'
 
     if multiplier is None and convert_to is not None:
+        unit_name = name_maps['singular'].get(str(amount.unit_pattern))
+        if unit_name is None:
+            unit_name = 'pcs'
         multiplier = CONVERSION_FACTORS.conversions[unit_name][convert_to]
+        amount.unit_pattern = convert_to
+        # amount.unit_name = unit_name
     elif convert_to is None and multiplier is not None:
         # just changing servings, not units:
-        convert_to = unit_name
+        pass
     else:
         print('PROBLEM: Exactly 1 of the two (convert_to and multiplier) arguments should be None.')
         return amount
 
-    amount.number_name = multiply_number(number_val=amount.number_value,
-                                         sub_type=amount.number_sub_type,
-                                         multiplier=multiplier)
     if isinstance(amount.number_value, str):
         split = amount.number_value.split(' ')
-        amount.number_value = ' '.join([str(float(n)*multiplier) for n in split])
+        amount.number_value = ' '.join([str(float(n) * multiplier) for n in split])
     else:
         amount.number_value *= multiplier
-
-    amount.unit_pattern = convert_to
-    # amount.unit_name = convert_to
-    amount.unit_name = 'FOOOO'  # todo placeholder just for now
 
     return amount
 
 
-def json_dict_to_df(df):
+def locate_amt_plus_amt_amounts(amounts, match_info):
+    """
+    finds amounts rows that are side by side and separated by 'plus' subtype phrases
+    in match_info. yields indices of the two amounts rows.
+    generator
+    note that it searches in reverse so row merges don't mess things up...
+    """
+    amt_index = amounts.index[::-1]
+    for left, right in zip(amt_index[1:], amt_index):
+        left_end = match_info.index.get_loc(amounts.loc[left, 'end'])
+        if len(match_info) > (left_end + 2):
+            # we are searching for amount PLUS amount, so left end + 2 = right start
+            expected_start = match_info.index[left_end + 2]
+            if expected_start == right:
+                plus_idx = match_info.index[left_end + 1]
+                if match_info.sub_type[plus_idx] == 'plus':
+                    # yield index of the two amounts rows to be joined:
+                    yield (left, right, plus_idx)
 
+
+def convert_amount_to_appropriate_unit(amount):
+    """
+    # if value is below unit's threshold, convert to that unit.
+    # if value is above unit's threshold, convert to that unit.
+    """
+    # if amount.number_sub_type != 'range':
+    unit_name = name_maps.loc[amount.unit_pattern, 'singular']
+    if amount.number_value < CONVERSION_FACTORS.thresholds[unit_name]['min']:
+        convert_to = CONVERSION_FACTORS.thresholds[unit_name]['smaller_unit']
+        amount = multiply_amount(amount=amount, convert_to=convert_to, multiplier=None)
+    elif amount.number_value >= CONVERSION_FACTORS.thresholds[unit_name]['max']:
+        convert_to = CONVERSION_FACTORS.thresholds[unit_name]['larger_unit']
+        amount = multiply_amount(amount=amount, convert_to=convert_to, multiplier=None)
+
+    return amount
+
+
+def insert_rows_if_amount_decimal_crosses_threshold(amount, amounts, match_info, round=8):
+    """
+    This function takes an amounts value's decimal (that has just been multiplied, presumably),
+    and creates extra match_info rows if needed, as determined by the amount unit's conversion thresholds.
+    Generally to be used in combination (after) convert_amount_to_appropriate_unit().
+    :param amount:
+    :param match_info:
+    :return:
+    """
+    # now, if decimal is below threshold, create a secondary amount:
+    decimal = amount.number_value % 1
+    unit_name = name_maps.loc[amount.unit_pattern, 'singular']
+    if 0 < decimal < CONVERSION_FACTORS.thresholds[unit_name]['min']:
+        convert_to = CONVERSION_FACTORS.thresholds[unit_name]['smaller_unit']
+        dec_multiplier = CONVERSION_FACTORS.conversions[unit_name][convert_to]
+        add_number_name = multiply_number_to_str(sub_type='unicode_fraction',
+                                                 number_val=decimal,
+                                                 multiplier=dec_multiplier)
+        # todo don't think this line is needed:
+        add_unit_name = name_maps.loc[convert_to, get_plurality_from_string(add_number_name)]
+
+        add_on_start_end = match_info.loc[amount.name:amount.end, 'end'].iloc[-1]
+        new_dec_number = np.round(dec_multiplier * decimal, round)
+        mi_row = pd.DataFrame(dict(pattern=[np.nan, np.nan, np.nan, convert_to],
+                                   # start=add_on_start_end, end=add_on_start_end,
+                                   type=['plus', 'number', 'spacer', 'unit'],
+                                   sub_type=[np.nan, amount.number_sub_type,
+                                             np.nan, amount.unit_sub_type],
+                                   value=[np.nan, new_dec_number, np.nan, np.nan],
+                                   original='',
+                                   name=[' plus ', add_number_name, ' ', add_unit_name]),
+                              index=[add_on_start_end + .01, add_on_start_end + .02,
+                                     add_on_start_end + .04, add_on_start_end + .03])
+        match_info = match_info.append(mi_row)
+
+        # modify the amounts dataframe so it contains two amounts, now:
+        amount_new_row = pd.DataFrame(dict(number_value=new_dec_number,
+                                           number_sub_type='unicode_fraction',
+                                           unit_sub_type=amount.unit_sub_type,
+                                           unit_idx=add_on_start_end + .03,
+                                           end=add_on_start_end + .03,
+                                           unit_pattern=convert_to), index=[add_on_start_end + .02])
+        amounts = amounts.append(amount_new_row)
+
+        # modify the original amount row so that it's just an int now:
+        amount.number_value = int(amount.number_value)
+
+    return match_info, amounts, amount
+
+
+def combine_two_amounts_rows(left_idx, right_idx, plus_idx, amounts, match_info):
+    to_merge = amounts.loc[[left_idx, right_idx], :]
+    new_row = to_merge.iloc[0, :]
+    # new_row.plus_idx = plus_idx
+    unit_name_1 = name_maps.loc[to_merge.unit_pattern.iloc[1], 'singular']
+    unit_name_2 = name_maps.loc[new_row.unit_pattern, 'singular']
+    conversion_float = CONVERSION_FACTORS.conversions[unit_name_1][unit_name_2]
+    new_row.number_value += to_merge.number_value.iloc[1] * conversion_float
+    amounts = replace_rows(amounts, idx=[left_idx, right_idx], new_row=new_row, by_iloc=False)
+
+    match_info_rows_to_drop = match_info.loc[plus_idx:to_merge.end.iloc[1], :].index
+    match_info = match_info.drop(match_info_rows_to_drop)
+
+    return match_info, amounts
+
+
+def json_dict_to_df(df):
     amounts = pd.DataFrame.from_dict(df, orient='index')
-    amounts.index = [int(i.split('_')[0]) for i in amounts.index]
+    amounts.index = [float(i) for i in amounts.index]
     amounts = amounts.sort_index(axis=0)
     amounts = amounts.replace('', value=np.nan)
     return amounts
@@ -82,10 +206,7 @@ def json_dict_to_df(df):
 
 def df_to_json_ready_dict(df):
     df = df.sort_index(axis=0)
-
-    if 'order' not in df.columns and len(df) > 0:
-        df.loc[:, 'order'] = np.nan
-    df.index = ['_'.join([str(i), str(df.order.get(i))]) for i in df.index]
+    df.index = [str(i) for i in df.index]
 
     df = df.fillna('').to_dict(orient='index')
     return df
@@ -204,8 +325,8 @@ def replace_match_rows_with_aggregate(match_info, hits_gen, type, sub_type,
 
         # first one shouldn't be necessary:
         match_info.loc[match_info.sister_idx == match_info.index[i], 'sister_idx'] = start
-        match_info.loc[match_info.sister_idx == match_info.index[i+1], 'sister_idx'] = start
-        match_info.loc[match_info.sister_idx == match_info.index[i+2], 'sister_idx'] = start
+        match_info.loc[match_info.sister_idx == match_info.index[i + 1], 'sister_idx'] = start
+        match_info.loc[match_info.sister_idx == match_info.index[i + 2], 'sister_idx'] = start
 
         match_info = replace_rows(match_info=match_info, idx=idx, new_row=new_row)
 
@@ -213,7 +334,7 @@ def replace_match_rows_with_aggregate(match_info, hits_gen, type, sub_type,
 
 
 def find_type_pattern(match_info, n, columns, patterns, middle_name_matches=None, middle_i_subtract=1):
-    i = n-1
+    i = n - 1
     n_patterns = len(patterns)
     # need to search backwards so that when rows are replaced, they are replaced back to front
     # and don't mess up the iloc match placements.
@@ -225,44 +346,11 @@ def find_type_pattern(match_info, n, columns, patterns, middle_name_matches=None
                     i -= 1
                     continue
 
-            match = i-n_patterns+1
+            match = i - n_patterns + 1
             i -= n_patterns
             yield match
         else:
             i -= 1
-
-
-def number_to_string(value):
-
-    if np.abs(np.abs((value % 1)-.5)-.5) < .05:
-        string = str(int(np.round(value)))
-    else:
-        fractions = name_maps_fractions.tail(10)
-        integer = int(value)
-        floater = value % 1
-        fraction = fractions.name.iloc[which_min((fractions.value-floater).abs())]
-        if integer == 0:
-            string = str(fraction)
-        else:
-            string = '{}{}'.format(integer, fraction)
-
-    return string
-
-
-def multiply_number(sub_type, number_val, multiplier):
-
-    if sub_type in ['range']:
-        name = [number_to_string(float(v)*multiplier) for v in number_val.split(' ')]
-        name = '{} to {}'.format(name[0], name[1])
-    else:
-        name = number_to_string(number_val*multiplier)
-
-    # TODO improve this so that before number is converted into a string, its sister unit is checked.
-    # TODO if the number is bigger than the sister unit's conversion limit, then convert into the sister unit's
-    # TODO favorite sister (tsp --> tbsp) and re-name everything to say, e.g. '2 tablespoons and 1/2 teaspoons sugar'.
-    # TODO ALSO - plurality needs to be dealt with when servings are changed.
-
-    return name
 
 
 def insert_text_match_info_rows(match_info, original_line):
@@ -271,30 +359,30 @@ def insert_text_match_info_rows(match_info, original_line):
     if nrows == 0:
         match_info = pd.DataFrame(dict(type='text', name=original_line, original=original_line,
                                        start=0, end=nchars, sub_type='', sister_idx=None),
-                                  index=[0])
+                                  index=[0.])
     else:
-        for i in range(nrows+1):
-                if i == 0:
-                    # look to the beginning of the line to the start of the first pattern (this pattern)
-                    start = 0
-                    end = match_info.iloc[i].start
-                elif i >= nrows:
-                    # look to the last of the last pattern to the end of the line
-                    start = match_info.iloc[i-1]['end']
-                    end = nchars
-                else:
-                    # look to the end of the last pattern to the start of this pattern
-                    start = match_info.iloc[i-1]['end']
-                    end = match_info.iloc[i].start
+        for i in range(nrows + 1):
+            if i == 0:
+                # look to the beginning of the line to the start of the first pattern (this pattern)
+                start = 0
+                end = match_info.iloc[i].start
+            elif i >= nrows:
+                # look to the last of the last pattern to the end of the line
+                start = match_info.iloc[i - 1]['end']
+                end = nchars
+            else:
+                # look to the end of the last pattern to the start of this pattern
+                start = match_info.iloc[i - 1]['end']
+                end = match_info.iloc[i].start
 
-                if end > start:
-                    text = original_line[start:end]
-                    newrow = pd.DataFrame(dict(type='text', name=text, original=text, start=start, end=end,
-                                               sub_type='', sister_idx=None),
-                                          index=[start])
-                    match_info = pd.concat([match_info, newrow])
-                elif end < start:
-                    raise Warning('End < start??? Indexing got messed up...')
+            if end > start:
+                text = original_line[start:end]
+                newrow = pd.DataFrame(dict(type='text', name=text, original=text, start=start, end=end,
+                                           sub_type='', sister_idx=None),
+                                      index=[float(start)])
+                match_info = pd.concat([match_info, newrow])
+            elif end < start:
+                raise Warning('End < start??? Indexing got messed up...')
 
     return match_info, original_line
 
@@ -346,4 +434,3 @@ def get_highlighted_ingredients(parsed_text, type_or_sub_types=['type', 'sub_typ
         highlighted.append(text)
 
     return highlighted
-

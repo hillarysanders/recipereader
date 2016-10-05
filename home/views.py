@@ -1,17 +1,13 @@
 from __future__ import unicode_literals
-from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.contrib.auth import authenticate, login, logout
-from django.views import generic
 from django.shortcuts import render, get_object_or_404
 from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
 from django.contrib import messages
-import logging
 from .models import Recipe, UserProxy
 from .forms import UserForm, LoginForm, AddRecipeForm, ServingsForm
 from .conversions_utils import get_highlighted_ingredients
 from .conversions import change_servings
-
 # Create your views here.
 
 
@@ -232,10 +228,10 @@ def recipe_detail(request, pk):
                                               servings0=recipe.num_servings,
                                               servings1=sform.cleaned_data['servings'])
 
-                instructions = change_servings(ingredients=instructions,
-                                               convert_sisterless_numbers=True,
-                                               servings0=recipe.num_servings,
-                                               servings1=sform.cleaned_data['servings'])
+                # instructions = change_servings(ingredients=instructions,
+                #                                convert_sisterless_numbers=True,
+                #                                servings0=recipe.num_servings,
+                #                                servings1=sform.cleaned_data['servings'])
                 context['servings_form'] = ServingsForm(initial={'servings': sform.cleaned_data['servings']})
 
     context['hi_ingredients'] = get_highlighted_ingredients(ingredients, type_or_sub_types=['sub_type', 'type'])
