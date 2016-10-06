@@ -151,7 +151,7 @@ class UnitConversions:
         'ounce': {
             'min': -np.Inf,
             'smaller_unit': None,
-            'max': 16.,
+            'max': 32.,
             'larger_unit': 'pound'
         },
         'pound': {

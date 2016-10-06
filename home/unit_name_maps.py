@@ -187,11 +187,21 @@ name_maps_pcs = [
          plural='slices'),
     dict(pattern=['bunch', 'bunches'],
          singular='bunch',
-         plural='bunches'),
+         plural='bunches')
     # dict(pattern=[],
     #      singular='',
     #      plural=''),
 ]
+# ingredients that are generally mentioned by name (e.g. '2 eggs'), not by unit:
+for ing in ['apple', 'banana', 'egg', 'apricot', 'Aubergine', 'eggplant', 'avocado', 'beet', 'yam',
+            'carrot', 'clementine', 'orange', 'courgette', 'date', 'endive', 'fennel', 'fig', 'garlic head',
+            'green bean', 'guava', 'honeydew melon', 'watermelon', 'jerusalem artichoke', 'artichoke',
+            'kiwi', 'leek', 'lemon', 'mango', 'mushroom', 'nectarine', 'nut', 'olive', 'orange',
+            'peanut', 'pear', 'pineapple', 'pumpkin', 'quince', 'radish', 'raisin', 'rhubarb', 'satsuma',
+            'strawberry', 'sweet potato', 'potato', 'tomato', 'turnip', 'plum', 'zucchini']:
+    name_maps_pcs.append(dict(pattern=[ing, '{}s'.format(ing)],
+                              singular=ing,
+                              plural='{}s'.format(ing)))
 
 temperature_patterns = pd.DataFrame(dict(pattern=['ºC', 'ºF', 'º', 'degrees'],
                                          type='unit', sub_type='temperature'))

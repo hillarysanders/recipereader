@@ -185,7 +185,7 @@ def tag_matches_from_line(match_info):
     # tag 'for each' numbers:
     # example: 1/2 cups at a time, or 1 teaspoon each
     # todo this isn't very specific, might not work / cause errors.
-    each_pattern = r'^[, ]each|^ for each|^ pieces each|^ times|^ at a time|^ of'
+    each_pattern = r'^[, ]each|^ for each|^ pieces each|^ times|^ at a time'
     match_info = conv_utils.lookback_for_type_from_pattern(match_info=match_info,
                                                            regex_pattern=each_pattern,
                                                            lookback_type='number',
