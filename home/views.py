@@ -228,10 +228,10 @@ def recipe_detail(request, pk):
                                               servings0=recipe.num_servings,
                                               servings1=sform.cleaned_data['servings'])
 
-                # instructions = change_servings(ingredients=instructions,
-                #                                convert_sisterless_numbers=True,
-                #                                servings0=recipe.num_servings,
-                #                                servings1=sform.cleaned_data['servings'])
+                instructions = change_servings(ingredients=instructions,
+                                               convert_sisterless_numbers=True,
+                                               servings0=recipe.num_servings,
+                                               servings1=sform.cleaned_data['servings'])
                 new_servings = sform.cleaned_data['servings']
                 new_servings = int(new_servings) if new_servings % 1 == 0 else new_servings
                 context['servings_form'] = ServingsForm(initial={'servings': new_servings})
