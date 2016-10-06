@@ -13,7 +13,7 @@ def update_plurality(match_info, amounts, replace_name=True):
         for i in amounts.index[~amounts.isnull().unit_idx]:
             row = amounts.loc[i, :]
             if multipliable[row['unit_sub_type']]:
-                if row.number_sub_type == 'range':
+                if isinstance(row.number_value, str):
                     number_name = number_to_string(float(row.number_value.split(' ')[-1]))
                 else:
                     number_name = number_to_string(row.number_value)
@@ -54,8 +54,8 @@ def get_plurality_from_string(number_name):
         return 'plural'
 
 
-def multiply_number_to_str(sub_type, number_val, multiplier=1.):
-    if sub_type in ['range']:
+def multiply_number_to_str(number_val, multiplier=1.):
+    if isinstance(number_val, str):
         name = [number_to_string(float(v) * multiplier) for v in number_val.split(' ')]
         name = '{} to {}'.format(name[0], name[1])
     else:
@@ -119,7 +119,6 @@ def convert_amount_to_appropriate_unit(amount):
     # if value is below unit's threshold, convert to that unit.
     # if value is above unit's threshold, convert to that unit.
     """
-    # if amount.number_sub_type != 'range':
     unit_name = name_maps.loc[amount.unit_pattern, 'singular']
     unit_thresholds = CONVERSION_FACTORS.thresholds.get(unit_name)
     if unit_thresholds is not None:
@@ -150,8 +149,7 @@ def insert_rows_if_amount_decimal_crosses_threshold(amount, amounts, match_info,
         if 0 < decimal < unit_thresholds['min']:
             convert_to = unit_thresholds['smaller_unit']
             dec_multiplier = CONVERSION_FACTORS.conversions[unit_name][convert_to]
-            add_number_name = multiply_number_to_str(sub_type='fraction',
-                                                     number_val=decimal,
+            add_number_name = multiply_number_to_str(number_val=decimal,
                                                      multiplier=dec_multiplier)
             # todo don't think this line is needed:
             add_unit_name = name_maps.loc[convert_to, get_plurality_from_string(add_number_name)]

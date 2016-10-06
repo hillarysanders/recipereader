@@ -137,7 +137,7 @@ def tag_matches_from_line(match_info):
         match_info['sub_type'].iloc[i + 3] = 'package'
     # e.g. "1 (16 oz.) package"
     idx = conv_utils.find_type_pattern(match_info=match_info, n=len(match_info),
-                                       columns=['type', 'type', 'type', 'sub_type', 'type', 'type', 'sub_type'],
+                                       columns=['type', 'type', 'type', 'type', 'type', 'type', 'sub_type'],
                                        patterns=['number', 'spacer', 'number', 'spacer', 'unit', 'spacer', 'pcs'],
                                        middle_name_matches=None)
     for i in idx:
@@ -149,20 +149,15 @@ def tag_matches_from_line(match_info):
                                        patterns=['number', 'text', 'number'],
                                        middle_name_matches=[' - ', '-', ' to ', '- to ', ' or '])
     match_info = conv_utils.replace_match_rows_with_aggregate(match_info=match_info, hits_gen=idx,
-                                                              type='number', sub_type='range')
+                                                              type='number', sub_type='range',
+                                                              value_func=lambda val0, val2: '{} {}'.format(val0, val2))
     idx = conv_utils.find_type_pattern(match_info=match_info, n=len(match_info),
                                        columns=['type', 'type', 'type'],
                                        patterns=['number', 'spacer', 'number'],
                                        middle_name_matches=[' - ', '-', ' to ', '- to ', ' or '])
     match_info = conv_utils.replace_match_rows_with_aggregate(match_info=match_info, hits_gen=idx,
-                                                              type='number', sub_type='range')
-    # # tag multi-unit ingredients (e.g. 3 tablespoons plus 1 teaspoon sugar
-    # range_idx = find_type_pattern(match_info=match_info, n=len(match_info),
-    #                               columns=['type', 'sub_type', 'type', 'type', 'type', 'sub_type', 'type'],
-    #                               patterns=['number', 'space', 'unit', 'text', 'number', 'space', 'unit'],
-    #                               middle_name_matches=[', plus ', ' plus ', ' + ', '+', ' and ', ' & '])
-    # match_info = replace_match_rows_with_aggregate(match_info=match_info, hits_gen=range_idx,
-    #                                                type='number', sub_type='range')
+                                                              type='number', sub_type='range',
+                                                              value_func=lambda val0, val2: '{} {}'.format(val0, val2))
     #######################################################################################################
     # tag dimensions (e.g. 12x9 inches):
     dims_idx = conv_utils.find_type_pattern(match_info=match_info, n=len(match_info),
@@ -172,20 +167,10 @@ def tag_matches_from_line(match_info):
     match_info = conv_utils.replace_match_rows_with_aggregate(match_info=match_info, hits_gen=dims_idx,
                                                               type='number', sub_type='dimension')
     #######################################################################################################
-    # tag numbers that go with odd unit types:
-    # # not necessary to flag these here? I think probably not. Remove once other stuff is working.
-    # for unit_type in ['temperature', 'time', 'length', 'percent']:
-    #     match_info = conv_utils.lookback_from_type_for_type(match_info=match_info, hit_type=unit_type,
-    #                                                         lookback_type='number',
-    #                                                         new_sub_type='{}_number'.format(unit_type),
-    #                                                         dont_skip_over_type='unit',
-    #                                                         lookback=2, type_or_sub_type='sub_type')
-    #     # temperature_number, time_number, and length_number, percent_number
-    #######################################################################################################
     # tag 'for each' numbers:
-    # example: 1/2 cups at a time, or 1 teaspoon each
-    # todo this isn't very specific, might not work / cause errors.
-    each_pattern = r'^[, ]each|^ for each|^ pieces each|^ times|^ at a time'
+    # example: "1/2 cups at a time", or "1 teaspoon each", or "spread about 1 teaspoon icing over each cupcake"
+    # up to one word followed by one of these phrases (e.g. "3 leaves for each cupcake").
+    each_pattern = r'^[ ,]?[^\s\.]*[, ]?(each|for each|pieces each|times|at a time|over each)'
     match_info = conv_utils.lookback_for_type_from_pattern(match_info=match_info,
                                                            regex_pattern=each_pattern,
                                                            lookback_type='number',
@@ -266,7 +251,7 @@ def change_servings_line(line, convert_sisterless_numbers, multiplier):
             if both_multipliable or sisterless_number:
                 amount = conv_utils.multiply_amount(amount, convert_to=None, multiplier=multiplier)
                 if not sisterless_number:
-                    if amount.number_sub_type != 'range':
+                    if not isinstance(amount.number_value, str):
                         # this function says: given the new amount value given to us by the use of
                         # multiply_amount() above, now see if units should be converted up or downwards.
                         # If they do need to be converted; do that
@@ -287,7 +272,6 @@ def change_servings_line(line, convert_sisterless_numbers, multiplier):
         for aidx in amounts.index:
             amount = amounts.loc[aidx, :]
             match_info.loc[amount.name, 'name'] = conv_utils.multiply_number_to_str(number_val=amount.number_value,
-                                                                                    sub_type=amount.number_sub_type,
                                                                                     multiplier=1.)
             match_info.loc[amount.name, 'value'] = amount.number_value
 
