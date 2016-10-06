@@ -43,7 +43,7 @@
         <div class="col s12 m4 l4 recipe_text">
             <h5 class="center">Ingredients</h5>
             {% for line in hi_ingredients %}
-                {{line|safe}}
+                <text_indent>{{line|safe}}</text_indent>
                 <br>
             {% endfor %}
         </div>

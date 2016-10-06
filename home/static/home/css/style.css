@@ -226,6 +226,12 @@ hi_each_number {
 }
 
 
+text_indent {
+  display: inline-block;
+  text-indent: -10px;
+  margin-left: 10px;
+  line-height: 14px;
+}
 
 
 
