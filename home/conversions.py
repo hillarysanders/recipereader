@@ -170,7 +170,7 @@ def tag_matches_from_line(match_info):
     # tag 'for each' numbers:
     # example: "1/2 cups at a time", or "1 teaspoon each", or "spread about 1 teaspoon icing over each cupcake"
     # up to one word followed by one of these phrases (e.g. "3 leaves for each cupcake").
-    each_pattern = r'^[ ,]?[^\s\.]*[, ]?(each|for each|pieces each|times|at a time|over each)'
+    each_pattern = r'^[ ,]?[^\s\.]*[, ]?(each|for each|pieces each|times|at a time|over each|full)'
     match_info = conv_utils.lookback_for_type_from_pattern(match_info=match_info,
                                                            regex_pattern=each_pattern,
                                                            lookback_type='number',
