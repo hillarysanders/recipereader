@@ -150,7 +150,7 @@ def insert_rows_if_amount_decimal_crosses_threshold(amount, amounts, match_info,
         if 0 < decimal < unit_thresholds['min']:
             convert_to = unit_thresholds['smaller_unit']
             dec_multiplier = CONVERSION_FACTORS.conversions[unit_name][convert_to]
-            add_number_name = multiply_number_to_str(sub_type='unicode_fraction',
+            add_number_name = multiply_number_to_str(sub_type='fraction',
                                                      number_val=decimal,
                                                      multiplier=dec_multiplier)
             # todo don't think this line is needed:
@@ -175,7 +175,7 @@ def insert_rows_if_amount_decimal_crosses_threshold(amount, amounts, match_info,
 
             # modify the amounts  dataframe so it contains two amounts, now:
             amount_new_row = pd.DataFrame(dict(number_value=new_dec_number,
-                                               number_sub_type='unicode_fraction',
+                                               number_sub_type='fraction',
                                                unit_sub_type=amount.unit_sub_type,
                                                unit_idx=add_on_start_end + .04,
                                                end=add_on_start_end + .04,

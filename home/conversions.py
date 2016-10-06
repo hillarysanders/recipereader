@@ -352,7 +352,6 @@ def parse_ingredients(x):
     # int
     # float
     # fraction
-    # unicode_fraction
     # english_number
     # range
 

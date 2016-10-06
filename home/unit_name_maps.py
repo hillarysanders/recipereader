@@ -197,7 +197,7 @@ name_maps_pcs = [
 ]
 # ingredients that are generally mentioned by name (e.g. '2 eggs'), not by unit:
 for ing in ['apple', 'banana', 'egg', 'apricot', 'aubergine', 'eggplant', 'avocado', 'beet', 'yam',
-            'carrot', 'clementine', 'orange', 'courgette', 'date', 'endive', 'fennel', 'fig', 'garlic head',
+            'carrot', 'clementine', 'courgette', 'date', 'endive', 'fennel', 'fig', 'garlic head',
             'green bean', 'guava', 'honeydew melon', 'watermelon', 'jerusalem artichoke', 'artichoke',
             'kiwi', 'leek', 'lemon', 'mango', 'mushroom', 'nectarine', 'nut', 'olive', 'orange',
             'peanut', 'pear', 'pineapple', 'pumpkin', 'quince', 'raisin', 'rhubarb', 'satsuma',
@@ -239,7 +239,7 @@ name_maps_english_numbers['sub_type'] = 'english_number'
 # fractions:
 name_maps_fractions = _prep_name_map(_name_maps_dict_to_df(name_maps_fractions))
 name_maps_fractions['type'] = 'number'
-name_maps_fractions['sub_type'] = 'unicode_fraction'
+name_maps_fractions['sub_type'] = 'fraction'
 
 # volume
 name_maps_volume = _prep_name_map(_name_maps_dict_to_df(name_maps_volume))
@@ -290,7 +290,6 @@ multipliable = dict(
     int=True,
     fraction=True,
     float=True,
-    unicode_fraction=True,
     english_number=True,
     range=True
 )
@@ -308,7 +307,6 @@ multipliable = dict(
     # int
     # float
     # fraction
-    # unicode_fraction
     # english_number
     # range
 
