@@ -5,7 +5,7 @@ from .models import Recipe
 
 
 class ServingsForm(forms.Form):
-    servings = forms.IntegerField(
+    servings = forms.FloatField(
         label='',
         widget=forms.NumberInput(attrs={'class': "input_serving"})
     )

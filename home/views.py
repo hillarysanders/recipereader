@@ -232,7 +232,9 @@ def recipe_detail(request, pk):
                 #                                convert_sisterless_numbers=True,
                 #                                servings0=recipe.num_servings,
                 #                                servings1=sform.cleaned_data['servings'])
-                context['servings_form'] = ServingsForm(initial={'servings': sform.cleaned_data['servings']})
+                new_servings = sform.cleaned_data['servings']
+                new_servings = int(new_servings) if new_servings % 1 == 0 else new_servings
+                context['servings_form'] = ServingsForm(initial={'servings': new_servings})
 
     context['hi_ingredients'] = get_highlighted_ingredients(ingredients, type_or_sub_types=['sub_type', 'type'])
     context['hi_instructions'] = get_highlighted_ingredients(instructions, type_or_sub_types=['sub_type', 'type'])
