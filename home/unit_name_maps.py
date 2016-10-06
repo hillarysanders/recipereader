@@ -185,6 +185,9 @@ name_maps_pcs = [
     dict(pattern=['slice', 'slices'],
          singular='slice',
          plural='slices'),
+    dict(pattern=['loaf', 'loaves'],
+         singular='loaf',
+         plural='loaves'),
     dict(pattern=['bunch', 'bunches'],
          singular='bunch',
          plural='bunches')
@@ -193,15 +196,21 @@ name_maps_pcs = [
     #      plural=''),
 ]
 # ingredients that are generally mentioned by name (e.g. '2 eggs'), not by unit:
-for ing in ['apple', 'banana', 'egg', 'apricot', 'Aubergine', 'eggplant', 'avocado', 'beet', 'yam',
+for ing in ['apple', 'banana', 'egg', 'apricot', 'aubergine', 'eggplant', 'avocado', 'beet', 'yam',
             'carrot', 'clementine', 'orange', 'courgette', 'date', 'endive', 'fennel', 'fig', 'garlic head',
             'green bean', 'guava', 'honeydew melon', 'watermelon', 'jerusalem artichoke', 'artichoke',
             'kiwi', 'leek', 'lemon', 'mango', 'mushroom', 'nectarine', 'nut', 'olive', 'orange',
-            'peanut', 'pear', 'pineapple', 'pumpkin', 'quince', 'radish', 'raisin', 'rhubarb', 'satsuma',
-            'strawberry', 'sweet potato', 'potato', 'tomato', 'turnip', 'plum', 'zucchini']:
+            'peanut', 'pear', 'pineapple', 'pumpkin', 'quince', 'raisin', 'rhubarb', 'satsuma',
+            'sweet potato', 'potato', 'tomato', 'turnip', 'plum', 'zucchini',
+            'chicken thigh', 'chicken breast', ]:
     name_maps_pcs.append(dict(pattern=[ing, '{}s'.format(ing)],
                               singular=ing,
                               plural='{}s'.format(ing)))
+for ing in ['radish']:
+    name_maps_pcs.append(dict(pattern=[ing, '{}es'.format(ing)],
+                              singular=ing,
+                              plural='{}es'.format(ing)))
+
 
 temperature_patterns = pd.DataFrame(dict(pattern=['ºC', 'ºF', 'º', 'degrees'],
                                          type='unit', sub_type='temperature'))
