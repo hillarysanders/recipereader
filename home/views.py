@@ -37,10 +37,17 @@ def profile(request):
     for r in recipes:
         print(r)
     print(len(recipes))
+
+    if len(recipes)>0:
+        most_recent_recipe = str(max([r.pub_date for r in recipes]))[:10]
+        n_recipes = '1 recipe' if len(recipes) == 1 else '{} recipes'.format(len(recipes))
+    else:
+        most_recent_recipe = "Aw man, you haven't saved any yet"
+        n_recipes = 0
     context = {
         'user': user,
-        'n_recipes': '1 recipe' if len(recipes) == 1 else '{} recipes'.format(len(recipes)),
-        'most_recent_recipe': str(max([r.pub_date for r in recipes]))[:10]
+        'n_recipes': n_recipes,
+        'most_recent_recipe': most_recent_recipe
     }
     return render(request, 'home/profile.html', context)
 
