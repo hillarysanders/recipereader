@@ -43,7 +43,7 @@ def profile(request):
         n_recipes = '1 recipe' if len(recipes) == 1 else '{} recipes'.format(len(recipes))
     else:
         most_recent_recipe = "Aw man, you haven't saved any yet"
-        n_recipes = 0
+        n_recipes = '0 recipes so far'
     context = {
         'user': user,
         'n_recipes': n_recipes,
