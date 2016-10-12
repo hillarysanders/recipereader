@@ -417,9 +417,9 @@ def clean_newlines(x):
 def _add_highlight(match_dict, type_or_sub_types=['type', 'sub_type'], prefix='<hi_{}>', postfix='</hi_{}>'):
     match_dict = match_dict.fillna('')
     txt = match_dict['name']
-    # for key in type_or_sub_types:
-    #     t = match_dict[key]
-    #     txt = '{}{}{}'.format(prefix.format(t), txt, postfix.format(t))
+    for key in type_or_sub_types:
+        t = match_dict[key]
+        txt = '{}{}{}'.format(prefix.format(t), txt, postfix.format(t))
 
     return txt
 

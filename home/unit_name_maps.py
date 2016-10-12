@@ -145,7 +145,7 @@ name_maps_weight = [
     dict(pattern=['lb', 'pound', 'lbs', 'pounds', 'lb\.', 'lbs\.'],  # todo pound cake???
          singular='pound',
          plural='lbs.'),
-    dict(pattern=['oz', 'ounce', 'onze', 'onza', 'oz\.'],
+    dict(pattern=['oz', 'ounce', 'ounces', 'onze', 'onza', 'oz\.'],
          singular='ounce',
          plural='oz.')
 ]

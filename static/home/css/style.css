@@ -122,81 +122,73 @@ highlighted {
     background-color: #ffff00;
 }
 
-hi_text {
-    background-color: #cccccf;
-}
+
 hi_number {
-    background-color: #ffff00;
+    background-color: #ffffaa;
 }
 hi_unit {
-    background-color: #4090cc;
+    background-color: #ccdfec;
 }
+
+
 hi_time {
     background-color: #ccffee;
 }
 hi_length {
-    background-color: #cc00ff;
+    background-color: #ff99ff;
 }
 hi_temperature {
-    background-color: #ff5050;
-}
-
-hi_spacer {
-    background-color: #77ff88;
+    background-color: #ffa0a0;
 }
 hi_plus {
-    background-color: red;
+    background-color: #ffaaee;
 }
 hi_line_number {
     background-color: #cceecc;
     font-size: 20px;
 }
-hi_temperature_number {
-    background-color: red;
-}
-hi_length_number {
-    background-color: #ff00ff;
-}
-hi_time_number {
-    background-color: #55ffee;
-}
-hi_percent_number {
-    background-color: #11aaff;
-}
 hi_package_number {
-    background-color: #444499;
+    background-color: #ccffaa;
 }
 hi_package {
-    background-color: #4444cc;
+    background-color: #ccffaa;
 }
 hi_int {
-    background-color: yellow;
+    background-color: #ffffcc;
 }
 hi_float {
-    background-color: #fff3aa;
+    background-color: #ffccaa;
 }
 hi_fraction {
-    background-color: #ffcc13;
+    background-color: #ffcc99;
 }
 hi_int_fraction {
-    background-color: #ffaa00;
+    background-color: #ffaacc;
 }
 hi_weight {
-    background-color: #4090ff;
+    background-color: #ccdfec;
 }
 hi_volume {
-    background-color: #4090aa;
+    background-color: #ccdffc;
 }
 hi_pcs {
-    background-color: #40aacc;
+    background-color: #dcdfec;
 }
 hi_english_number {
-    background-color: #ff7000;
+    background-color: #ffccff;
 }
 hi_each_number {
-    background-color: black;
-    color: white;
+    background-color: grey;
 }
+hi_spacer {
+    background-color: #ccccbb;
+}
+/*
+hi_text {
+    background-color: #cccccf;
+}
+*/
+
 
 .servings_box {
     width: 200px;
@@ -226,9 +218,12 @@ hi_each_number {
 }
 
 
-
-
-
+text_indent {
+  display: inline-block;
+  text-indent: -10px;
+  margin-left: 10px;
+  line-height: 14px;
+}
 
 
 .ghostbtn {

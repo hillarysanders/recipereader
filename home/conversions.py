@@ -205,19 +205,25 @@ def get_amounts(match_info):
         amounts.number_value = match_info.loc[numbers_idx, 'value'].values
         amounts.number_sub_type = match_info.loc[numbers_idx, 'sub_type'].values
         for i in numbers_idx:
-            # get the number and the following two phrases (if they exist)
-            next_two = match_info.loc[i:, :].head(3)
+            # get the number and the subsequent phrases, sans spacers:
+            following = match_info.loc[[j for j in match_info.loc[i:, :].index if
+                                        match_info.loc[j, 'type'] != 'spacer'], :]
             # initialize the end location:
             amounts.loc[i, 'end'] = i
-            if len(next_two) > 1:
-                if conv_utils.df_get(next_two, 1, 'type') == 'spacer':
-                    next_two = next_two.iloc[[0, 2], :]
-
-                if conv_utils.df_get(next_two, 1, 'type') == 'unit':
-                    amounts.loc[i, 'unit_pattern'] = next_two.pattern.iloc[1]
-                    amounts.loc[i, 'unit_sub_type'] = next_two.sub_type.iloc[1]
-                    amounts.loc[i, 'end'] = next_two.index[1]
-                    amounts.loc[i, 'unit_idx'] = next_two.index[1]
+            if len(following) > 1:
+                if conv_utils.df_get(following, 1, 'type') == 'unit':
+                    amounts.loc[i, 'unit_pattern'] = following.pattern.iloc[1]
+                    amounts.loc[i, 'unit_sub_type'] = following.sub_type.iloc[1]
+                    amounts.loc[i, 'end'] = following.index[1]
+                    amounts.loc[i, 'unit_idx'] = following.index[1]
+                elif len(following) > 3:
+                    if all(following['type'].head(4) == ['number', 'number', 'unit', 'unit']):
+                        # we have a "1 (16 oz) package" type amount on our hands. "16 oz" will be recorded separately,
+                        # on 16's turn.
+                        amounts.loc[i, 'unit_pattern'] = following.pattern.iloc[3]
+                        amounts.loc[i, 'unit_sub_type'] = following.sub_type.iloc[3]
+                        amounts.loc[i, 'end'] = following.index[3]
+                        amounts.loc[i, 'unit_idx'] = following.index[3]
 
     return amounts
 
@@ -268,7 +274,7 @@ def change_servings_line(line, convert_sisterless_numbers, multiplier):
                         )
                 amounts.loc[amount.name, :] = amount
 
-        # now the multiplication has happened, giv em' some aftercare :P
+        # now the multiplication has happened, insert number info into the match_info object:
         for aidx in amounts.index:
             amount = amounts.loc[aidx, :]
             match_info.loc[amount.name, 'name'] = conv_utils.multiply_number_to_str(number_val=amount.number_value,
@@ -279,6 +285,7 @@ def change_servings_line(line, convert_sisterless_numbers, multiplier):
     amounts = amounts.sort_index()
     match_info = match_info.sort_index()
 
+    # this is where the (possibly changed) units are inserted into the match_info object
     match_info = conv_utils.update_plurality(match_info, amounts)
     return dict(match_info=match_info, amounts=amounts)
 
