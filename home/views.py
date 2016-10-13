@@ -6,7 +6,7 @@ from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
 from django.contrib import messages
 from .models import Recipe, UserProxy
 from .forms import UserForm, LoginForm, AddRecipeForm, ServingsForm
-from .conversions_utils import get_highlighted_ingredients
+from .conversions_utils import get_highlighted_ingredients, highlight_changed_amounts
 from .conversions import change_servings
 # Create your views here.
 
@@ -223,6 +223,7 @@ def recipe_detail(request, pk):
     ingredients = recipe.ingredients
     instructions = recipe.instructions
 
+    highlight_changes = False
     if request.method == "POST":
         # if the user clicked the create user submit button:
         if request.POST.get("servingsSubmit"):
@@ -243,8 +244,18 @@ def recipe_detail(request, pk):
                 new_servings = int(new_servings) if new_servings % 1 == 0 else new_servings
                 context['servings_form'] = ServingsForm(initial={'servings': new_servings})
 
-    context['hi_ingredients'] = get_highlighted_ingredients(ingredients, type_or_sub_types=['sub_type', 'type'])
-    context['hi_instructions'] = get_highlighted_ingredients(instructions, type_or_sub_types=['sub_type', 'type'])
+                highlight_changes = True
+
+    if highlight_changes:
+        context['hi_ingredients'] = highlight_changed_amounts(ingredients,
+                                                              convert_sisterless_numbers=True)
+        context['hi_instructions'] = highlight_changed_amounts(instructions,
+                                                               convert_sisterless_numbers=True)
+    else:
+        context['hi_ingredients'] = highlight_changed_amounts(ingredients,
+                                                              convert_sisterless_numbers=True)
+        context['hi_instructions'] = highlight_changed_amounts(instructions,
+                                                               convert_sisterless_numbers=True)
 
     return render(request, 'home/recipe_detail.html', context)
 

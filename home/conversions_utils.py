@@ -94,26 +94,6 @@ def multiply_amount(amount, convert_to=None, multiplier=None):
     return amount
 
 
-def locate_amt_plus_amt_amounts(amounts, match_info):
-    """
-    finds amounts rows that are side by side and separated by 'plus' subtype phrases
-    in match_info. yields indices of the two amounts rows.
-    generator
-    note that it searches in reverse so row merges don't mess things up...
-    """
-    amt_index = amounts.index[::-1]
-    for left, right in zip(amt_index[1:], amt_index):
-        left_end = match_info.index.get_loc(amounts.loc[left, 'end'])
-        if len(match_info) > (left_end + 2):
-            # we are searching for amount PLUS amount, so left end + 2 = right start
-            expected_start = match_info.index[left_end + 2]
-            if expected_start == right:
-                plus_idx = match_info.index[left_end + 1]
-                if match_info.sub_type[plus_idx] == 'plus':
-                    # yield index of the two amounts rows to be joined:
-                    yield (left, right, plus_idx)
-
-
 def convert_amount_to_appropriate_unit(amount):
     """
     # if value is below unit's threshold, convert to that unit.
@@ -162,8 +142,8 @@ def insert_rows_if_amount_decimal_crosses_threshold(amount, amounts, match_info,
             new_dec_number = np.round(dec_multiplier * decimal, round)
             mi_row = pd.DataFrame(dict(pattern=[np.nan, np.nan, np.nan, convert_to],
                                        # start=add_on_start_end, end=add_on_start_end,
-                                       type=['plus', 'number', 'spacer', 'unit'],
-                                       sub_type=[np.nan, amount.number_sub_type,
+                                       type=['text', 'number', 'spacer', 'unit'],
+                                       sub_type=['plus', amount.number_sub_type,
                                                  np.nan, amount.unit_sub_type],
                                        value=[np.nan, new_dec_number, np.nan, np.nan],
                                        original='',
@@ -196,7 +176,8 @@ def combine_two_amounts_rows(left_idx, right_idx, plus_idx, amounts, match_info)
     unit_name_1 = name_maps.loc[to_merge.unit_pattern.iloc[1], 'singular']
     unit_name_2 = name_maps.loc[new_row.unit_pattern, 'singular']
     conversion_float = CONVERSION_FACTORS.conversions[unit_name_1][unit_name_2]
-    new_row.number_value += to_merge.number_value.iloc[1] * conversion_float
+    new_row['number_value'] += to_merge.number_value.iloc[1] * conversion_float
+    new_row['end'] = to_merge.end.iloc[1]
     amounts = replace_rows(amounts, idx=[left_idx, right_idx], new_row=new_row, by_iloc=False)
 
     match_info_rows_to_drop = match_info.loc[plus_idx:to_merge.end.iloc[1], :].index
@@ -444,3 +425,91 @@ def get_highlighted_ingredients(parsed_text, type_or_sub_types=['type', 'sub_typ
         highlighted.append(text)
 
     return highlighted
+
+
+def locate_amt_plus_amt_amounts(amounts, match_info):
+    """
+    finds amounts rows that are side by side and separated by 'plus' subtype phrases
+    in match_info. yields indices of the two amounts rows.
+    generator
+    note that it searches in reverse so row merges don't mess things up...
+    """
+    amt_index = amounts.index[::-1]
+    for left, right in zip(amt_index[1:], amt_index):
+        left_end = match_info.index.get_loc(amounts.loc[left, 'end'], method='pad')
+        if len(match_info) > (left_end + 2):
+            # we are searching for amount PLUS amount, so left end + 2 = right start
+            expected_start = match_info.index[left_end + 2]
+            if expected_start == right:
+                plus_idx = match_info.index[left_end + 1]
+                if match_info.sub_type[plus_idx] == 'plus':
+                    # yield index of the two amounts rows to be joined:
+                    yield (left, right, plus_idx)
+
+
+def merge_amounts_meant_to_be_together(amounts, match_info):
+    if len(amounts) > 0:
+        # now, merge any amounts that are meant to be together:
+        side_by_side_idx = locate_amt_plus_amt_amounts(amounts=amounts, match_info=match_info)
+        for left_idx, right_idx, plus_idx in side_by_side_idx:
+            match_info, amounts = combine_two_amounts_rows(left_idx=left_idx, right_idx=right_idx,
+                                                           plus_idx=plus_idx, amounts=amounts,
+                                                           match_info=match_info)
+
+    return amounts, match_info
+
+
+def highlight_changed_amounts(parsed_text, convert_sisterless_numbers=True):
+    """
+    :param parsed_text: output of parse_ingredients()
+    """
+    idx = sort_char_keys(parsed_text)
+    highlighted = []
+    for i in idx:
+        match_info = parsed_text[i]['match_info']
+        amounts = parsed_text[i]['amounts']
+
+        if not isinstance(match_info, pd.DataFrame):
+            match_info = json_dict_to_df(match_info)
+        if not isinstance(amounts, pd.DataFrame):
+            amounts = json_dict_to_df(amounts)
+
+        amounts, match_info = merge_amounts_meant_to_be_together(amounts, match_info)
+        # import pdb; pdb.set_trace()
+
+        match_info = match_info.fillna('')
+        for aidx in amounts.index:
+            amount = amounts.loc[aidx, :]
+            # is the number type (and the unit type, if it exists) multipliable?
+            is_multipliable = is_amount_multipliable(amount,
+                                                     convert_sisterless_numbers=convert_sisterless_numbers)
+
+            if is_multipliable:
+                match_info.loc[aidx, 'name'] = '<multiplied_amount>{}'.format(match_info.loc[aidx, 'name'])
+                end_idx = match_info.index.get_loc(amount.end, method='pad')
+                match_info['name'].iloc[end_idx] += '</multiplied_amount>'
+
+        text = ''.join(match_info.name)
+        highlighted.append(text)
+
+    return highlighted
+
+
+def is_amount_multipliable(amount, convert_sisterless_numbers=True):
+
+    # initialize:
+    is_multipliable = False
+    # first off, are both the unit sub_type and number sub_type multipliable?
+    both_multipliable = (multipliable.get(amount['number_sub_type']) is True) and \
+                        (multipliable.get(amount['unit_sub_type']) is True)
+    if both_multipliable:
+        is_multipliable = True
+    else:
+        if convert_sisterless_numbers:
+            # is the number alone but multipliable?
+            sisterless_number = (not isinstance(amount.get('unit_pattern'), str)) and \
+                                (multipliable.get(amount['number_sub_type']) is True)
+            if sisterless_number:
+                is_multipliable = True
+
+    return is_multipliable

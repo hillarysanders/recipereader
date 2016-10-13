@@ -123,6 +123,9 @@ highlighted {
 }
 
 
+multiplied_amount {
+    background-color: #acbfcc;
+}
 hi_number {
     background-color: #ffffaa;
 }
@@ -141,7 +144,7 @@ hi_temperature {
     background-color: #ffa0a0;
 }
 hi_plus {
-    background-color: #ffaaee;
+    background-color: #88aaff;
 }
 hi_line_number {
     background-color: #cceecc;

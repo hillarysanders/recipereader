@@ -234,29 +234,19 @@ def change_servings_line(line, convert_sisterless_numbers, multiplier):
     match_info = conv_utils.json_dict_to_df(line['match_info'])
 
     if len(amounts) > 0:
-
-        side_by_side_idx = conv_utils.locate_amt_plus_amt_amounts(amounts=amounts, match_info=match_info)
-        # now, merge any amounts that are meant to be together:
-        for left_idx, right_idx, plus_idx in side_by_side_idx:
-            match_info, amounts = conv_utils.combine_two_amounts_rows(left_idx=left_idx, right_idx=right_idx,
-                                                                      plus_idx=plus_idx, amounts=amounts,
-                                                                      match_info=match_info)
+        amounts, match_info = conv_utils.merge_amounts_meant_to_be_together(amounts, match_info)
 
         for aidx in amounts.index:
             amount = amounts.loc[aidx, :]
-            # is the number type and the unit type multipliable?
-            # if unit doesn't exist, True and None = None; False and none = False.
-            both_multipliable = (multipliable.get(amount['number_sub_type']) is True) and \
-                                (multipliable.get(amount['unit_sub_type']) is True)
-            # is the number alone but multipliable?
-            sisterless_number = (not isinstance(amount.get('unit_pattern'), str)) and \
-                                convert_sisterless_numbers and \
-                                (multipliable.get(amount['number_sub_type']) is True)
+            # is the number type (and the unit type, if it exists) multipliable?
+            is_multipliable = conv_utils.is_amount_multipliable(amount,
+                                                                convert_sisterless_numbers=convert_sisterless_numbers)
 
             # if unit and number are multipliable, or sisterless numbers are OK:
-            if both_multipliable or sisterless_number:
+            if is_multipliable:
                 amount = conv_utils.multiply_amount(amount, convert_to=None, multiplier=multiplier)
-                if not sisterless_number:
+                # if there is a unit paired with a number (not sisterless)
+                if isinstance(amount.get('unit_pattern'), str):
                     if not isinstance(amount.number_value, str):
                         # this function says: given the new amount value given to us by the use of
                         # multiply_amount() above, now see if units should be converted up or downwards.
