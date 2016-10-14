@@ -90,7 +90,7 @@ def find_matches_in_line(line):
 
                     # the default name will be the original:
                     info['name'] = p
-                    
+
                 # record the info:
                 placement = int(info.loc[:, 'end'])
                 match_info = match_info.append(info, ignore_index=False)
