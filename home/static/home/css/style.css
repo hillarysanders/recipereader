@@ -126,6 +126,8 @@ highlighted {
 multiplied_amount {
     background-color: #acbfcc;
     background-color: #ccdadf;
+    border-top: 3px solid #ccdadf;
+    border-bottom: 3px solid #ccdadf;
 }
 hi_number {
     background-color: #ffffaa;
