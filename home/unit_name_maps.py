@@ -59,7 +59,7 @@ def _get_name_maps_english_numbers(n=1000):
 
 name_maps_fractions = [
     # don't want to match to... half and half, half chopped, etc
-    dict(pattern=['half', 'a half', 'one half', '1/2', '\.5', 'halves', '½'],
+    dict(pattern=['half', 'a half', 'one half', '1/2', '\.5', '½'],
          name='½',
          value=.5),
     dict(pattern=['a quarter', 'one quarter', '1/4', '\.25', 'a forth', 'quarters', '¼'],

@@ -272,12 +272,12 @@ def lookback_for_type_from_pattern(match_info, regex_pattern, lookback_type, new
     return match_info
 
 
-def lookforward_for_type_from_pattern(match_info, regex_pattern, lookback_type, new_sub_type, lookback=1):
-    lookback += 1
+def lookforward_for_type_from_pattern(match_info, regex_pattern, hit_type, new_sub_type, lookforward=1):
+    lookforward += 1
     idx = [i for i in match_info.index if re.match(regex_pattern, match_info.loc[i, 'name'])]
     for i in idx:
-        m = match_info.loc[i:, :].head(lookback)
-        is_number = m.type == lookback_type
+        m = match_info.loc[i:, :].head(lookforward)
+        is_number = m.type == hit_type
         if any(is_number):
             hit = m.loc[is_number].index[0]
             match_info.loc[hit, 'sub_type'] = new_sub_type
@@ -474,6 +474,7 @@ def highlight_changed_amounts(parsed_text, convert_sisterless_numbers=True):
         if not isinstance(amounts, pd.DataFrame):
             amounts = json_dict_to_df(amounts)
 
+        # merging amounts so that e.g. '1 tablespoon plus 1 teaspoon' is highlighted as a single amount.
         amounts, _match_info = merge_amounts_meant_to_be_together(amounts, match_info)
 
         match_info = match_info.fillna('')

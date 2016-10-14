@@ -177,6 +177,12 @@ def tag_matches_from_line(match_info):
                                                            lookback_type='number',
                                                            dont_skip_over_type='text',
                                                            new_sub_type='each_number', lookback=3)
+    each_pattern = r' of this| of the| of your'
+    match_info = conv_utils.lookback_for_type_from_pattern(match_info=match_info,
+                                                           regex_pattern=each_pattern,
+                                                           lookback_type='number',
+                                                           dont_skip_over_type='unit',
+                                                           new_sub_type='each_number', lookback=1)
 
     # todo maybe this should be applied to amounts, since e.g. you can have:
     # number spacer unit ' at a time'
