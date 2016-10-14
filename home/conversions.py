@@ -84,11 +84,9 @@ def find_matches_in_line(line):
                     info['start'] = start + placement
                     info['end'] = end + placement
                     info['pattern'] = pidx
-
-
-                    # TODO TEMPORARY:
-                    info['name'] = p
-                    # match_info, info = handle_unit_plurality(info=info, match_info=match_info, pidx=start + placement)
+                    for col in ['singular', 'plural']:
+                        if info.get(col) is not None:
+                            del info[col]
 
                 # record the info:
                 placement = int(info.loc[:, 'end'])
