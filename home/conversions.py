@@ -88,6 +88,9 @@ def find_matches_in_line(line):
                         if info.get(col) is not None:
                             del info[col]
 
+                    # the default name will be the original:
+                    info['name'] = p
+                    
                 # record the info:
                 placement = int(info.loc[:, 'end'])
                 match_info = match_info.append(info, ignore_index=False)
