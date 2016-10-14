@@ -474,8 +474,7 @@ def highlight_changed_amounts(parsed_text, convert_sisterless_numbers=True):
         if not isinstance(amounts, pd.DataFrame):
             amounts = json_dict_to_df(amounts)
 
-        amounts, match_info = merge_amounts_meant_to_be_together(amounts, match_info)
-        # import pdb; pdb.set_trace()
+        amounts, _match_info = merge_amounts_meant_to_be_together(amounts, match_info)
 
         match_info = match_info.fillna('')
         for aidx in amounts.index:
