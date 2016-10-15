@@ -123,14 +123,19 @@ highlighted {
 }
 
 
+multiplied_amount {
+    background-color: #acbfcc;
+    background-color: #ccdadf;
+    border-top: 3px solid #ccdadf;
+    border-bottom: 3px solid #ccdadf;
+}
+/*
 hi_number {
     background-color: #ffffaa;
 }
 hi_unit {
     background-color: #ccdfec;
 }
-
-
 hi_time {
     background-color: #ccffee;
 }
@@ -141,7 +146,7 @@ hi_temperature {
     background-color: #ffa0a0;
 }
 hi_plus {
-    background-color: #ffaaee;
+    background-color: #88aaff;
 }
 hi_line_number {
     background-color: #cceecc;
@@ -183,7 +188,6 @@ hi_each_number {
 hi_spacer {
     background-color: #ccccbb;
 }
-/*
 hi_text {
     background-color: #cccccf;
 }
@@ -222,7 +226,8 @@ text_indent {
   display: inline-block;
   text-indent: -10px;
   margin-left: 10px;
-  line-height: 14px;
+  line-height: 16px;
+  margin-top: 3px;
 }
 
 
