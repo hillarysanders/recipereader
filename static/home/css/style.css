@@ -69,12 +69,6 @@ _nav .brand-logo {
     border: 3px solid #888899;
 }
 
-
-
-
-
-
-
 .big_form_input {
     height: 100px;
 }
@@ -117,9 +111,15 @@ input::-webkit-inner-spin-button {
 }
 
 
-/*highlights for text parsing:*/
-highlighted {
-    background-color: #ffff00;
+
+
+/* tooltip for servings multiplication: */
+.material-tooltip .backdrop {
+    background: transparent;
+}
+.material-tooltip {
+    color: #444455;
+    font-style: italic;
 }
 
 
@@ -128,6 +128,11 @@ multiplied_amount {
     background-color: #ccdadf;
     border-top: 3px solid #ccdadf;
     border-bottom: 3px solid #ccdadf;
+}
+
+/*highlights for text parsing:*/
+highlighted {
+    background-color: #ffff00;
 }
 /*
 hi_number {
