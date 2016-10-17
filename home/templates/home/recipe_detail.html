@@ -14,8 +14,18 @@
             <!--</a>-->
             <t class="serves_text">servings:</t>
             {{ servings_form.servings|as_material:"s4 m3 l2" }}
-            <input type="submit" id="servbtn" value="Submit" name="servingsSubmit" style="display: none;"/>
+
+                <input type="submit" id="servbtn" value="Submit" name="servingsSubmit" style="display: none;"/>
+
+              <!--<a class="btn tooltipped" data-position="bottom" data-delay="50" data-tooltip="I am tooltip">Hover me!</a>-->
+
+            {% if recipe.changed_servings %}
+                Hi!!!
+            {% endif %}
+            <a  class="tooltipped" data-position="bottom" data-delay="50">
             <label for="servbtn" class="btn-floating btn-med waves-effect col2 servingbtn">Go</label>
+            </a>
+
         </form>
         <div class="red center-align">{{ form.name.errors }}</div>
     </div>
