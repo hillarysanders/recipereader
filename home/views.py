@@ -217,13 +217,13 @@ def recipe_detail(request, pk):
 
     context = {
         'recipe': recipe,
-        'servings_form': ServingsForm(initial={'servings': recipe.num_servings})
+        'servings_form': ServingsForm(initial={'servings': recipe.num_servings}),
+        'changed_servings': False
     }
 
     ingredients = recipe.ingredients
     instructions = recipe.instructions
 
-    changed_servings = False
     if request.method == "POST":
         # if the user clicked the create user submit button:
         if request.POST.get("servingsSubmit"):
@@ -244,9 +244,9 @@ def recipe_detail(request, pk):
                 new_servings = int(new_servings) if new_servings % 1 == 0 else new_servings
                 context['servings_form'] = ServingsForm(initial={'servings': new_servings})
 
-                changed_servings = True
+                context['changed_servings'] = True
 
-    if changed_servings:
+    if context['changed_servings']:
         context['hi_ingredients'] = highlight_changed_amounts(ingredients,
                                                               convert_sisterless_numbers=True)
         context['hi_instructions'] = highlight_changed_amounts(instructions,
@@ -256,8 +256,6 @@ def recipe_detail(request, pk):
                                                               convert_sisterless_numbers=True)
         context['hi_instructions'] = highlight_changed_amounts(instructions,
                                                                convert_sisterless_numbers=True)
-
-    context['changed_servings'] = changed_servings
 
     return render(request, 'home/recipe_detail.html', context)
 

@@ -1,6 +1,7 @@
 {% extends "home/index.html" %}
 
 {% block content %}
+{% load static %}
 <!--{% load materialize %}-->
 <h2 class="center"> {{ recipe.recipe_name }} </h2>
 
@@ -9,19 +10,11 @@
     <div class="center-align servings_box">
         <form action="." method="post">
             {% csrf_token %}
-            <!--<a class="btn-floating btn-small col2">-->
-                <!--<i class="small material-icons">mode_edit</i>-->
-            <!--</a>-->
             <t class="serves_text">servings:</t>
             {{ servings_form.servings|as_material:"s4 m3 l2" }}
 
                 <input type="submit" id="servbtn" value="Submit" name="servingsSubmit" style="display: none;"/>
 
-              <!--<a class="btn tooltipped" data-position="bottom" data-delay="50" data-tooltip="I am tooltip">Hover me!</a>-->
-
-            {% if recipe.changed_servings %}
-                Hi!!!
-            {% endif %}
             <a  class="tooltipped" data-position="bottom" data-delay="50">
             <label for="servbtn" class="btn-floating btn-med waves-effect col2 servingbtn">Go</label>
             </a>
@@ -30,6 +23,9 @@
         <div class="red center-align">{{ form.name.errors }}</div>
     </div>
 
+    <!--{% if changed_servings %}-->
+        <!--<img class="responsive-img circle" src="{% static 'home/images/chef-pictures-clipart.jpeg' %}" width="400"/>-->
+    <!--{% endif %}-->
 
     <div class="col s12 recipe_text">
         <!--recipe image, time took prep / cook / make, description:-->
