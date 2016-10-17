@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.contrib.postgres.fields import JSONField
 from django.urls import reverse
 from django.db.models.fields.related import ManyToManyField
+from django.template.defaultfilters import slugify
 from . import conversions
 from .utils import Timer
 # Create your models here.
@@ -62,6 +63,7 @@ class Recipe(models.Model):
     num_servings = models.IntegerField(blank=True, null=False, default=4)
     # your recipe image
     image = models.ImageField(blank=True, upload_to='images/recipes/', null=True)
+    slug = models.SlugField(max_length=40, default='default-slug')
 
     # invisible to the user stuff:
     pub_date = models.DateTimeField('date published', auto_now_add=True)
@@ -77,6 +79,8 @@ class Recipe(models.Model):
 
         with Timer('Parsing instructions') as t2:
             self.instructions = conversions.parse_ingredients(self.instructions_text)
+
+        self.slug = slugify(self.recipe_name[:40])
 
         super(Recipe, self).save(*args, **kwargs)
 
@@ -97,9 +101,10 @@ class Recipe(models.Model):
         return data
 
     def get_absolute_url(self):
-        # todo this should be done via reverse but couldn't get it to work:
-        return "/recipes/detail/{}/".format(self.pk)
-        # return reverse('recipe_detail', args=self.pk)
+        return ('recipe', (), {
+            'slug': self.slug,
+            'pd': self.pk,
+        })
 
     def get_all_fields(self):
         """Returns a list of all field names on the instance."""

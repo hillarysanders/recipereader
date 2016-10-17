@@ -4,6 +4,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, get_object_or_404
 from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
 from django.contrib import messages
+from django.urls import reverse
 from .models import Recipe, UserProxy
 from .forms import UserForm, LoginForm, AddRecipeForm, ServingsForm
 from .conversions_utils import get_highlighted_ingredients, highlight_changed_amounts
@@ -169,7 +170,7 @@ def add_recipe(request):
             recipe.user_proxy = get_user_proxy(request)
             recipe.save()
 
-            return HttpResponseRedirect('/recipes/detail/{}/'.format(recipe.id))
+            return HttpResponseRedirect(reverse('home:recipe_detail', args=(recipe.slug, recipe.pk)))
         else:
             # no return redirect statement here, as errors will be shown in template below
             pass
@@ -185,7 +186,7 @@ def add_recipe(request):
     return render(request, 'home/add_recipe.html', context)
 
 
-def edit_recipe(request, pk):
+def edit_recipe(request, slug, pk):
 
     recipe = get_object_or_404(Recipe, pk=pk)
     if request.method == "POST":
@@ -196,7 +197,7 @@ def edit_recipe(request, pk):
             # recipe.user = request.user
             recipe.save()
 
-            return HttpResponseRedirect('/recipes/detail/{}/'.format(recipe.id))
+            return HttpResponseRedirect(reverse('home:recipe_detail', args=(slug, pk)))
         else:
             # no return redirect statement here, as errors will be shown in template below
             pass
@@ -212,7 +213,7 @@ def edit_recipe(request, pk):
     return render(request, 'home/add_recipe.html', context)
 
 
-def recipe_detail(request, pk):
+def recipe_detail(request, slug, pk):
     recipe = get_object_or_404(Recipe, pk=pk)
 
     context = {

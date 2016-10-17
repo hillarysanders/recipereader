@@ -19,7 +19,7 @@
 </nav>
 
 {% for recipe in recipes %}
-    <h5><a href="{% url 'home:recipe_detail' recipe.id %}">{{recipe.recipe_name|capfirst}}</a></h5>
+    <h5><a href="{% url 'home:recipe_detail' recipe.slug recipe.pk %}">{{recipe.recipe_name|capfirst}}</a></h5>
     {{recipe.description|escape|urlize|linebreaks}}
 {% endfor %}
 
