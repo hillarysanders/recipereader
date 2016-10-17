@@ -38,14 +38,12 @@
             <p>{{add_recipe_form.ingredients_text|as_material:"s12 m6"}}</p>
             <p>{{add_recipe_form.instructions_text|as_material:"s12 m6"}}</p>
         </div>
-        <!--<div class="row">-->
-            <!--<div class="col s12 m6 textbox"> TODO (realtime validation textbox) </div>-->
-            <!--<div class="col s12 m6 textbox"> TODO (realtime validation textbox) </div>-->
-        <!--</div>-->
+
+        <p>{{add_recipe_form.public|as_material:"s12"}}</p>
+
 
         <input type="submit" id="rsubmitbtn" value="{{update}}" style='display: none;'/>
         <label for="rsubmitbtn" class="waves-effect waves-light btn col2">Submit</label>
-
     </form>
 
     {% if add_recipe_form.errors %}

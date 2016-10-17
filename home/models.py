@@ -64,6 +64,7 @@ class Recipe(models.Model):
     # your recipe image
     image = models.ImageField(blank=True, upload_to='images/recipes/', null=True)
     slug = models.SlugField(max_length=40, default='default-slug')
+    public = models.BooleanField(default=True, verbose_name='make recipe public?')
 
     # invisible to the user stuff:
     pub_date = models.DateTimeField('date published', auto_now_add=True)
