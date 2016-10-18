@@ -9,15 +9,23 @@
     <div class="nav-wrapper">
         <form method="get" action="{% url 'home:cookbook' %}">
 
+
             <div class="input-field">
                 <input id="search" type="search" name="search">
                 <label for="search"><i class="material-icons">search</i></label>
                 <i class="material-icons">close</i>
+
+            <!--</div>-->
+            <!--<div class="input-field">-->
+                <input type="checkbox" id="bool_search" name="public_search" {{public_search_attr}}/>
+                <label for="bool_search">Expand search?</label>
             </div>
         </form>
     </div>
 </nav>
 
+
+<br><br><br>
 {% for recipe in recipes %}
     <h5><a href="{% url 'home:recipe_detail' recipe.slug recipe.pk %}">{{recipe.recipe_name|capfirst}}</a></h5>
     {{recipe.description|escape|urlize|linebreaks}}

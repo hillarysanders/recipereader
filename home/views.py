@@ -139,7 +139,11 @@ def cookbook(request):
     user_proxy = get_user_proxy(request)
     print('cookbook view: user proxy:')
     print(user_proxy)
-    recipes = Recipe.objects.filter(user_proxy=user_proxy).order_by('recipe_name')
+
+    if request.GET.get('public_search', False):
+        recipes = Recipe.objects.filter().order_by('recipe_name')
+    else:
+        recipes = Recipe.objects.filter(user_proxy=user_proxy).order_by('recipe_name')
 
     if request.method == 'GET':
         search_text = request.GET.get('search', None)
@@ -150,7 +154,8 @@ def cookbook(request):
                 recipes = recipes.annotate(rank=SearchRank(vector, query)).order_by('-rank').filter(rank__gt=0)
 
     context = {
-        'recipes': recipes
+        'recipes': recipes,
+        'public_search_attr': 'checked="checked"' if request.GET.get('public_search', False) else ''
     }
 
     # all = Recipe.objects.order_by('recipe_name')

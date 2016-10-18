@@ -110,6 +110,9 @@ input::-webkit-inner-spin-button {
     margin-top: 0px;
 }
 
+#bool_search {
+    margin-top: -105px;
+}
 
 
 
