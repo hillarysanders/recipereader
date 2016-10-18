@@ -5,6 +5,8 @@ from django.shortcuts import render, get_object_or_404
 from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
 from django.contrib import messages
 from django.urls import reverse
+from django.db.models import Q
+from django.contrib.auth.decorators import login_required, user_passes_test
 from .models import Recipe, UserProxy
 from .forms import UserForm, LoginForm, AddRecipeForm, ServingsForm
 from .conversions_utils import get_highlighted_ingredients, highlight_changed_amounts
@@ -28,11 +30,11 @@ def welcome(request):
     return render(request, 'home/welcome.html', context)
 
 
+@login_required
 def profile(request):
     # todo add to this view. first need to sup up userProxy model.
 
     user = request.user  # can this be anonymous?
-    print(user)
     user_proxy = get_user_proxy(request)
     recipes = Recipe.objects.filter(user_proxy=user_proxy)
     for r in recipes:
@@ -73,7 +75,6 @@ def auth_login(request):
                 # for now, automatically import session recipes:
                 if request.session.session_key is not None:
                     user_proxy, created = UserProxy.objects.get_or_create(session=request.session.session_key)
-                    print(user_proxy)
                     user_proxy.user = user
                     user_proxy.session = ''
                     user_proxy.save()
@@ -137,11 +138,9 @@ def get_user_proxy(request):
 
 def cookbook(request):
     user_proxy = get_user_proxy(request)
-    print('cookbook view: user proxy:')
-    print(user_proxy)
 
     if request.GET.get('public_search', False):
-        recipes = Recipe.objects.filter().order_by('recipe_name')
+        recipes = Recipe.objects.filter(Q(public=True) | Q(user_proxy=user_proxy)).order_by('recipe_name')
     else:
         recipes = Recipe.objects.filter(user_proxy=user_proxy).order_by('recipe_name')
 
@@ -191,21 +190,31 @@ def add_recipe(request):
     return render(request, 'home/add_recipe.html', context)
 
 
+def check_if_owned_by_user(request, recipe):
+    user_proxy = get_user_proxy(request)
+    recipes_user = recipe.user_proxy
+    has_perm = user_proxy == recipes_user
+    return has_perm
+
+
 def edit_recipe(request, slug, pk):
 
     recipe = get_object_or_404(Recipe, pk=pk)
     if request.method == "POST":
-        # instance = recipe tells this that it's an update
-        add_recipe_form = AddRecipeForm(request.POST, request.FILES, instance=recipe)
-        if add_recipe_form.is_valid():
-            recipe = add_recipe_form.save(commit=False)  # doesn't save the instance yet, since we need to add stuff
-            # recipe.user = request.user
-            recipe.save()
+        if check_if_owned_by_user(request, recipe):
+            # instance = recipe tells this that it's an update
+            add_recipe_form = AddRecipeForm(request.POST, request.FILES, instance=recipe)
+            if add_recipe_form.is_valid():
+                recipe = add_recipe_form.save(commit=False)  # doesn't save the instance yet, since we need to add stuff
+                # recipe.user = request.user
+                recipe.save()
 
-            return HttpResponseRedirect(reverse('home:recipe_detail', args=(slug, pk)))
+                return HttpResponseRedirect(reverse('home:recipe_detail', args=(slug, pk)))
+            else:
+                # no return redirect statement here, as errors will be shown in template below
+                pass
         else:
-            # no return redirect statement here, as errors will be shown in template below
-            pass
+            return HttpResponseRedirect(reverse('home:bad_perm'))
     else:
         add_recipe_form = AddRecipeForm(instance=recipe)
 
@@ -216,6 +225,13 @@ def edit_recipe(request, slug, pk):
     }
 
     return render(request, 'home/add_recipe.html', context)
+
+
+def bad_perm(request):
+    context = {
+        'message': "Ruh roh! Looks like you didn't have permission to do that."
+    }
+    return render(request, 'home/message.html', context)
 
 
 def recipe_detail(request, slug, pk):
@@ -268,14 +284,24 @@ def recipe_detail(request, slug, pk):
 
 def delete_recipe(request, pk):
     recipe = get_object_or_404(Recipe, pk=pk)
-    if recipe:
-        context = {
-            'message': 'Your recipe ({}) was successfully deleted.'.format(recipe.recipe_name)
-        }
-        recipe.delete()
-        messages.success(request, "Your recipe was successfully deleted.")
 
-        return render(request, 'home/message.html', context)
+    if recipe:
+        if check_if_owned_by_user(request, recipe):
+            message = 'Your recipe ({}) was successfully deleted.'.format(recipe.recipe_name)
+            recipe.delete()
+            messages.success(request, "Your recipe was successfully deleted.")
+        else:
+            message = "Ruh roh! Looks like you don't have permission to delete that, only the lovely '{}' does".format(
+                recipe.user_proxy)
+
+    else:
+        message = 'Hmmmm. Recipe not found. :('
+
+    context = {
+        'message': message
+    }
+
+    return render(request, 'home/message.html', context)
 
 
 def about(request):

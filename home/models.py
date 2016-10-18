@@ -47,7 +47,7 @@ class UserProxy(models.Model):
 class Recipe(models.Model):
     # TextField is larger than CharField
     recipe_name = models.CharField(max_length=128, default='')
-    description = models.CharField(max_length=1024, default='')
+    description = models.CharField(max_length=1024, default='', blank=True)
     ingredients_text = models.TextField(max_length=2048*2, verbose_name='Ingredients')
     instructions_text = models.TextField(max_length=2048*4, verbose_name='Instructions')
     ingredients = JSONField(default=dict)

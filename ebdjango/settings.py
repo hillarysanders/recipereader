@@ -150,3 +150,8 @@ MEDIA_URL = '/media/'
 # SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
 # SESSION_COOKIE_HTTPONLY = True
 # SESSION_SAVE_EVERY_REQUEST = True
+
+LOGIN_URL = '/'
+SESSION_COOKIE_AGE = 604800*4  # 4 weeks, in seconds
+
+
