@@ -65,12 +65,12 @@
 
 <!-- Modal Trigger -->
 <div id="confirmdeletemodal" class="modal modal-fixed-footer">
-    <div class="modal-content">
+    <div class="modal-content pale_red">
       <h4>Are you sure you want to delete your recipe?</h4>
       <p>Are you sure you want to delete {{recipe.recipe_name}}?</p>
     </div>
     <div class="modal-footer">
-      <a href="{% url 'home:delete_recipe' recipe.id %}" class="modal-action modal-close waves-effect waves-green btn-flat">Yes, Delete</a>
+      <a href="{% url 'home:delete_recipe' recipe.id %}" class="red modal-action modal-close waves-effect waves-green btn-flat">Yes, Delete</a>
       <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Nevermind!</a>
     </div>
 </div>
