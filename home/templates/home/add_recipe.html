@@ -27,7 +27,7 @@
         <div class="row">
 
             <!--format this little image upload guy:-->
-            <p>{{add_recipe_form.image|as_material:"s12 m6"}}<br><i>(Currently broken :P)</i></p>
+            <p>{{add_recipe_form.image|as_material:"s12 m6"}}<br></p>
             {% if add_recipe_form.image %}
                 <img src="{{ add_recipe_form.image.url }}" />
             {% endif %}
