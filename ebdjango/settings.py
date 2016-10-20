@@ -11,23 +11,28 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 """
 
 import os
+try:
+    from .credentials import *
+except ImportError:
+    pass
+# now creds should be environments variables (either from .credentials or aws elasticbeanstalk)
+AWS_S3_ACCESS_KEY_ID = os.environ['AWS_S3_ACCESS_KEY_ID']
+AWS_S3_SECRET_ACCESS_KEY = os.environ['AWS_S3_SECRET_ACCESS_KEY']
+AWS_STORAGE_BUCKET_NAME = os.environ['AWS_STORAGE_BUCKET_NAME']
+SECRET_KEY = os.environ['SECRET_KEY']
+
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'swx7+6$q0xy4m8*z319*1o4ruq18+=f93o(zn+ar&-vm4pc-gz'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTS = []
 
-BOTO_CONFIG = '~/.aws/credentials'
 # Application definition
 
 # STATICFILES_DIRS = [
@@ -96,12 +101,12 @@ WSGI_APPLICATION = 'ebdjango.wsgi.application'
 # conn = DB(dbtype='postgres', dbname='ebdb', username="hills", password="evergreen", hostname="aa6waj6g0kkg9u.cpa0rmdl6ahx.us-west-2.rds.amazonaws.com")
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'ebdb',
-        'USER': 'hills',  # admin or hills?
-        'PASSWORD': 'evergreen',
-        'HOST': 'aa6waj6g0kkg9u.cpa0rmdl6ahx.us-west-2.rds.amazonaws.com',
-        'PORT': '5432',
+        'ENGINE': os.environ['DB_ENGINE'],
+        'NAME': os.environ['DB_NAME'],
+        'USER': os.environ['DB_USER'],  # admin or hills?
+        'PASSWORD': os.environ['DB_PASSWORD'],
+        'HOST': os.environ['DB_HOST'],
+        'PORT': os.environ['DB_PORT'],
         # adding this options.init_command line so that user <--> recipe relationships don't break things...?
         # 'OPTIONS': {
         #  "init_command": "SET foreign_key_checks = 0;",
@@ -169,10 +174,4 @@ SESSION_COOKIE_AGE = 604800*4  # 4 weeks, in seconds
 # https://console.aws.amazon.com/iam/home?#users/user1
 # django storage:
 # https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html
-try:
-    from .credentials import *
-except ImportError:
-    AWS_S3_ACCESS_KEY_ID = os.environ['AWS_S3_ACCESS_KEY_ID']
-    AWS_S3_SECRET_ACCESS_KEY = os.environ['AWS_S3_SECRET_ACCESS_KEY']
-    AWS_STORAGE_BUCKET_NAME = os.environ['AWS_STORAGE_BUCKET_NAME']
-    SECRET_KEY = os.environ['SECRET_KEY']
+# import pdb;pdb.set_trace()
