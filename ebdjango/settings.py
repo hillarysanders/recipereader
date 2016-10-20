@@ -27,7 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
+BOTO_CONFIG = '~/.aws/credentials'
 # Application definition
 
 # STATICFILES_DIRS = [
@@ -169,7 +169,8 @@ SESSION_COOKIE_AGE = 604800*4  # 4 weeks, in seconds
 # https://console.aws.amazon.com/iam/home?#users/user1
 # django storage:
 # https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html
-AWS_S3_ACCESS_KEY_ID = 'AKIAJYUTLKVOMH3W4JWQ'
-AWS_S3_SECRET_ACCESS_KEY = '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'
-AWS_STORAGE_BUCKET_NAME = 'recipereader-user-images'
-SECRET_KEY = 'thisishillzsecretkeyzomg'
+
+AWS_S3_ACCESS_KEY_ID = os.environ['AWS_S3_ACCESS_KEY_ID']
+AWS_S3_SECRET_ACCESS_KEY = os.environ['AWS_S3_SECRET_ACCESS_KEY']
+AWS_STORAGE_BUCKET_NAME = os.environ['AWS_STORAGE_BUCKET_NAME']
+SECRET_KEY = os.environ['SECRET_KEY']

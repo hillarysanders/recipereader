@@ -1,4 +1,3 @@
-
 # Elastic Beanstalk Files
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
@@ -14,3 +13,5 @@
 *.jpg
 *.jpeg
 *.zip
+
+local_credentials.py
