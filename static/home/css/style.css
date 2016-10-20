@@ -110,8 +110,13 @@ input::-webkit-inner-spin-button {
     margin-top: 0px;
 }
 
+#bool_search {
+    margin-top: -105px;
+}
 
-
+.pale_red {
+    background-color: #cc8888;
+}
 
 /* tooltip for servings multiplication: */
 .material-tooltip .backdrop {

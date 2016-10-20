@@ -8,7 +8,7 @@ from django.urls import reverse
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required, user_passes_test
 from .models import Recipe, UserProxy
-from .forms import UserForm, LoginForm, AddRecipeForm, ServingsForm
+from .forms import UserForm, LoginForm, AddRecipeForm, ServingsForm, PhotoForm
 from .conversions_utils import get_highlighted_ingredients, highlight_changed_amounts
 from .conversions import change_servings
 # Create your views here.
@@ -164,13 +164,34 @@ def cookbook(request):
     return render(request, 'home/cookbook.html', context)
 
 
+def check_if_owned_by_user(request, recipe):
+    user_proxy = get_user_proxy(request)
+    recipes_user = recipe.user_proxy
+    has_perm = user_proxy == recipes_user
+    return has_perm
+
+
 def add_recipe(request):
 
+    context = dict(add_recipe_form=AddRecipeForm(),
+                   update='',
+                   title='Add a Recipe',
+                   photo_form=PhotoForm())
+
     if request.method == "POST":
+        #     import pdb; pdb.set_trace()
+        #     if request.POST.get("photo_upload"):
+        #         photo_form = PhotoForm(request.POST, request.FILES)
+        #         if photo_form.is_valid():
+        #             photo_form.save()
+        #             context['photo_form'] = photo_form
+        #
+        #     else:
         add_recipe_form = AddRecipeForm(request.POST, request.FILES)
         if add_recipe_form.is_valid():
+            # posted? todo (image)
+            context['posted'] = add_recipe_form.instance
             recipe = add_recipe_form.save(commit=False)  # doesn't save the instance yet, since we need to add stuff
-            # recipe.user = request.user
             recipe.user_proxy = get_user_proxy(request)
             recipe.save()
 
@@ -178,23 +199,8 @@ def add_recipe(request):
         else:
             # no return redirect statement here, as errors will be shown in template below
             pass
-    else:
-        add_recipe_form = AddRecipeForm()
-
-    context = {
-        'add_recipe_form': add_recipe_form,
-        'update': '',
-        'title': 'Add a Recipe'
-    }
 
     return render(request, 'home/add_recipe.html', context)
-
-
-def check_if_owned_by_user(request, recipe):
-    user_proxy = get_user_proxy(request)
-    recipes_user = recipe.user_proxy
-    has_perm = user_proxy == recipes_user
-    return has_perm
 
 
 def edit_recipe(request, slug, pk):

@@ -48,10 +48,13 @@ INSTALLED_APPS = [
     'django.contrib.postgres',
     # materialize form helper: (awesome: https://github.com/florent1933/django-materializecss-form)
     'materialize_forms',
+    'storages',
     # homemade apps:
     'polls.apps.PollsConfig',
     'home.apps.HomeConfig'
 ]
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
+
 
 MIDDLEWARE_CLASSES = [
     'django.middleware.security.SecurityMiddleware',
@@ -129,6 +132,12 @@ AUTH_PASSWORD_VALIDATORS = [
     # },
 ]
 
+# cloudinary.config(
+#   cloud_name = "dkw0dtp8h",
+#   api_key = "632629697964542",
+#   api_secret = "5TR-RWm4g5v_mZRkEtzSnmT1qV4"
+# )
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.9/topics/i18n/
@@ -146,6 +155,7 @@ STATIC_URL = '/static/'
 STATIC_ROOT = 'static'
 MEDIA_ROOT = '/Users/hills/Desktop/code/django-beanstalk/ebdjango/media/'
 MEDIA_URL = '/media/'
+# MEDIA_URL = "https://recipereader-user-images.s3-us-west-2.amazonaws.com/"
 
 # SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
 # SESSION_COOKIE_HTTPONLY = True
@@ -155,3 +165,11 @@ LOGIN_URL = '/'
 SESSION_COOKIE_AGE = 604800*4  # 4 weeks, in seconds
 
 
+# user 1
+# https://console.aws.amazon.com/iam/home?#users/user1
+# django storage:
+# https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html
+AWS_S3_ACCESS_KEY_ID = 'AKIAJYUTLKVOMH3W4JWQ'
+AWS_S3_SECRET_ACCESS_KEY = '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'
+AWS_STORAGE_BUCKET_NAME = 'recipereader-user-images'
+SECRET_KEY = 'thisishillzsecretkeyzomg'

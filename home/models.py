@@ -44,6 +44,13 @@ class UserProxy(models.Model):
             return 'anonymously browsing\n\tsession: {}'.format(self.session)
 
 
+class Photo(models.Model):
+    """
+    Photos uploaded by users. Uses the Cloudinary service.
+    """
+    photo = models.ImageField(upload_to='photos/recipes/', null=True, blank=True)
+
+
 class Recipe(models.Model):
     # TextField is larger than CharField
     recipe_name = models.CharField(max_length=128, default='')
@@ -65,6 +72,12 @@ class Recipe(models.Model):
     image = models.ImageField(blank=True, upload_to='images/recipes/', null=True)
     slug = models.SlugField(max_length=40, default='default-slug')
     public = models.BooleanField(default=True, verbose_name='make recipe public?')
+    photo = models.ForeignKey(Photo, on_delete=models.CASCADE, blank=True, null=True)
+    # todo
+
+
+
+
 
     # invisible to the user stuff:
     pub_date = models.DateTimeField('date published', auto_now_add=True)

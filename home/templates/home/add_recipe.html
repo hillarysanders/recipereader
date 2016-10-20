@@ -3,8 +3,8 @@
 {% block content %}
 {% load materialize %}
 
-
     <h3> {{title}} </h3>
+
 
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
@@ -13,16 +13,9 @@
         <!--{% endfor %}-->
         <div class="row">
             <p>{{add_recipe_form.recipe_name|as_material:"s12 m8 l6"}}</p>
+            <p>{{add_recipe_form.num_servings|as_material:"s12 m2 l1"}}</p>
         </div>
-        <div class="row">
-            <p>{{add_recipe_form.num_servings|as_material:"s10 m2 l2"}}</p>
-            <!--format this little image upload guy:-->
-            <p>{{add_recipe_form.image|as_material:"s12 m6"}}<br><i>(Currently broken :P)</i></p>
-            <!--{% if add_recipe_form.image %}-->
-                <!--<img src="{{ add_recipe_form.image.url }}" />-->
-            <!--{% endif %}-->
 
-        </div>
         <div class="row">
             <p>   {{add_recipe_form.prep_time_hours|as_material:"s5 m2 l1"}}</p>
             <p> {{add_recipe_form.prep_time_minutes|as_material:"s7 m2 l1"}}</p>
@@ -30,7 +23,31 @@
             <p> {{add_recipe_form.cook_time_minutes|as_material:"s7 m2 l1"}}</p>
             <p>    {{add_recipe_form.ready_in_hours|as_material:"s5 m2 l1"}}</p>
             <p>  {{add_recipe_form.ready_in_minutes|as_material:"s7 m2 l1"}}</p>
+        </div>
+        <div class="row">
 
+            <!--format this little image upload guy:-->
+            <p>{{add_recipe_form.image|as_material:"s12 m6"}}<br><i>(Currently broken :P)</i></p>
+            {% if add_recipe_form.image %}
+                <img src="{{ add_recipe_form.image.url }}" />
+            {% endif %}
+
+            <!--<br><br><br>-->
+            <!--<br><br><br>-->
+            <!--<hr>-->
+            <!--{{ add_recipe_form.image }}-->
+            <!--<hr>-->
+            <!--LENGTH: {{add_recipe_form.image.size}}-->
+            <!--<br>-->
+            <!--{% for a in add_recipe_form.image %}-->
+                <!--{{a}}-->
+            <!--<br>-->
+            <!--_______________-->
+            <!--{% endfor %}-->
+            <!--<hr>-->
+
+        </div>
+        <div class="row">
             <p>{{add_recipe_form.description|as_material:"s12 m8 l6"}}</p>
         </div>
 
@@ -42,9 +59,10 @@
         <p>{{add_recipe_form.public|as_material:"s12"}}</p>
 
 
-        <input type="submit" id="rsubmitbtn" value="{{update}}" style='display: none;'/>
+        <input type="submit" id="rsubmitbtn" value="{{update}}" name="submit_recipe_button" style='display: none;'/>
         <label for="rsubmitbtn" class="waves-effect waves-light btn col2">Submit</label>
     </form>
+
 
     {% if add_recipe_form.errors %}
         {% for field in add_recipe_form %}
