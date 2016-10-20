@@ -14,4 +14,4 @@
 *.jpeg
 *.zip
 
-local_credentials.py
+credentials.py
