@@ -7,8 +7,12 @@ from .models import Recipe, Photo
 class ServingsForm(forms.Form):
     servings = forms.FloatField(
         label='',
-        widget=forms.NumberInput(attrs={'class': "input_serving"})
+        help_text='',
+        widget=forms.NumberInput(attrs={'class': "input_serving",
+                                        'placeholder': ''})
     )
+
+
 
 
 class UserForm(UserCreationForm):

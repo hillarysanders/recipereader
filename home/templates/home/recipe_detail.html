@@ -6,60 +6,112 @@
 <h2 class="center"> {{ recipe.recipe_name }} </h2>
 
 <div class="row">
-
-    <div class="center-align servings_box">
-        <form action="." method="post">
-            {% csrf_token %}
-            <t class="serves_text">servings:</t>
-            {{ servings_form.servings|as_material:"s4 m3 l2" }}
-
-                <input type="submit" id="servbtn" value="Submit" name="servingsSubmit" style="display: none;"/>
-
-            <a  class="tooltipped" data-position="bottom" data-delay="50">
-            <label for="servbtn" class="btn-floating btn-med waves-effect col2 servingbtn">Go</label>
-            </a>
-
-        </form>
-        <div class="red center-align">{{ form.name.errors }}</div>
-    </div>
-
-    <!--{% if changed_servings %}-->
-        <!--<img class="responsive-img circle" src="{% static 'home/images/chef-pictures-clipart.jpeg' %}" width="400"/>-->
-    <!--{% endif %}-->
+    <div class="red center-align">{{ form.name.errors }}</div>
 
     <div class="col s12 recipe_text">
-        <!--recipe image, time took prep / cook / make, description:-->
-        <div class="col s12 m4 l4 recipe_image float_left">
-            <div class="col s12 m12 l12">
-                <div class="col s12 m12 l12 center margin_10">
-                    <div class="col s12">{{ recipe.get_prep_time }}</div>
-                    <div class="col s12">{{ recipe.get_cook_time }}</div>
-                    <div class="col s12">{{ recipe.get_ready_in_time }}</div>
-                </div>
-                <i>{{ recipe.description }}</i>
-
+        <div class="valign-wrapper col s12">
+            <div class="col s12 m4 l4 left">
+                <br>
+                <i class="left-align">{{ recipe.description }}</i>
             </div>
 
-            {% if recipe.image %}
-            <img src="{{ recipe.image.url }}"/>
-            {% endif %}
+            <!--servings_box-->
+            <div class="col s12 m4 l4 center-align valign-wrapper">
+
+                <div class="col s6 right-align">
+                    <h5 class="servtext">Servings:</h5>
+                </div>
+                <div class="col s6 left-align">
+                  <form action="." method="post">
+                        {% csrf_token %}
+                        {{ servings_form.servings|as_material:"" }}
+                        <input type="submit" id="servbtn" value="Submit" name="servingsSubmit" style="display: none;"/>
+
+                        <a class="tooltipped" data-position="bottom" data-delay="50">
+                            <label for="servbtn" class="btn-floating btn-med waves-effect col2 center servgo">Go</label>
+                        </a>
+                    </form>
+                </div>
+            </div>
+
+
+            <div class="col s12 m4 l4 right">
+                <div class="center col s12">{{ recipe.get_prep_time }}</div>
+                <div class="center col s12">{{ recipe.get_cook_time }}</div>
+                <div class="center col s12">{{ recipe.get_ready_in_time }}</div>
+            </div>
+
         </div>
 
-        <!--ingredients:-->
-        <div class="col s12 m4 l4 recipe_text">
-            <h5 class="center">Ingredients</h5>
-            {% for line in hi_ingredients %}
-                <text_indent>{{line|safe}}</text_indent>
+    </div>
+    <div class="col s12 spacer10px"></div>
+
+    <div class="col s12 recipe_text">
+
+            {% if recipe.image %}
+                <div class="col s12 m12 l8 image_ingredients_holder">
+                    <div class="col s12 m6 l6 recipe_image">
+                        <!--<div class="col s12 m12 l12 center">-->
+                            <!--<div class="col s12">{{ recipe.get_prep_time }}</div>-->
+                            <!--<div class="col s12">{{ recipe.get_cook_time }}</div>-->
+                            <!--<div class="col s12">{{ recipe.get_ready_in_time }}</div>-->
+                        <!--</div>-->
+                         <!--<div class="col s12 m12 l12">-->
+                             <!--<br>-->
+                             <!--<i>{{ recipe.description }}</i>-->
+                         <!--</div>-->
+                        <br>
+
+
+                        <img src="{{ recipe.image.url }}"/>
+                    </div>
+
+                    <!--ingredients:-->
+                    <div class="col s12 m6 l6 ingredients">
+                        <h5 class="center">Ingredients</h5>
+                        {% for line in hi_ingredients %}
+                        <text_indent>{{line|safe}}</text_indent>
+                        <br>
+                        {% endfor %}
+                    </div>
+                </div>
+
+            {% elif True %}
+                <!--ingredients:-->
+
+
+                <div class="col s12 m6 l6 image_ingredients_holder">
+                    <!--<div class="col s12 valign-wrapper">-->
+                        <!--<div class="col s12 m6 left">-->
+                            <!--<i>{{ recipe.description }}</i>-->
+                        <!--</div>-->
+                        <!--<div class="col s12 m6 right">-->
+                                    <!--<div class="col s12 m12 l12 center">-->
+                                        <!--<div class="col s12">{{ recipe.get_prep_time }}</div>-->
+                                        <!--<div class="col s12">{{ recipe.get_cook_time }}</div>-->
+                                        <!--<div class="col s12">{{ recipe.get_ready_in_time }}</div>-->
+                                    <!--</div>-->
+                        <!--</div>-->
+                    <!--</div>-->
+
+                    <div class="col s12 ingredients">
+                    <h5 class="center">Ingredients</h5>
+                        {% for line in hi_ingredients %}
+                            <text_indent>{{line|safe}}</text_indent>
+                            <br>
+                        {% endfor %}
+                    </div>
+                </div>
+
+            {% endif %}
+
+            <!--directions:-->
+
+            <h5 class="center">Directions</h5>
+            {% for line in hi_instructions %}
+                {{line|safe}}
                 <br>
             {% endfor %}
-        </div>
-
-        <!--directions:-->
-        <h5 class="center">Directions</h5>
-        {% for line in hi_instructions %}
-            {{line|safe}}
-            <br>
-        {% endfor %}
     </div>
 </div>
 

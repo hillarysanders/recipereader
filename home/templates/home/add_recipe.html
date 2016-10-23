@@ -25,27 +25,11 @@
             <p>  {{add_recipe_form.ready_in_minutes|as_material:"s7 m2 l1"}}</p>
         </div>
         <div class="row">
-
             <!--format this little image upload guy:-->
-            <p>{{add_recipe_form.image|as_material:"s12 m6"}}<br></p>
+            <p>{{add_recipe_form.image|as_material:"s12 m12 l12"}}<br></p>
             {% if add_recipe_form.image %}
                 <img src="{{ add_recipe_form.image.url }}" />
             {% endif %}
-
-            <!--<br><br><br>-->
-            <!--<br><br><br>-->
-            <!--<hr>-->
-            <!--{{ add_recipe_form.image }}-->
-            <!--<hr>-->
-            <!--LENGTH: {{add_recipe_form.image.size}}-->
-            <!--<br>-->
-            <!--{% for a in add_recipe_form.image %}-->
-                <!--{{a}}-->
-            <!--<br>-->
-            <!--_______________-->
-            <!--{% endfor %}-->
-            <!--<hr>-->
-
         </div>
         <div class="row">
             <p>{{add_recipe_form.description|as_material:"s12 m8 l6"}}</p>
