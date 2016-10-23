@@ -245,9 +245,11 @@ hi_text {
 .servtext {
  margin-right: -8px;
 }
-
 .spacer10px {
     height: 10px;
+}
+.recipe_topper {
+    background-color: #f3e7d1;
 }
 
 text_indent {
