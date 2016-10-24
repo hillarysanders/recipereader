@@ -202,7 +202,8 @@ for ing in ['apple', 'banana', 'egg', 'apricot', 'aubergine', 'eggplant', 'avoca
             'kiwi', 'leek', 'lemon', 'lime', 'mango', 'mushroom', 'nectarine', 'nut', 'olive', 'orange',
             'peanut', 'pear', 'pineapple', 'pumpkin', 'quince', 'raisin', 'rhubarb', 'satsuma',
             'sweet potato', 'potato', 'tomato', 'turnip', 'plum', 'zucchini',
-            'chicken thigh', 'chicken breast']:
+            'chicken thigh', 'chicken breast',
+            'clove', 'shallot', 'chunk']:
     name_maps_pcs.append(dict(pattern=[ing, '{}s'.format(ing)],
                               singular=ing,
                               plural='{}s'.format(ing)))

@@ -103,11 +103,45 @@ input::-webkit-inner-spin-button {
 
 
 /* recipe detail page */
+
+/* the servings input form */
+.input_serving {
+    width: 30px !important;
+    font-size: 20px !important;
+    align: center;
+    text-align: center;
+    margin-left: -20px !important;
+    margin-top: 10px !important;
+}
+/* the servings input button */
+.servgo {
+    margin-top: 28px;
+    margin-left: -6px;
+    font-size: 14px;
+}
+.servtext {
+ margin-right: -8px;
+}
+.spacer10px {
+    height: 10px;
+}
+.recipe_topper {
+    background-color: #fff6cf;
+}
+
+text_indent {
+  display: inline-block;
+  text-indent: -10px;
+  margin-left: 10px;
+  line-height: 16px;
+  margin-top: 3px;
+}
+
 .recipe_text {
-    background-color: #e2d3b6;
+    background-color: #f9f1d2;
 }
 .image_ingredients_holder {
-    background-color: #ffffe6;
+    background-color: #fff9e0;
     margin: 10px;
 }
 .recipe_image img {
@@ -223,42 +257,6 @@ hi_text {
     background-color: #cccccf;
 }
 */
-
-
-
-
-/* the servings input form */
-.input_serving {
-    width: 30px !important;
-    font-size: 20px !important;
-    align: center;
-    text-align: center;
-    margin-left: -20px !important;
-    margin-top: 10px !important;
-}
-/* the servings input button */
-.servgo {
-    margin-top: 28px;
-    margin-left: -6px;
-    font-size: 14px;
-}
-.servtext {
- margin-right: -8px;
-}
-.spacer10px {
-    height: 10px;
-}
-.recipe_topper {
-    background-color: #f3e7d1;
-}
-
-text_indent {
-  display: inline-block;
-  text-indent: -10px;
-  margin-left: 10px;
-  line-height: 16px;
-  margin-top: 3px;
-}
 
 
 .ghostbtn {
