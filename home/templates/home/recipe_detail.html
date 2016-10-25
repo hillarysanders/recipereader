@@ -9,14 +9,14 @@
     <div class="red center-align">{{ form.name.errors }}</div>
 
     <div class="col s12 recipe_topper">
-        <div class="valign-wrapper col s12">
+        <div class="col s12">
             <div class="col s12 m4 l4 left">
                 <br>
                 <i class="left-align">{{ recipe.description }}</i>
             </div>
 
             <!--servings_box-->
-            <div class="col s12 m4 l4 center-align valign-wrapper">
+            <div class="col s12 m5 l4 center-align valign-wrapper">
 
                 <div class="col s6 right-align">
                     <h5 class="servtext">Servings:</h5>
@@ -34,11 +34,11 @@
                 </div>
             </div>
 
-
-            <div class="col s12 m4 l4 right">
-                <div class="center col s12">{{ recipe.get_prep_time }}</div>
-                <div class="center col s12">{{ recipe.get_cook_time }}</div>
-                <div class="center col s12">{{ recipe.get_ready_in_time }}</div>
+            <div class="col s12 m3 l4 right">
+                    <br>
+                    <div class="center col s12">{{ recipe.get_prep_time }}</div>
+                    <div class="center col s12">{{ recipe.get_cook_time }}</div>
+                    <div class="center col s12">{{ recipe.get_ready_in_time }}</div>
             </div>
 
         </div>

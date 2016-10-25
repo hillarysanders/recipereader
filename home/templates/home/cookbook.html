@@ -26,10 +26,21 @@
 
 
 <br><br><br>
-{% for recipe in recipes %}
-    <h5><a href="{% url 'home:recipe_detail' recipe.slug recipe.pk %}">{{recipe.recipe_name|capfirst}}</a></h5>
-    {{recipe.description|escape|urlize|linebreaks}}
-{% endfor %}
+<div class="row">
+    {% for recipe in recipes %}
+        <div class="cookbook_recipe_holder col s12 ">
+            <div class="recipe_title col s12"><a href="{% url 'home:recipe_detail' recipe.slug recipe.pk %}">
+                {{recipe.recipe_name|capfirst}}
+            </a></div>
+
+            <div class="recipe_stuff col s4 m4 l4 ">
+                {{recipe.description|safe}}
+            </div>
 
 
+
+        </div>
+    {% endfor %}
+
+</div>
 {% endblock %}

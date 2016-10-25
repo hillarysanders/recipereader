@@ -126,7 +126,7 @@ input::-webkit-inner-spin-button {
     height: 10px;
 }
 .recipe_topper {
-    background-color: #fff6cf;
+    background-color: #f3ecdc;
 }
 
 text_indent {
@@ -138,7 +138,7 @@ text_indent {
 }
 
 .recipe_text {
-    background-color: #f9f1d2;
+    background-color: #f3ecdc;
 }
 .image_ingredients_holder {
     background-color: #fff9e0;

@@ -118,7 +118,9 @@ input::-webkit-inner-spin-button {
     margin-top: 28px;
     margin-left: -6px;
     font-size: 14px;
+    margin-right: 0px;
 }
+
 .servtext {
  margin-right: -8px;
 }
@@ -126,7 +128,7 @@ input::-webkit-inner-spin-button {
     height: 10px;
 }
 .recipe_topper {
-    background-color: #fff6cf;
+    background-color: #f3ecdc;
 }
 
 text_indent {
@@ -138,7 +140,7 @@ text_indent {
 }
 
 .recipe_text {
-    background-color: #f9f1d2;
+    background-color: #f3ecdc;
 }
 .image_ingredients_holder {
     background-color: #fff9e0;
@@ -156,6 +158,20 @@ text_indent {
     margin-top: -4px;
     margin-bottom: 10px;
 }
+
+
+/* cookbook page */
+. cookbook_recipe_holder {
+    margin-bottom: -30px;
+}
+.recipe_title {
+    font-size: 23px;
+}
+.recipe_stuff {
+    margin-top: -5px;
+    margin-bottom: 5px;
+}
+
 
 .pushup {
     margin-top: -80px;
