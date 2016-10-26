@@ -378,8 +378,9 @@ div.nav-wrapper li.sidenav_btn a:link {
 }
 .existing_recipe_img {
     height: auto;
-    width: 100%;
+    width: auto;
     max-width: 300px;
+    max-height: 300px;
     float: right;
 }
 .cookbook_thumbnail {
