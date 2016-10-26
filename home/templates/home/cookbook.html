@@ -26,18 +26,31 @@
 <br><br><br>
 <div class="row">
     {% for recipe in recipes %}
-    <div class="cookbook_recipe_holder col s12">
-        <div class="recipe_title col s12"><a href="{% url 'home:recipe_detail' recipe.slug recipe.pk %}">
-            {{recipe.recipe_name|capfirst}}
-        </a></div>
 
-        <div class="recipe_stuff col s12 m10 truncate">
-            {{recipe.description|safe}}
+     {% if forloop.counter|divisibleby:2 %}
+        <div class="col s12">
+            {% else %}
+        <div class="col s12 col3">
+            {% endif %}
+
+            <div class="cookbook_recipe_holder col s10">
+                <div class="recipe_title col s12"><a href="{% url 'home:recipe_detail' recipe.slug recipe.pk %}">
+                    {{recipe.recipe_name|capfirst}}
+                </a></div>
+
+                <div class="recipe_stuff col s12 m10 truncate">
+                    {{recipe.description|safe}}
+                </div>
+
+            </div>
+
+            {% if recipe.thumbnail %}
+                <div class="col s2 right center">
+                    <img class="circle responsive-img cookbook_thumbnail" src="{{ recipe.thumbnail.url }}">
+                </div>
+            {% endif %}
         </div>
 
-
-    </div>
     {% endfor %}
-
 </div>
 {% endblock %}

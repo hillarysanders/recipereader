@@ -5,7 +5,9 @@ from django.contrib.postgres.fields import JSONField
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db.models.fields.related import ManyToManyField
 from django.template.defaultfilters import slugify
-from io import StringIO
+from django.core.files.uploadedfile import InMemoryUploadedFile
+import io
+import requests
 import os
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage as storage
@@ -133,7 +135,7 @@ class Photo(models.Model):
             FILE_EXTENSION = 'png'
 
         # Open original photo which we want to thumbnail using PIL's Image
-        photo = Image.open(StringIO(self.photo.read()))
+        photo = Image.open(io.StringIO(self.photo.read()))
 
         # We use our PIL Image object to create the thumbnail, which already
         # has a thumbnail() convenience method that contrains proportions.
@@ -142,7 +144,7 @@ class Photo(models.Model):
         photo.thumbnail(THUMBNAIL_SIZE, Image.ANTIALIAS)
 
         # Save the thumbnail
-        temp_handle = StringIO()
+        temp_handle = io.StringIO()
         photo.save(temp_handle, PIL_TYPE)
         temp_handle.seek(0)
 
@@ -175,7 +177,7 @@ class Photo(models.Model):
 class Recipe(models.Model):
     # TextField is larger than CharField
     recipe_name = models.CharField(max_length=128, default='')
-    description = models.CharField(max_length=1024, default='', blank=True)
+    description = models.TextField(max_length=1024, default='', blank=True)
     ingredients_text = models.TextField(max_length=2048*2, verbose_name='Ingredients')
     instructions_text = models.TextField(max_length=2048*4, verbose_name='Instructions')
     ingredients = JSONField(default=dict)
@@ -191,6 +193,7 @@ class Recipe(models.Model):
     num_servings = models.IntegerField(blank=True, null=False, default=4)
     # your recipe image
     image = models.ImageField(blank=True, upload_to='images/recipes/', null=True)
+    thumbnail = models.ImageField(blank=True, upload_to='thumbnails/recipes/', null=True)
     slug = models.SlugField(max_length=40, default='default-slug')
     public = models.BooleanField(default=True, verbose_name='make recipe public?')
     # photo = models.ForeignKey(Photo, on_delete=models.CASCADE, blank=True, null=True)
@@ -210,8 +213,20 @@ class Recipe(models.Model):
         # with Timer('Parsing instructions') as t2:
         self.instructions = conversions.parse_ingredients(self.instructions_text)
 
-        print('HELLO')
         self.slug = slugify(self.recipe_name[:40])
+
+        if self.image:
+            thumb = Image.open(requests.get(self.image.url, stream=True).raw)
+            size = 128, 128
+            thumb.thumbnail(size)
+            thumb_io = io.BytesIO()
+            thumb.save(thumb_io, format='JPEG')
+            # import pdb; pdb.set_trace()
+            thumb_file = InMemoryUploadedFile(file=thumb_io, field_name=None,
+                                              name=os.path.split(self.image.name)[-1],
+                                              content_type='image/jpeg',
+                                              size=thumb_io.getbuffer().nbytes, charset=None)
+            self.thumbnail = thumb_file
 
         super(Recipe, self).save(*args, **kwargs)
 

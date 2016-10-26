@@ -382,3 +382,8 @@ div.nav-wrapper li.sidenav_btn a:link {
     max-width: 300px;
     float: right;
 }
+.cookbook_thumbnail {
+    max-height: 50px;
+    margin-top: 5px;
+    height: auto;
+}
