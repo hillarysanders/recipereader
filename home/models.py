@@ -216,9 +216,12 @@ class Recipe(models.Model):
         self.slug = slugify(self.recipe_name[:40])
 
         if self.image:
-            thumb = Image.open(requests.get(self.image.url, stream=True).raw)
+            # thumb = Image.open(requests.get(self.image.url, stream=True).raw)
+            thumb = Image.open(io.BytesIO(self.image.read()))
             size = 128, 128
-            thumb.thumbnail(size)
+            thumb.thumbnail(size, Image.ANTIALIAS)
+            # convert to greyscale?
+            # thumb = thumb.convert('L')
             thumb_io = io.BytesIO()
             thumb.save(thumb_io, format='JPEG')
             # import pdb; pdb.set_trace()
