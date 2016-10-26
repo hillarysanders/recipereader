@@ -367,3 +367,18 @@ div.nav-wrapper li.sidenav_btn a:link {
 }
 
 
+.img_id {
+    display: none;
+}
+.img_upload_btn {
+    text-transform: none;
+}
+.edit_recipe_img {
+    max-height: 150px;
+}
+.existing_recipe_img {
+    height: auto;
+    width: 100%;
+    max-width: 300px;
+    float: right;
+}

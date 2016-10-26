@@ -3,45 +3,62 @@
 {% block content %}
 {% load materialize %}
 
-    <h3> {{title}} </h3>
 
 
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        <!--{% for f in add_recipe_form %}-->
-            <!--{{ f|as_material:"s12" }}-->
-        <!--{% endfor %}-->
         <div class="row">
-            <p>{{add_recipe_form.recipe_name|as_material:"s12 m8 l6"}}</p>
-            <p>{{add_recipe_form.num_servings|as_material:"s12 m2 l1"}}</p>
-        </div>
+            <div class="col s12 m8 l6">
+                <div class="col s12">
+                    <h3> {{title}} </h3>
+                </div>
 
-        <div class="row">
-            <p>   {{add_recipe_form.prep_time_hours|as_material:"s5 m2 l1"}}</p>
-            <p> {{add_recipe_form.prep_time_minutes|as_material:"s7 m2 l1"}}</p>
-            <p>   {{add_recipe_form.cook_time_hours|as_material:"s5 m2 l1"}}</p>
-            <p> {{add_recipe_form.cook_time_minutes|as_material:"s7 m2 l1"}}</p>
-            <p>    {{add_recipe_form.ready_in_hours|as_material:"s5 m2 l1"}}</p>
-            <p>  {{add_recipe_form.ready_in_minutes|as_material:"s7 m2 l1"}}</p>
-        </div>
-        <div class="row">
-            <!--format this little image upload guy:-->
-            <p>{{add_recipe_form.image|as_material:"s12 m12 l12"}}<br></p>
-            {% if add_recipe_form.image %}
-                <img src="{{ add_recipe_form.image.url }}" />
-            {% endif %}
-        </div>
-        <div class="row">
-            <p>{{add_recipe_form.description|as_material:"s12 m8 l6"}}</p>
-        </div>
+                <p>{{add_recipe_form.recipe_name|as_material:"s12 m12 l10"}}</p>
+                <p>{{add_recipe_form.num_servings|as_material:"s12 m4 l2"}}</p>
+                <div class="col s12"></div>
+                <!--<div class="col s12 red">-->
+                    <p>   {{add_recipe_form.prep_time_hours|as_material:"s5 m4 l2"}}</p>
+                    <p> {{add_recipe_form.prep_time_minutes|as_material:"s7 m5 l2"}}</p>
+                    <p>   {{add_recipe_form.cook_time_hours|as_material:"s5 m4 l2"}}</p>
+                    <p> {{add_recipe_form.cook_time_minutes|as_material:"s7 m5 l2"}}</p>
+                    <p>    {{add_recipe_form.ready_in_hours|as_material:"s5 m4 l2"}}</p>
+                    <p>  {{add_recipe_form.ready_in_minutes|as_material:"s7 m5 l2"}}</p>
+                <!--</div>-->
+            </div>
+            <div class="col s12 m4 l6">
+               {% if add_recipe_form.image %}
 
-        <div class="row">
-            <p>{{add_recipe_form.ingredients_text|as_material:"s12 m6"}}</p>
-            <p>{{add_recipe_form.instructions_text|as_material:"s12 m6"}}</p>
+                    <div class="existing_recipe_img">
+                        <h6>Current Image:</h6>
+                        <img src="{{ add_recipe_form.image.value.url }}" class="existing_recipe_img"/>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- image upload view:-->
+            <div class="col s12">
+                <input class="validate validate" style="visibility:hidden;" id="id_image" name="image"
+                       type="file" onchange="upload_img(this);">
+                <div class="col s12">
+                    <label for="id_image" class="waves-effect waves-light btn col2 img_upload_btn">Upload image?</label>
+                    <br><br>
+                    <img id="img_id" class="edit_recipe_img" src="" alt=""/>
+                </div>
+            </div>
+
+            <div class="col s12">
+                <p>{{add_recipe_form.description|as_material:"s12 m8 l6"}}</p>
+            </div>
+            <div class="col s12">
+                <p>{{add_recipe_form.ingredients_text|as_material:"s12 m6"}}</p>
+                <p>{{add_recipe_form.instructions_text|as_material:"s12 m6"}}</p>
+                <p>{{add_recipe_form.public|as_material:"s12"}}</p>
+            </div>
+
+
+
+
         </div>
-
-        <p>{{add_recipe_form.public|as_material:"s12"}}</p>
-
 
         <input type="submit" id="rsubmitbtn" value="{{update}}" name="submit_recipe_button" style='display: none;'/>
         <label for="rsubmitbtn" class="waves-effect waves-light btn col2">Submit</label>

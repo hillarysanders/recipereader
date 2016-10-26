@@ -12,9 +12,6 @@ class ServingsForm(forms.Form):
                                         'placeholder': ''})
     )
 
-
-
-
 class UserForm(UserCreationForm):
     class Meta:
         model = User

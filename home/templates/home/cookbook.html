@@ -5,18 +5,16 @@
 
 <h2> My Cookbook </h2>
 
+
 <nav class="searchnav col2">
     <div class="nav-wrapper">
         <form method="get" action="{% url 'home:cookbook' %}">
-
-
             <div class="input-field">
                 <input id="search" type="search" name="search">
                 <label for="search"><i class="material-icons">search</i></label>
                 <i class="material-icons">close</i>
-
-            <!--</div>-->
-            <!--<div class="input-field">-->
+            </div>
+            <div class="col s12">
                 <input type="checkbox" id="bool_search" name="public_search" {{public_search_attr}}/>
                 <label for="bool_search">Search all public recipes</label>
             </div>
@@ -28,18 +26,17 @@
 <br><br><br>
 <div class="row">
     {% for recipe in recipes %}
-        <div class="cookbook_recipe_holder col s12 ">
-            <div class="recipe_title col s12"><a href="{% url 'home:recipe_detail' recipe.slug recipe.pk %}">
-                {{recipe.recipe_name|capfirst}}
-            </a></div>
+    <div class="cookbook_recipe_holder col s12 ">
+        <div class="recipe_title col s12"><a href="{% url 'home:recipe_detail' recipe.slug recipe.pk %}">
+            {{recipe.recipe_name|capfirst}}
+        </a></div>
 
-            <div class="recipe_stuff col s4 m4 l4 ">
-                {{recipe.description|safe}}
-            </div>
-
-
-
+        <div class="recipe_stuff col s12 m9 l8">
+            {{recipe.description|safe}}
         </div>
+
+
+    </div>
     {% endfor %}
 
 </div>
