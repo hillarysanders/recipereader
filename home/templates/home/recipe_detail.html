@@ -111,7 +111,7 @@
       <p>Are you sure you want to delete {{recipe.recipe_name}}?</p>
     </div>
     <div class="modal-footer">
-      <a href="{% url 'home:delete_recipe' recipe.id %}" class="red modal-action modal-close waves-effect waves-green btn-flat">Yes, Delete</a>
+      <a href="{% url 'home:delete_recipe' recipe.id %}" class="red modal-action modal-close waves-effect waves-white btn-flat">Yes, Delete</a>
       <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Nevermind!</a>
     </div>
 </div>
@@ -125,7 +125,7 @@
     <ul>
         <li><a class="modal-trigger waves-effect waves-light btn ghostbtn col1" href="#confirmdeletemodal">delete recipe</a></li>
         <li><a class="waves-effect waves-light btn ghostbtn col1" href="{% url 'home:edit_recipe' recipe.slug recipe.id %}">edit recipe</a></li>
-        <li><a class="waves-effect waves-light btn ghostbtn col1" href="#!">change units</a></li>
+        <!--<li><a class="waves-effect waves-light btn ghostbtn col1" href="#!">change units</a></li>-->
     </ul>
 </div>
 

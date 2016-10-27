@@ -367,9 +367,7 @@ div.nav-wrapper li.sidenav_btn a:link {
 }
 
 
-.img_id {
-    display: none;
-}
+/* add / edit recipe pages */
 .img_upload_btn {
     text-transform: none;
 }
@@ -383,6 +381,9 @@ div.nav-wrapper li.sidenav_btn a:link {
     max-height: 300px;
     float: right;
 }
+
+/* cookbook page, recipe search */
+
 .cookbook_thumbnail {
     max-height: 50px;
     margin-top: 5px;
