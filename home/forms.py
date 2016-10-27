@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
-from .models import Recipe, Photo
+from .models import Recipe
 
 
 class ServingsForm(forms.Form):
@@ -49,17 +49,11 @@ class LoginForm(forms.ModelForm):
         self.fields['password'].widget = forms.PasswordInput(attrs={'placeholder': ''})
 
 
-class PhotoForm(forms.ModelForm):
-    class Meta:
-        model = Photo
-        fields = ['photo']
-
-
 class AddRecipeForm(forms.ModelForm):
     class Meta:
         model = Recipe
         fields = '__all__'
-        exclude = ('user_proxy', 'photo', 'pub_date', 'ingredients', 'instructions', 'slug')
+        exclude = ('user_proxy', 'pub_date', 'ingredients', 'instructions', 'slug')
 
     def __init__(self, *args, **kwargs):
         super(AddRecipeForm, self).__init__(*args, **kwargs)

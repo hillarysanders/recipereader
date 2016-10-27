@@ -59,21 +59,6 @@ def retrieve_image(url):
     return io.StringIO(response.content)
 
 
-class Photo(models.Model):
-    photo = models.ImageField(
-        upload_to='photos/recipes/',
-        null=True,
-        blank=True
-    )
-
-    thumbnail = models.ImageField(
-        upload_to='thumbnails/recipes/',
-        max_length=500,
-        null=True,
-        blank=True
-    )
-
-
 @deconstructible
 class PathAndRename(object):
     """
@@ -124,7 +109,6 @@ class Recipe(models.Model):
     thumbnail = models.ImageField(blank=True, upload_to=PathAndRename('thumbnails/recipes/'), null=True)
     slug = models.SlugField(max_length=40, default='default-slug')
     public = models.BooleanField(default=True, verbose_name='make recipe public?')
-    # photo = models.ForeignKey(Photo, on_delete=models.CASCADE, blank=True, null=True)
 
     # invisible to the user stuff:
     pub_date = models.DateTimeField('date published', auto_now_add=True)

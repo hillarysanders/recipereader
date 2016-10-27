@@ -8,7 +8,7 @@ from django.urls import reverse
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required, user_passes_test
 from .models import Recipe, UserProxy
-from .forms import UserForm, LoginForm, AddRecipeForm, ServingsForm, PhotoForm
+from .forms import UserForm, LoginForm, AddRecipeForm, ServingsForm
 from .conversions_utils import get_highlighted_ingredients, highlight_changed_amounts
 from .conversions import change_servings
 # Create your views here.
@@ -175,17 +175,9 @@ def add_recipe(request):
 
     context = dict(add_recipe_form=AddRecipeForm(),
                    update='',
-                   title='Add a Recipe',
-                   photo_form=PhotoForm())
+                   title='Add a Recipe')
 
     if request.method == "POST":
-        #     if request.POST.get("photo_upload"):
-        #         photo_form = PhotoForm(request.POST, request.FILES)
-        #         if photo_form.is_valid():
-        #             photo_form.save()
-        #             context['photo_form'] = photo_form
-        #
-        #     else:
         add_recipe_form = AddRecipeForm(request.POST, request.FILES)
         if add_recipe_form.is_valid():
             # posted? todo (image)
