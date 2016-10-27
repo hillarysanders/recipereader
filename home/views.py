@@ -179,7 +179,6 @@ def add_recipe(request):
                    photo_form=PhotoForm())
 
     if request.method == "POST":
-        #     import pdb; pdb.set_trace()
         #     if request.POST.get("photo_upload"):
         #         photo_form = PhotoForm(request.POST, request.FILES)
         #         if photo_form.is_valid():

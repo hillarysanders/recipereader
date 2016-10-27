@@ -10,6 +10,7 @@ import io
 import math
 import requests
 import os
+from uuid import uuid4
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage as storage
 from PIL import Image
@@ -175,6 +176,31 @@ class Photo(models.Model):
         super(Photo, self).save(force_update=force_update)
 
 
+def path_and_rename(path):
+    """
+    This function creates a file name for an uploaded image. This keeps images from name clashing.
+    e.g. without this function, if two different users upload an image called 'cheesecake.jpg', one
+    would overwrite the other.
+    :param path: the folder in which you wish to save your images
+    :return: a function that returns your full image path
+    """
+    def wrapper(instance, filename):
+        ext = filename.split('.')[-1]
+        # make filename
+        if instance.pk:
+            filename = '{}.{}'.format(instance.pk, ext)
+            # todo double saving issue (https://code.djangoproject.com/ticket/12009)
+            # todo if instance.pk exists, that means that we can delete the old image that was used before
+            # todo --> if the image is originally saved in some way like images/recipes/[user]/[filename]
+            # todo or images/recipes/[filename+int+for+duplicates] then that image can now be deleted to save space.
+        else:
+            # set filename as random string
+            filename = '{}.{}'.format(uuid4().hex, ext)
+        # return the whole path to the file
+        return os.path.join(path, filename)
+    return wrapper
+
+
 class Recipe(models.Model):
     # TextField is larger than CharField
     recipe_name = models.CharField(max_length=128, default='')
@@ -193,8 +219,8 @@ class Recipe(models.Model):
     ready_in_minutes = models.IntegerField(blank=True, null=True, verbose_name='')
     num_servings = models.IntegerField(blank=True, null=False, default=4)
     # your recipe image
-    image = models.ImageField(blank=True, upload_to='images/recipes/', null=True)
-    thumbnail = models.ImageField(blank=True, upload_to='thumbnails/recipes/', null=True)
+    image = models.ImageField(blank=True, upload_to=path_and_rename('images/recipes/'), null=True)
+    thumbnail = models.ImageField(blank=True, upload_to=path_and_rename('thumbnails/recipes/'), null=True)
     slug = models.SlugField(max_length=40, default='default-slug')
     public = models.BooleanField(default=True, verbose_name='make recipe public?')
     # photo = models.ForeignKey(Photo, on_delete=models.CASCADE, blank=True, null=True)
@@ -247,7 +273,6 @@ class Recipe(models.Model):
         # thumb = thumb.convert('L')
         thumb_io = io.BytesIO()
         thumb.save(thumb_io, format='JPEG')
-        # import pdb; pdb.set_trace()
         thumb_file = InMemoryUploadedFile(file=thumb_io, field_name=None,
                                           name=os.path.split(self.image.name)[-1],
                                           content_type='image/jpeg',
