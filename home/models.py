@@ -7,6 +7,7 @@ from django.db.models.fields.related import ManyToManyField
 from django.template.defaultfilters import slugify
 from django.core.files.uploadedfile import InMemoryUploadedFile
 import io
+import math
 import requests
 import os
 from django.core.files.base import ContentFile
@@ -216,25 +217,42 @@ class Recipe(models.Model):
         self.slug = slugify(self.recipe_name[:40])
 
         if self.image:
-            # thumb = Image.open(requests.get(self.image.url, stream=True).raw)
-            thumb = Image.open(io.BytesIO(self.image.read()))
-            size = 128, 128
-            thumb.thumbnail(size, Image.ANTIALIAS)
-            # convert to greyscale?
-            # thumb = thumb.convert('L')
-            thumb_io = io.BytesIO()
-            thumb.save(thumb_io, format='JPEG')
-            # import pdb; pdb.set_trace()
-            thumb_file = InMemoryUploadedFile(file=thumb_io, field_name=None,
-                                              name=os.path.split(self.image.name)[-1],
-                                              content_type='image/jpeg',
-                                              size=thumb_io.getbuffer().nbytes, charset=None)
-            self.thumbnail = thumb_file
+            image = Image.open(io.BytesIO(self.image.read()))
+            self.image = self.reduce_image_size(image=image)
+            self.thumbnail = self.make_thumbnail(thumb=image)
 
         super(Recipe, self).save(*args, **kwargs)
 
-        # todo currently causing recursive save loop, probably because the whole thing is saved at once...
-        # todo I think it'd be better to have image be a ForeignKey to another object that has its own thumbnail.
+    def reduce_image_size(self, image, size_limit=850000):
+        image_size = image.size[0]*image.size[1]
+        print('image size: {}'.format(image_size))
+        if image_size <= size_limit:
+            return self.image
+        else:
+            reduce_by = math.sqrt(image_size / size_limit)
+            size = int(image.width / reduce_by), int(image.height / reduce_by)
+            image = image.resize(size, Image.ANTIALIAS)
+            image_io = io.BytesIO()
+            image.save(image_io, format='JPEG')
+            image_file = InMemoryUploadedFile(file=image_io, field_name=None,
+                                              name=os.path.split(self.image.name)[-1],
+                                              content_type='image/jpeg',
+                                              size=image_io.getbuffer().nbytes, charset=None)
+        return image_file
+
+    def make_thumbnail(self, thumb):
+        size = 128, 128
+        thumb.thumbnail(size, Image.ANTIALIAS)
+        # convert to greyscale?
+        # thumb = thumb.convert('L')
+        thumb_io = io.BytesIO()
+        thumb.save(thumb_io, format='JPEG')
+        # import pdb; pdb.set_trace()
+        thumb_file = InMemoryUploadedFile(file=thumb_io, field_name=None,
+                                          name=os.path.split(self.image.name)[-1],
+                                          content_type='image/jpeg',
+                                          size=thumb_io.getbuffer().nbytes, charset=None)
+        return thumb_file
 
     def __str__(self):
         return self.description
