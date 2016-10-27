@@ -53,53 +53,9 @@ class UserProxy(models.Model):
             return 'anonymously browsing\n\tsession: {}'.format(self.session)
 
 
-# class Photo(models.Model):
-#     """
-#     Photos uploaded by users. Uses the Cloudinary service.
-#     """
-#     photo = models.ImageField(upload_to='photos/recipes/', null=True, blank=True)
-#     thumbnail = models.ImageField(upload_to='thumbnails/recipes/', null=True, blank=True)
-#
-#     def make_thumbnail(self, thumb_size=128):
-#         """
-#         Create and save the thumbnail for the photo (simple resize with PIL).
-#         """
-#
-#         fh = storage.open(self.photo.name)
-#         try:
-#             photo = Image.open(fh)
-#         except:
-#             return False
-#
-#         thumb_size = thumb_size, thumb_size
-#         photo.thumbnail(thumb_size, Image.ANTIALIAS)
-#         fh.close()
-#
-#         # Path to save to, name, and extension
-#         thumb_name, thumb_extension = os.path.splitext(self.photo.name)
-#         thumb_extension = thumb_extension.lower()
-#
-#         thumb_filename = thumb_name + '_thumb' + thumb_extension
-#
-#         if thumb_extension in ['.jpg', '.jpeg']:
-#             FTYPE = 'JPEG'
-#         elif thumb_extension == '.gif':
-#             FTYPE = 'GIF'
-#         elif thumb_extension == '.png':
-#             FTYPE = 'PNG'
-#         else:
-#             return False    # Unrecognized file type
-#
-#         # Save thumbnail to in-memory file as StringIO
-#         temp_thumb = StringIO()
-#         photo.save(temp_thumb, FTYPE)
-#         temp_thumb.seek(0)
-#
-#         # Load a ContentFile into the thumbnail field so it gets saved
-#         self.thumbnail.save(thumb_filename, ContentFile(temp_thumb.read()), save=True)
-#         temp_thumb.close()
-#
-#         return True
+def retrieve_image(url):
+    response = requests.get(url)
+    return io.StringIO(response.content)
 
 
 class Photo(models.Model):
@@ -115,65 +71,6 @@ class Photo(models.Model):
         null=True,
         blank=True
     )
-
-    def create_thumbnail(self):
-        # original code for this method came from
-        # http://snipt.net/danfreak/generate-thumbnails-in-django-with-pil/
-
-        # If there is no image associated with this.
-        # do not create thumbnail
-        if not self.photo:
-            return
-
-        # Set our max thumbnail size in a tuple (max width, max height)
-        THUMBNAIL_SIZE = (128, 128)
-        DJANGO_TYPE = self.photo.file.content_type
-
-        if DJANGO_TYPE == 'image/jpeg':
-            PIL_TYPE = 'jpeg'
-            FILE_EXTENSION = 'jpg'
-        elif DJANGO_TYPE == 'image/png':
-            PIL_TYPE = 'png'
-            FILE_EXTENSION = 'png'
-
-        # Open original photo which we want to thumbnail using PIL's Image
-        photo = Image.open(io.StringIO(self.photo.read()))
-
-        # We use our PIL Image object to create the thumbnail, which already
-        # has a thumbnail() convenience method that contrains proportions.
-        # Additionally, we use Image.ANTIALIAS to make the image look better.
-        # Without antialiasing the image pattern artifacts may result.
-        photo.thumbnail(THUMBNAIL_SIZE, Image.ANTIALIAS)
-
-        # Save the thumbnail
-        temp_handle = io.StringIO()
-        photo.save(temp_handle, PIL_TYPE)
-        temp_handle.seek(0)
-
-        # Save image to a SimpleUploadedFile which can be saved into
-        # ImageField
-        suf = SimpleUploadedFile(os.path.split(self.photo.name)[-1],
-                temp_handle.read(), content_type=DJANGO_TYPE)
-        # Save SimpleUploadedFile into image field
-        self.thumbnail.save(
-            '%s_thumbnail.%s' % (os.path.splitext(suf.name)[0], FILE_EXTENSION),
-            suf,
-            save=False
-        )
-
-    def save(self, *args, **kwargs):
-
-        self.create_thumbnail()
-
-        force_update = False
-
-        # If the instance already has been saved, it has an id and we set
-        # force_update to True
-        if self.id:
-            force_update = True
-
-        # Force an UPDATE SQL query if we're editing the image to avoid integrity exception
-        super(Photo, self).save(force_update=force_update)
 
 
 def path_and_rename(path):
