@@ -6,6 +6,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db.models.fields.related import ManyToManyField
 from django.template.defaultfilters import slugify
 from django.core.files.uploadedfile import InMemoryUploadedFile
+from django.utils.deconstruct import deconstructible
 import io
 import math
 import requests
@@ -73,15 +74,19 @@ class Photo(models.Model):
     )
 
 
-def path_and_rename(path):
+@deconstructible
+class PathAndRename(object):
     """
-    This function creates a file name for an uploaded image. This keeps images from name clashing.
+    This creates a file name for an uploaded image. This keeps images from name clashing.
     e.g. without this function, if two different users upload an image called 'cheesecake.jpg', one
     would overwrite the other.
     :param path: the folder in which you wish to save your images
     :return: a function that returns your full image path
     """
-    def wrapper(instance, filename):
+    def __init__(self, sub_path):
+        self.path = sub_path
+
+    def __call__(self, instance, filename):
         ext = filename.split('.')[-1]
         # make filename
         if instance.pk:
@@ -94,8 +99,7 @@ def path_and_rename(path):
             # set filename as random string
             filename = '{}.{}'.format(uuid4().hex, ext)
         # return the whole path to the file
-        return os.path.join(path, filename)
-    return wrapper
+        return os.path.join(self.path, filename)
 
 
 class Recipe(models.Model):
@@ -116,8 +120,8 @@ class Recipe(models.Model):
     ready_in_minutes = models.IntegerField(blank=True, null=True, verbose_name='')
     num_servings = models.IntegerField(blank=True, null=False, default=4)
     # your recipe image
-    image = models.ImageField(blank=True, upload_to=path_and_rename('images/recipes/'), null=True)
-    thumbnail = models.ImageField(blank=True, upload_to=path_and_rename('thumbnails/recipes/'), null=True)
+    image = models.ImageField(blank=True, upload_to=PathAndRename('images/recipes/'), null=True)
+    thumbnail = models.ImageField(blank=True, upload_to=PathAndRename('thumbnails/recipes/'), null=True)
     slug = models.SlugField(max_length=40, default='default-slug')
     public = models.BooleanField(default=True, verbose_name='make recipe public?')
     # photo = models.ForeignKey(Photo, on_delete=models.CASCADE, blank=True, null=True)
