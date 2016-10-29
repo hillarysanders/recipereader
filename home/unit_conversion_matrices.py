@@ -4,6 +4,34 @@ import logging as log
 from .utils import most_common
 # anything above 1 uses num_to_words
 
+"""
+Okay so there's
+
+1. weight
+- us (pound, ounce, pint)
+- metric (kg, gram)
+
+2. volume
+- us (cup, teaspoon, tablespoon)
+- metric (liter, deciliter)
+- european (british cup, british teaspoon)
+
+So, given a recipe, you should be able to choose to convert it to:
+
+1. All by weight, Imperial
+2. All by weight, Metric
+
+3. All by volume, Imperial
+4. All by volume, Metric
+
+5. Same weight / volume allocation, but Imperial units
+6. Same weight / volume allocation, but Metric units
+
+5 & 6 are much easier than 1-4, because they don't require transferring amounts from volume to weight and vice versa,
+which requires ingredients identification and weight knowledge (very hard, since there are many possible ingredients).
+So we're going to start off with 5 and 6.
+"""
+
 
 class UnitConversions:
     """
@@ -15,7 +43,7 @@ class UnitConversions:
     """
 
     # types of units:
-    units = dict(mass=['kilogram', 'gram', 'milligram', 'ounce', 'pound', 'stone'],
+    units = dict(mass=['kilogram', 'gram', 'milligram', 'ounce', 'pound'],
                  volume_us=['teaspoon', 'tablespoon', 'fluid ounce', 'cup', 'pint', 'quart', 'gallon'],
                  volume_metric=['liter', 'milliliter', 'centiliter'],
                  pcs=['pcs'])
@@ -213,19 +241,25 @@ class UnitConversions:
             'min': 1.,
             'smaller_unit': 'milliliter',
             'max': 100.,
-            'larger_unit': 'liter'
+            'larger_unit': 'liter',
+            'imperial_unit': 'teaspoon',
+            'metric_unit': None
         },
         'liter': {
             'min': 1.,
             'smaller_unit': 'milliliter',
             'max': np.Inf,
-            'larger_unit': None
+            'larger_unit': None,
+            'imperial_unit': 'quart',
+            'metric_unit': None
         },
         'pcs': {
             'min': -np.Inf,
             'smaller_unit': None,
             'max': np.Inf,
-            'larger_unit': None
+            'larger_unit': None,
+            'imperial_unit': None,
+            'metric_unit': None
         }
     }
     # conversions within unit types:

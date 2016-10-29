@@ -274,7 +274,7 @@ def lookback_for_type_from_pattern(match_info, regex_pattern, lookback_type, new
 
 def lookforward_for_type_from_pattern(match_info, regex_pattern, hit_type, new_sub_type, lookforward=1):
     lookforward += 1
-    idx = [i for i in match_info.index if re.match(regex_pattern, match_info.loc[i, 'name'])]
+    idx = [i for i in match_info.index if re.search(regex_pattern, match_info.loc[i, 'name'])]
     for i in idx:
         m = match_info.loc[i:, :].head(lookforward)
         is_number = m.type == hit_type

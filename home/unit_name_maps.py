@@ -203,7 +203,10 @@ for ing in ['apple', 'banana', 'egg', 'apricot', 'aubergine', 'eggplant', 'avoca
             'peanut', 'pear', 'pineapple', 'pumpkin', 'quince', 'raisin', 'rhubarb', 'satsuma',
             'sweet potato', 'potato', 'tomato', 'turnip', 'plum', 'zucchini',
             'chicken thigh', 'chicken breast',
-            'clove', 'shallot', 'chunk']:
+
+            'clove', 'shallot', 'chunk',
+
+            'serving']:
     name_maps_pcs.append(dict(pattern=[ing, '{}s'.format(ing)],
                               singular=ing,
                               plural='{}s'.format(ing)))
@@ -228,6 +231,7 @@ length_patterns['name'] = length_patterns['pattern']
 
 percent_patters = pd.DataFrame(dict(pattern=['%', 'percent'], name=['%', 'percent'],
                                     type='unit', sub_type='percent'))
+
 
 # use num2words:
 name_maps_english_numbers = _get_name_maps_english_numbers(n=100)
@@ -282,6 +286,7 @@ multipliable = dict(
     each_number=False,
     dimension=False,
     line_number=False,
+    hashtag_number=False,
     package=False,
     package_number=False,
     weight=True,

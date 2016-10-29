@@ -184,6 +184,10 @@ def tag_matches_from_line(match_info):
                                                            dont_skip_over_type='unit',
                                                            new_sub_type='each_number', lookback=1)
 
+    match_info = conv_utils.lookforward_for_type_from_pattern(match_info=match_info, regex_pattern=r'#$',
+                                                              hit_type='number', new_sub_type='hashtag_number',
+                                                              lookforward=1)
+
     # todo maybe this should be applied to amounts, since e.g. you can have:
     # number spacer unit ' at a time'
     # number unit ' at a time'
