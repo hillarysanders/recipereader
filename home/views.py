@@ -264,14 +264,14 @@ def recipe_detail(request, slug, pk, units='original'):
             sform = ServingsForm(data=request.POST)
             if sform.is_valid():
                 ingredients = conversions.change_servings(ingredients=ingredients,
-                                              convert_sisterless_numbers=True,
-                                              servings0=recipe.num_servings,
-                                              servings1=sform.cleaned_data['servings'])
+                                                          convert_sisterless_numbers=True,
+                                                          servings0=recipe.num_servings,
+                                                          servings1=sform.cleaned_data['servings'])
 
                 instructions = conversions.change_servings(ingredients=instructions,
-                                               convert_sisterless_numbers=True,
-                                               servings0=recipe.num_servings,
-                                               servings1=sform.cleaned_data['servings'])
+                                                           convert_sisterless_numbers=True,
+                                                           servings0=recipe.num_servings,
+                                                           servings1=sform.cleaned_data['servings'])
                 new_servings = sform.cleaned_data['servings']
                 new_servings = int(new_servings) if new_servings % 1 == 0 else new_servings
                 context['servings_form'] = ServingsForm(initial={'servings': new_servings})
@@ -293,6 +293,8 @@ def recipe_detail(request, slug, pk, units='original'):
 
 
 def change_units(request):
+    # todo now we just need to create the conversions.change_units() function,
+    # todo and then after than, make it so servings conversion is done via ajax as well! :)
     ingredients = json.loads(request.GET.get('ingredients', None))
     instructions = json.loads(request.GET.get('instructions', None))
     units_type = request.GET.get('units_type', None)
