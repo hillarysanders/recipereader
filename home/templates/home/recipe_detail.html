@@ -162,19 +162,22 @@
 
 function change_units(kind) {
   var ingredients = document.getElementById("ingredients").innerHTML
+  var instructions = document.getElementById("instructions").innerHTML
 
   $.ajax({
     url: '/ajax/change_units/',
     data: {
       'ingredients': ingredients,
-      <!--'instructions': instructions,-->
+      'instructions': instructions,
       'units_type': kind
     },
     dataType: 'json',
     success: function (data) {
-        console.log(data.hi_ingredients)
+        console.log('Yay. Ajax unit conversion <3')
         document.getElementById("hi_ingredients").innerHTML = data.hi_ingredients;
         document.getElementById("ingredients").innerHTML = data.ingredients;
+        document.getElementById("hi_instructions").innerHTML = data.hi_instructions;
+        document.getElementById("instructions").innerHTML = data.instructions;
     }
   });
 }
