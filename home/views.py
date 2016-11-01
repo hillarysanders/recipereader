@@ -8,11 +8,12 @@ from django.urls import reverse
 from django.db.models import Q
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
+from django.core.serializers.json import DjangoJSONEncoder
 import json
 from . import models
 from .forms import UserForm, LoginForm, AddRecipeForm, ServingsForm, UnitsForm
 from .conversions_utils import get_highlighted_ingredients, highlight_changed_amounts
-from .conversions import change_servings
+from . import conversions
 # Create your views here.
 
 
@@ -243,20 +244,6 @@ def bad_perm(request):
     return render(request, 'home/message.html', context)
 
 
-def change_units(request, pk, change_units='original'):
-
-    results = {'success': False}
-    if request.method == u'GET':
-        GET = request.GET
-        if GET.has_key(u'pk') and GET.has_key(u'change_units'):
-            pk = int(GET[u'pk'])
-            units_class = GET[u'change_units']
-            # todo
-            results = {'success': True}
-
-    return HttpResponse(json.dumps(results), mimetype='application/json')
-
-
 def recipe_detail(request, slug, pk, units='original'):
     recipe = get_object_or_404(models.Recipe, pk=pk)
 
@@ -276,12 +263,12 @@ def recipe_detail(request, slug, pk, units='original'):
         if request.POST.get("servingsSubmit"):
             sform = ServingsForm(data=request.POST)
             if sform.is_valid():
-                ingredients = change_servings(ingredients=ingredients,
+                ingredients = conversions.change_servings(ingredients=ingredients,
                                               convert_sisterless_numbers=True,
                                               servings0=recipe.num_servings,
                                               servings1=sform.cleaned_data['servings'])
 
-                instructions = change_servings(ingredients=instructions,
+                instructions = conversions.change_servings(ingredients=instructions,
                                                convert_sisterless_numbers=True,
                                                servings0=recipe.num_servings,
                                                servings1=sform.cleaned_data['servings'])
@@ -296,14 +283,34 @@ def recipe_detail(request, slug, pk, units='original'):
             if uform.is_valid():
                 context['placeholder_unit_message'] = uform.cleaned_data['unit_class']
 
-    # context['ingredients'] = ingredients
-    # context['instructions'] = instructions
-    context['hi_ingredients'] = highlight_changed_amounts(ingredients,
-                                                          convert_sisterless_numbers=True)
-    context['hi_instructions'] = highlight_changed_amounts(instructions,
-                                                           convert_sisterless_numbers=True)
+    context['ingredients'] = json.dumps(ingredients, cls=DjangoJSONEncoder)
+    context['instructions'] = json.dumps(instructions, cls=DjangoJSONEncoder)
+    context['hi_ingredients'] = highlight_changed_amounts(ingredients, convert_sisterless_numbers=True,
+                                                          ingredients=True)
+    context['hi_instructions'] = highlight_changed_amounts(instructions, convert_sisterless_numbers=True)
 
     return render(request, 'home/recipe_detail.html', context)
+
+
+def change_units(request):
+    ingredients = json.loads(request.GET.get('ingredients', None))
+    # instructions = json.loads(request.GET.get('instructions', None))
+    units_type = request.GET.get('units_type', None)
+
+    ingredients = conversions.change_units(ingredients)
+    # ingredients['0']['match_info']['0.0']['name'] = '{} {}'.format('Changed units to {}'.format(units_type),
+    #                                                                ingredients['0']['match_info']['0.0']['name'])
+    # import pdb; pdb.set_trace()
+    data = dict()
+    data['units_type'] = units_type
+    data['ingredients'] = json.dumps(ingredients, cls=DjangoJSONEncoder)
+    data['hi_ingredients'] = '{}: {}'.format(units_type, highlight_changed_amounts(ingredients,
+                                                                                   convert_sisterless_numbers=True,
+                                                                                   ingredients=True))
+
+    # data['hi_instructions'] = '{} {}'.format(units_type, instructions)
+
+    return JsonResponse(data)
 
 
 def delete_recipe(request, pk):

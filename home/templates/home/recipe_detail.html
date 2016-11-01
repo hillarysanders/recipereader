@@ -82,10 +82,8 @@
             <!--ingredients:-->
             <div class="col s12 m6 l6 ingredients">
                 <h5 class="center">Ingredients</h5>
-                {% for line in hi_ingredients %}
-                <text_indent>{{line|safe}}</text_indent>
-                <br>
-                {% endfor %}
+                <div id="hi_ingredients" class="red">{{ hi_ingredients }}</div>
+
             </div>
         </div>
 
@@ -97,22 +95,29 @@
 
             <div class="col s12 ingredients">
                 <h5 class="center">Ingredients</h5>
-                {% for line in hi_ingredients %}
-                <text_indent>{{line|safe}}</text_indent>
-                <br>
-                {% endfor %}
+                <div id="hi_ingredients">{{ hi_ingredients | safe }}</div>
             </div>
         </div>
 
         {% endif %}
-
         <!--directions:-->
 
         <h5 class="center">Directions</h5>
-        {% for line in hi_instructions %}
-        {{line|safe}}
-        <br>
-        {% endfor %}
+        <div id="hi_instructions">{{ hi_instructions | safe }}</div>
+
+
+
+
+        <!--the javascript / ajax friendly (json) versions of these:-->
+        <div id="ingredients"class="blue hide">{{ ingredients }}</div>
+        <div id="instructions" class="blue hide">{{ instructions }}</div>
+        <!--the reader-friendly versions of these:-->
+
+
+
+
+
+
     </div>
 </div>
 
@@ -152,4 +157,35 @@
     $('select').material_select();
 });
 </script>
+<script>
+
+
+function change_units(kind) {
+  var ingredients = document.getElementById("ingredients").innerHTML
+
+  $.ajax({
+    url: '/ajax/change_units/',
+    data: {
+      'ingredients': ingredients,
+      <!--'instructions': instructions,-->
+      'units_type': kind
+    },
+    dataType: 'json',
+    success: function (data) {
+        console.log(data.hi_ingredients)
+        document.getElementById("hi_ingredients").innerHTML = data.hi_ingredients;
+        document.getElementById("ingredients").innerHTML = data.ingredients;
+    }
+  });
+}
+
+function addClickHandlers() {
+  $("#change_units_metric").click( function() { change_units("metric") });
+  $("#change_units_us").click( function() { change_units("us") });
+  $("#change_units_original").click( function() { change_units("original") });
+}
+$(document).ready(addClickHandlers);
+
+</script>
 {% endblock %}
+

@@ -459,7 +459,7 @@ def merge_amounts_meant_to_be_together(amounts, match_info):
     return amounts, match_info
 
 
-def highlight_changed_amounts(parsed_text, convert_sisterless_numbers=True):
+def highlight_changed_amounts(parsed_text, convert_sisterless_numbers=True, ingredients=False):
     """
     :param parsed_text: output of parse_ingredients()
     """
@@ -490,7 +490,11 @@ def highlight_changed_amounts(parsed_text, convert_sisterless_numbers=True):
                 match_info['name'].iloc[end_idx] += '</multiplied_amount>'
 
         text = ''.join(match_info.name)
+        if ingredients:
+            text = '<text_indent>{}</text_indent>'.format(text)
         highlighted.append(text)
+
+    highlighted = '<br>'.join(highlighted)
 
     return highlighted
 

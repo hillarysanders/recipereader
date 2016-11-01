@@ -19,6 +19,10 @@ X = """2 1/4 cups all-purpose flour
 2 cups (12-oz. pkg.) NESTLÉ® TOLL HOUSE® Semi-Sweet Chocolate Morsels
 1 cup chopped nuts"""
 
+def change_units(ingredients):
+    # TODO TODO TODO
+    return ingredients
+
 
 def find_matches_in_line(line):
     ok_left = '[- \(]'
