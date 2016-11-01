@@ -10,19 +10,27 @@
 
     <div class="col s12 recipe_topper">
         <div class="col s12">
-            <div class="col s12 m4 l4 left">
+            <div class="col s12 m12 l3 left">
                 <br>
                 <i class="left-align">{{ recipe.description }}</i>
             </div>
 
-            <!--servings_box-->
-            <div class="col s12 m5 l4 center-align valign-wrapper">
 
+            <div class="col s12 m4 l3">
+                <br>
+
+                <div class="center col s12">{{ recipe.get_prep_time }}</div>
+                <div class="center col s12">{{ recipe.get_cook_time }}</div>
+                <div class="center col s12">{{ recipe.get_ready_in_time }}</div>
+            </div>
+
+            <!--servings_box-->
+            <div class="col s7 m5 l4 valign-wrapper">
                 <div class="col s6 right-align">
-                    <h5 class="servtext">Servings:</h5>
+                    <p class="servtext">Servings:</p>
                 </div>
                 <div class="col s6 left-align">
-                  <form action="." method="post">
+                    <form action="." method="post">
                         {% csrf_token %}
                         {{ servings_form.servings|as_material:"" }}
                         <input type="submit" id="servbtn" value="Submit" name="servingsSubmit" style="display: none;"/>
@@ -34,12 +42,44 @@
                 </div>
             </div>
 
-            <div class="col s12 m3 l4 right">
-                    <br>
-                    <div class="center col s12">{{ recipe.get_prep_time }}</div>
-                    <div class="center col s12">{{ recipe.get_cook_time }}</div>
-                    <div class="center col s12">{{ recipe.get_ready_in_time }}</div>
+            <div class="col s5 m3 l2 left-align">
+                    <form action="." method="post">
+                        {% csrf_token %}
+                        <select onchange="this.form.submit()" class="unitsform" id="id_unit_class" name="unit_class">
+                            <option value="" disabled selected>Change Units?</option>
+                            {% for choice in units_form.unit_class.field.choices %}
+                                <option value="{{choice.0}}">{{choice.1}}</option>
+                            {% endfor %}
+                        </select>
+                        <p class="red">{{ units_form.units_form.errors }}</p>
+                    </form>
             </div>
+
+            <!--<div class="col s12 blue">-->
+
+
+                <!--{{ placeholder_unit_message }}-->
+            <!--</div>-->
+            <!--<div class="col s12 green">-->
+                <!--&lt;!&ndash; Dropdown Trigger &ndash;&gt;-->
+                <!--&lt;!&ndash; todo need to send this prolly via url or form to view &ndash;&gt;-->
+                <!--<a class='dropdown-button btn col2 units_dropdown_btn' href='#' data-activates='dropdown1'-->
+                   <!--data-hover="true" data-beloworigin="true">Change Units</a>-->
+
+                <!--&lt;!&ndash; Dropdown Structure &ndash;&gt;-->
+                <!--<ul id='dropdown1' class='dropdown-content'>-->
+                    <!--<li class="units_dropdown_btn"><a id="change_units_us"-->
+                                                      <!--class="units_dropdown">U.S.</a></li>-->
+                    <!--<li class="divider"></li>-->
+                    <!--<li class="units_dropdown_btn"><a id="change_units_metric"-->
+                                                      <!--class="units_dropdown">metric</a></li>-->
+                    <!--<li class="divider"></li>-->
+                    <!--<li class="units_dropdown_btn"><span id="change_units_original"-->
+                                                      <!--class="units_dropdown">original</span></li>-->
+                <!--</ul>-->
+
+            <!--</div>-->
+
 
         </div>
 
@@ -48,71 +88,73 @@
 
     <div class="col s12 recipe_text">
 
-            {% if recipe.image %}
-                <div class="col s12 m12 l8 image_ingredients_holder">
-                    <div class="col s12 m6 l6 recipe_image">
-                        <br>
-                        <img src="{{ recipe.image.url }}"/>
-                    </div>
-
-                    <!--ingredients:-->
-                    <div class="col s12 m6 l6 ingredients">
-                        <h5 class="center">Ingredients</h5>
-                        {% for line in hi_ingredients %}
-                        <text_indent>{{line|safe}}</text_indent>
-                        <br>
-                        {% endfor %}
-                    </div>
-                </div>
-
-            {% elif True %}
-                <!--ingredients:-->
-
-
-                <div class="col s12 m6 l6 image_ingredients_holder">
-                    <!--<div class="col s12 valign-wrapper">-->
-                        <!--<div class="col s12 m6 left">-->
-                            <!--<i>{{ recipe.description }}</i>-->
-                        <!--</div>-->
-                        <!--<div class="col s12 m6 right">-->
-                                    <!--<div class="col s12 m12 l12 center">-->
-                                        <!--<div class="col s12">{{ recipe.get_prep_time }}</div>-->
-                                        <!--<div class="col s12">{{ recipe.get_cook_time }}</div>-->
-                                        <!--<div class="col s12">{{ recipe.get_ready_in_time }}</div>-->
-                                    <!--</div>-->
-                        <!--</div>-->
-                    <!--</div>-->
-
-                    <div class="col s12 ingredients">
-                    <h5 class="center">Ingredients</h5>
-                        {% for line in hi_ingredients %}
-                            <text_indent>{{line|safe}}</text_indent>
-                            <br>
-                        {% endfor %}
-                    </div>
-                </div>
-
-            {% endif %}
-
-            <!--directions:-->
-
-            <h5 class="center">Directions</h5>
-            {% for line in hi_instructions %}
-                {{line|safe}}
+        {% if recipe.image %}
+        <div class="col s12 m12 l8 image_ingredients_holder">
+            <div class="col s12 m6 l6 recipe_image">
                 <br>
-            {% endfor %}
+                <img src="{{ recipe.image.url }}"/>
+            </div>
+
+            <!--ingredients:-->
+            <div class="col s12 m6 l6 ingredients">
+                <h5 class="center">Ingredients</h5>
+                {% for line in hi_ingredients %}
+                <text_indent>{{line|safe}}</text_indent>
+                <br>
+                {% endfor %}
+            </div>
+        </div>
+
+        {% elif True %}
+        <!--ingredients:-->
+
+
+        <div class="col s12 m6 l6 image_ingredients_holder">
+            <!--<div class="col s12 valign-wrapper">-->
+            <!--<div class="col s12 m6 left">-->
+            <!--<i>{{ recipe.description }}</i>-->
+            <!--</div>-->
+            <!--<div class="col s12 m6 right">-->
+            <!--<div class="col s12 m12 l12 center">-->
+            <!--<div class="col s12">{{ recipe.get_prep_time }}</div>-->
+            <!--<div class="col s12">{{ recipe.get_cook_time }}</div>-->
+            <!--<div class="col s12">{{ recipe.get_ready_in_time }}</div>-->
+            <!--</div>-->
+            <!--</div>-->
+            <!--</div>-->
+
+            <div class="col s12 ingredients">
+                <h5 class="center">Ingredients</h5>
+                {% for line in hi_ingredients %}
+                <text_indent>{{line|safe}}</text_indent>
+                <br>
+                {% endfor %}
+            </div>
+        </div>
+
+        {% endif %}
+
+        <!--directions:-->
+
+        <h5 class="center">Directions</h5>
+        {% for line in hi_instructions %}
+        {{line|safe}}
+        <br>
+        {% endfor %}
     </div>
 </div>
 
 <!-- Modal Trigger -->
 <div id="confirmdeletemodal" class="modal modal-fixed-footer">
     <div class="modal-content pale_red">
-      <h4>Are you sure you want to delete your recipe?</h4>
-      <p>Are you sure you want to delete {{recipe.recipe_name}}?</p>
+        <h4>Are you sure you want to delete your recipe?</h4>
+
+        <p>Are you sure you want to delete {{recipe.recipe_name}}?</p>
     </div>
     <div class="modal-footer">
-      <a href="{% url 'home:delete_recipe' recipe.id %}" class="red modal-action modal-close waves-effect waves-white btn-flat">Yes, Delete</a>
-      <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Nevermind!</a>
+        <a href="{% url 'home:delete_recipe' recipe.id %}"
+           class="red modal-action modal-close waves-effect waves-white btn-flat">Yes, Delete</a>
+        <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Nevermind!</a>
     </div>
 </div>
 
@@ -123,14 +165,13 @@
         <i class="large material-icons">mode_edit</i>
     </a>
     <ul>
-        <li><a class="modal-trigger waves-effect waves-light btn ghostbtn col1" href="#confirmdeletemodal">delete recipe</a></li>
-        <li><a class="waves-effect waves-light btn ghostbtn col1" href="{% url 'home:edit_recipe' recipe.slug recipe.id %}">edit recipe</a></li>
+        <li><a class="modal-trigger waves-effect waves-light btn ghostbtn" href="#confirmdeletemodal">delete recipe</a>
+        </li>
+        <li><a class="waves-effect waves-light btn ghostbtn" href="{% url 'home:edit_recipe' recipe.slug recipe.id %}">edit
+            recipe</a></li>
         <!--<li><a class="waves-effect waves-light btn ghostbtn col1" href="#!">change units</a></li>-->
     </ul>
 </div>
-
-
-
 
 
 <!--{% for field in recipe.get_all_fields %}-->
@@ -155,6 +196,24 @@
 <!--<p>{{recipe.image}}</p>-->
 <!--</div>-->
 <!--</div>-->
+<script>
+ $(document).ready(function() {
+    $('select').material_select();
+});
+</script>
 
+<!--<script>-->
+<!--function change_units(kind) {-->
+  <!--$.getJSON("/change_units/", { pk:{{ object.pk }}, change_units: kind }, function(json){-->
+    <!--alert("Was successful?: " + json['success']);-->
+  <!--});-->
+<!--}-->
+<!--function addClickHandlers() {-->
+  <!--$("#change_units_metric").click( function() { change_units("metric") });-->
+  <!--$("#change_units_us").click( function() { change_units("u.s.") });-->
+  <!--$("#change_units_original").click( function() { change_units("original") });-->
+<!--}-->
+<!--$(document).ready(addClickHandlers);-->
+<!--</script>-->
 
 {% endblock %}

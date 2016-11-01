@@ -107,11 +107,17 @@ input::-webkit-inner-spin-button {
 /* the servings input form */
 .input_serving {
     width: 30px !important;
-    font-size: 20px !important;
+    font-size: 18px !important;
     align: center;
     text-align: center;
     margin-left: -20px !important;
     margin-top: 10px !important;
+}
+
+.unitsform {
+    font-size: 18px !important;
+    margin-top: 24px;
+    max-width: 130px;
 }
 /* the servings input button */
 .servgo {
@@ -123,6 +129,7 @@ input::-webkit-inner-spin-button {
 
 .servtext {
  margin-right: -8px;
+ font-size: 18px;
 }
 .spacer10px {
     height: 10px;
@@ -276,12 +283,46 @@ hi_text {
 
 
 .ghostbtn {
-    color: black;
     padding: 0px 5px 35px 5px;
     float: left;
     border-radius: 30px;
     font-size: 12px;
     text-transform: none;
+    background-color: #ffffe6;
+}
+.ghostbtn:hover {
+    background-color: #cccccf !important;
+}
+
+.units_dropdown_btn {
+    font-size: 12px;
+    text-transform: none;
+    color: white !important;
+    min-height: 35px !important;
+    height: 35px;
+}
+.units_dropdown {
+    color: #445570 !important;
+    min-height: 35px !important;
+    height: 35px;
+    background-color: #ffffe6;
+    line-height: 11px !important;
+
+}
+.units_dropdown:hover {
+    background-color: #cccccf;
+}
+
+
+/* units type drop down on recipe detail page: */
+ul.dropdown-content li span {
+    color: #445570;
+    background-color: #ffffe6;
+}
+/* ul.dropdown-content.select-dropdown li span { } */
+
+ul.dropdown-content li span:hover {
+    background-color: #cccccf;
 }
 
 

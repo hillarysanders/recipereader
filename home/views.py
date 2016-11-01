@@ -1,14 +1,15 @@
 from __future__ import unicode_literals
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, get_object_or_404
 from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
 from django.contrib import messages
 from django.urls import reverse
 from django.db.models import Q
-from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.decorators import login_required
+import json
 from .models import Recipe, UserProxy
-from .forms import UserForm, LoginForm, AddRecipeForm, ServingsForm
+from .forms import UserForm, LoginForm, AddRecipeForm, ServingsForm, UnitsForm
 from .conversions_utils import get_highlighted_ingredients, highlight_changed_amounts
 from .conversions import change_servings
 # Create your views here.
@@ -231,13 +232,35 @@ def bad_perm(request):
     return render(request, 'home/message.html', context)
 
 
-def recipe_detail(request, slug, pk):
+# def recipe_view(request, slug, pk, change_units='original'):
+#
+#
+#     recipe = get_object_or_404(Recipe, pk=pk)
+#
+#     context = {
+#         'recipe': recipe,
+#         'servings_form': ServingsForm(initial={'servings': recipe.num_servings}),
+#         'units_form': UnitsForm(),
+#         'changed_servings': False,
+#         'placeholder_unit_message': None
+#     }
+#
+#     # import pdb; pdb.set_trace()
+#     ingredients = recipe.ingredients
+#     instructions = recipe.instructions
+#
+#     return render(request, 'home/recipe_detail.html', context)
+
+
+def recipe_detail(request, slug, pk, units='original'):
     recipe = get_object_or_404(Recipe, pk=pk)
 
     context = {
         'recipe': recipe,
         'servings_form': ServingsForm(initial={'servings': recipe.num_servings}),
-        'changed_servings': False
+        'units_form': UnitsForm(),
+        'changed_servings': False,
+        'placeholder_unit_message': None
     }
 
     ingredients = recipe.ingredients
@@ -264,6 +287,11 @@ def recipe_detail(request, slug, pk):
                 context['servings_form'] = ServingsForm(initial={'servings': new_servings})
 
                 context['changed_servings'] = True
+
+        if request.POST.get('unit_class'):
+            uform = UnitsForm(data=request.POST)
+            if uform.is_valid():
+                context['placeholder_unit_message'] = uform.cleaned_data['unit_class']
 
     if context['changed_servings']:
         context['hi_ingredients'] = highlight_changed_amounts(ingredients,

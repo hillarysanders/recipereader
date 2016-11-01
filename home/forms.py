@@ -12,6 +12,19 @@ class ServingsForm(forms.Form):
                                         'placeholder': ''})
     )
 
+
+class UnitsForm(forms.Form):
+    unit_class = forms.ChoiceField(
+        label='',
+        help_text='',
+        choices=[('us', 'U.S.'),
+                 ('metric', 'Metric'),
+                 ('original', 'Original')],
+        widget=forms.Select(attrs={'class': 'units_form'}),
+        required=False
+    )
+
+
 class UserForm(UserCreationForm):
     class Meta:
         model = User
@@ -35,7 +48,6 @@ class UserForm(UserCreationForm):
 
 
 class LoginForm(forms.ModelForm):
-
     class Meta:
         model = User
         fields = ["username", "password"]
@@ -72,7 +84,6 @@ class AddRecipeForm(forms.ModelForm):
 
         # make recipe name big:
         self.fields['recipe_name'].widget = forms.TextInput(attrs={'style': 'font-size: 30px'})
-
 
 # class RecipeSearch(forms.Form):
 #     search = forms.CharField(max_length=100, required=False)

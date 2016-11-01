@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 from django.db import models
+from django import forms
 from django.contrib.auth.models import User
 from django.contrib.postgres.fields import JSONField
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -17,12 +18,12 @@ from django.core.files.storage import default_storage as storage
 from PIL import Image
 from . import conversions
 from .utils import Timer
+
 # Create your models here.
 # Each model is represented by a class that subclasses django.db.models.Model. Each model has a number of class
 # variables, each of which represents a database field in the model.
 # Each field is represented by an instance of a Field class - e.g., CharField for character fields and DateTimeField
 # for datetimes. This tells Django what type of data each field holds.
-
 
 # create session id object to be used only when a user tries to record a recipe but is not logged in.
 # looking in e.g. cookbook will use userproxy object instead of user object.
@@ -30,6 +31,7 @@ from .utils import Timer
 # instead of None.
 # at some point set it so e.g. if a cookie has become inactive (how long is this?) you delete the UserProxy instance
 # (and therefore, its recipes) if there is no attached user account.
+
 
 class UserProxy(models.Model):
     """
@@ -68,6 +70,7 @@ class PathAndRename(object):
     :param path: the folder in which you wish to save your images
     :return: a function that returns your full image path
     """
+
     def __init__(self, sub_path):
         self.path = sub_path
 
@@ -91,8 +94,8 @@ class Recipe(models.Model):
     # TextField is larger than CharField
     recipe_name = models.CharField(max_length=128, default='')
     description = models.TextField(max_length=1024, default='', blank=True)
-    ingredients_text = models.TextField(max_length=2048*2, verbose_name='Ingredients')
-    instructions_text = models.TextField(max_length=2048*4, verbose_name='Instructions')
+    ingredients_text = models.TextField(max_length=2048 * 2, verbose_name='Ingredients')
+    instructions_text = models.TextField(max_length=2048 * 4, verbose_name='Instructions')
     ingredients = JSONField(default=dict)
     instructions = JSONField(default=dict)
 
@@ -135,7 +138,7 @@ class Recipe(models.Model):
         super(Recipe, self).save(*args, **kwargs)
 
     def reduce_image_size(self, image, size_limit=850000):
-        image_size = image.size[0]*image.size[1]
+        image_size = image.size[0] * image.size[1]
         print('image size: {}'.format(image_size))
         if image_size <= size_limit:
             return self.image
@@ -193,25 +196,24 @@ class Recipe(models.Model):
 
             fname = f.name
             # resolve picklists/choices, with get_xyz_display() function
-            get_choice = 'get_'+fname+'_display'
+            get_choice = 'get_' + fname + '_display'
             if hasattr(self, get_choice):
                 value = getattr(self, get_choice)()
             else:
-                try :
+                try:
                     value = getattr(self, fname)
                 except AttributeError:
                     value = None
 
             # only display fields with values and skip some fields entirely
-            if f.editable and value and f.name not in ('id',  'user', 'recipe_name',
+            if f.editable and value and f.name not in ('id', 'user', 'recipe_name',
                                                        'status', 'workshop', 'complete'):
-
                 fields.append(
-                  {
-                   'label': f.verbose_name,
-                   'name': f.name,
-                   'value': value,
-                  }
+                    {
+                        'label': f.verbose_name,
+                        'name': f.name,
+                        'value': value,
+                    }
                 )
         return fields
 
@@ -251,7 +253,6 @@ class Recipe(models.Model):
         time = '' if (time == '') else 'Ready In: {}'.format(time)
         return time
 
-
 # class NumberMatch(models.Model):
 #     start = models.IntegerField()
 #     end = models.IntegerField()
@@ -284,9 +285,3 @@ class Recipe(models.Model):
 #     number_name = models.CharField()
 #     number_value = models.FloatField()
 #     ingredient_line = models.ForeignKey(IngredientLine)
-
-
-
-
-
-
