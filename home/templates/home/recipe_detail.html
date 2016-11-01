@@ -3,6 +3,7 @@
 {% block content %}
 {% load static %}
 <!--{% load materialize %}-->
+
 <h2 class="center"> {{ recipe.recipe_name }} </h2>
 
 <div class="row">
@@ -42,43 +43,26 @@
                 </div>
             </div>
 
-            <div class="col s5 m3 l2 left-align">
-                    <form action="." method="post">
-                        {% csrf_token %}
-                        <select onchange="this.form.submit()" class="unitsform" id="id_unit_class" name="unit_class">
-                            <option value="" disabled selected>Change Units?</option>
-                            {% for choice in units_form.unit_class.field.choices %}
-                                <option value="{{choice.0}}">{{choice.1}}</option>
-                            {% endfor %}
-                        </select>
-                        <p class="red">{{ units_form.units_form.errors }}</p>
-                    </form>
+            <div class="col s5 m3 l2 left-align valign-wrapper">
+                <!-- Dropdown Trigger -->
+                <br><br><br><br>
+                <a class='dropdown-button btn col2 units_dropdown_btn' href='#' data-activates='dropdown1'
+                   data-hover="true" data-beloworigin="true">Δ Units</a>
+
+                <!-- Dropdown Structure -->
+                <ul id='dropdown1' class='dropdown-content'>
+                    <li class="units_dropdown_btn"><a id="change_units_us"
+                                                      class="units_dropdown">U.S.</a></li>
+                    <li class="divider"></li>
+                    <li class="units_dropdown_btn"><a id="change_units_metric"
+                                                      class="units_dropdown">metric</a></li>
+                    <li class="divider"></li>
+                    <li class="units_dropdown_btn"><a id="change_units_original"
+                                                      class="units_dropdown">original</a></li>
+                </ul>
+
             </div>
 
-            <!--<div class="col s12 blue">-->
-
-
-                <!--{{ placeholder_unit_message }}-->
-            <!--</div>-->
-            <!--<div class="col s12 green">-->
-                <!--&lt;!&ndash; Dropdown Trigger &ndash;&gt;-->
-                <!--&lt;!&ndash; todo need to send this prolly via url or form to view &ndash;&gt;-->
-                <!--<a class='dropdown-button btn col2 units_dropdown_btn' href='#' data-activates='dropdown1'-->
-                   <!--data-hover="true" data-beloworigin="true">Change Units</a>-->
-
-                <!--&lt;!&ndash; Dropdown Structure &ndash;&gt;-->
-                <!--<ul id='dropdown1' class='dropdown-content'>-->
-                    <!--<li class="units_dropdown_btn"><a id="change_units_us"-->
-                                                      <!--class="units_dropdown">U.S.</a></li>-->
-                    <!--<li class="divider"></li>-->
-                    <!--<li class="units_dropdown_btn"><a id="change_units_metric"-->
-                                                      <!--class="units_dropdown">metric</a></li>-->
-                    <!--<li class="divider"></li>-->
-                    <!--<li class="units_dropdown_btn"><span id="change_units_original"-->
-                                                      <!--class="units_dropdown">original</span></li>-->
-                <!--</ul>-->
-
-            <!--</div>-->
 
 
         </div>
@@ -110,18 +94,6 @@
 
 
         <div class="col s12 m6 l6 image_ingredients_holder">
-            <!--<div class="col s12 valign-wrapper">-->
-            <!--<div class="col s12 m6 left">-->
-            <!--<i>{{ recipe.description }}</i>-->
-            <!--</div>-->
-            <!--<div class="col s12 m6 right">-->
-            <!--<div class="col s12 m12 l12 center">-->
-            <!--<div class="col s12">{{ recipe.get_prep_time }}</div>-->
-            <!--<div class="col s12">{{ recipe.get_cook_time }}</div>-->
-            <!--<div class="col s12">{{ recipe.get_ready_in_time }}</div>-->
-            <!--</div>-->
-            <!--</div>-->
-            <!--</div>-->
 
             <div class="col s12 ingredients">
                 <h5 class="center">Ingredients</h5>
@@ -173,47 +145,12 @@
     </ul>
 </div>
 
-
-<!--{% for field in recipe.get_all_fields %}-->
-<!--<h5>{{field.label|capfirst}}</h5>-->
-<!--{{field.value|escape|urlize|linebreaks}}-->
-<!--<br>-->
-<!--{% endfor %}-->
-
-<!--<div class="row">-->
-<!--<div class="col s12 m3 l2">-->
-<!--<p>{{recipe.prep_time}}</p>-->
-<!--<p>{{recipe.prep_time}}</p>-->
-<!--<p>{{recipe.cook_time}}</p>-->
-<!--<p>{{recipe.ready_in}}</p>-->
-<!--<p>{{recipe.num_servings}}</p>-->
-<!--</div>-->
-<!--<div class="col s12 m9 l10">-->
-<!--<p>{{recipe.recipe_name}}</p>-->
-<!--<p>{{recipe.description}}</p>-->
-<!--<p>{{recipe.ingredients_text}}</p>-->
-<!--<p>{{recipe.instructions_text}}</p>-->
-<!--<p>{{recipe.image}}</p>-->
-<!--</div>-->
-<!--</div>-->
 <script>
  $(document).ready(function() {
     $('select').material_select();
 });
 </script>
 
-<!--<script>-->
-<!--function change_units(kind) {-->
-  <!--$.getJSON("/change_units/", { pk:{{ object.pk }}, change_units: kind }, function(json){-->
-    <!--alert("Was successful?: " + json['success']);-->
-  <!--});-->
-<!--}-->
-<!--function addClickHandlers() {-->
-  <!--$("#change_units_metric").click( function() { change_units("metric") });-->
-  <!--$("#change_units_us").click( function() { change_units("u.s.") });-->
-  <!--$("#change_units_original").click( function() { change_units("original") });-->
-<!--}-->
-<!--$(document).ready(addClickHandlers);-->
-<!--</script>-->
+
 
 {% endblock %}
