@@ -27,15 +27,15 @@ function upload_img(input) {
     }
 }
 
-
-function change_units(kind) {
-  $.getJSON("/change_units/", { pk:{{ recipe.pk }}, change_units: kind }, function(json){
-    alert("Was successful?: " + json['success']);
-  });
-}
-function addClickHandlers() {
-  $("#change_units_metric").click( function() { change_units("metric") });
-  $("#change_units_us").click( function() { change_units("us") });
-  $("#change_units_original").click( function() { change_units("original") });
-}
-$(document).ready(addClickHandlers);
+//
+//function change_units(kind) {
+//  $.getJSON("/change_units/", { pk:{{ recipe.pk }}, change_units: kind }, function(json){
+//    alert("Was successful?: " + json['success']);
+//  });
+//}
+//function addClickHandlers() {
+//  $("#change_units_metric").click( function() { change_units("metric") });
+//  $("#change_units_us").click( function() { change_units("us") });
+//  $("#change_units_original").click( function() { change_units("original") });
+//}
+//$(document).ready(addClickHandlers);

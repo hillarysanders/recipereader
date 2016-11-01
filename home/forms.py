@@ -52,6 +52,14 @@ class LoginForm(forms.ModelForm):
         model = User
         fields = ["username", "password"]
 
+    def add_prefix(self, field_name):
+        # this is a hack to make sure form field IDs don't clash in the login page -
+        # there's a username, password for login and make-new-user forms, so if we use the default
+        # names the IDs clash, which is bad.
+        # http://stackoverflow.com/questions/8801910/override-django-form-fields-name-attr
+        field_name = 'login_{}'.format(field_name)
+        return super(LoginForm, self).add_prefix(field_name)
+
     def __init__(self, *args, **kwargs):
         # first call the 'real' __init__()
         super(LoginForm, self).__init__(*args, **kwargs)

@@ -6,9 +6,10 @@ from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
 from django.contrib import messages
 from django.urls import reverse
 from django.db.models import Q
+from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 import json
-from .models import Recipe, UserProxy
+from . import models
 from .forms import UserForm, LoginForm, AddRecipeForm, ServingsForm, UnitsForm
 from .conversions_utils import get_highlighted_ingredients, highlight_changed_amounts
 from .conversions import change_servings
@@ -31,13 +32,24 @@ def welcome(request):
     return render(request, 'home/welcome.html', context)
 
 
+def ajax_validate_username(request):
+    username = request.GET.get('username', None)
+    data = {
+        'is_taken': models.User.objects.filter(username__iexact=username).exists()
+    }
+    if data['is_taken']:
+        data['error_message'] = "A user with the username '{}' already exists.".format(username)
+
+    return JsonResponse(data)
+
+
 @login_required
 def profile(request):
     # todo add to this view. first need to sup up userProxy model.
 
     user = request.user  # can this be anonymous?
     user_proxy = get_user_proxy(request)
-    recipes = Recipe.objects.filter(user_proxy=user_proxy)
+    recipes = models.Recipe.objects.filter(user_proxy=user_proxy)
     for r in recipes:
         print(r)
     print(len(recipes))
@@ -75,7 +87,7 @@ def auth_login(request):
 
                 # for now, automatically import session recipes:
                 if request.session.session_key is not None:
-                    user_proxy, created = UserProxy.objects.get_or_create(session=request.session.session_key)
+                    user_proxy, created = models.UserProxy.objects.get_or_create(session=request.session.session_key)
                     user_proxy.user = user
                     user_proxy.session = ''
                     user_proxy.save()
@@ -87,8 +99,8 @@ def auth_login(request):
                 error_messages = uform.errors
         # if the user clicked the login submit button:
         elif request.POST.get("loginSubmit"):
-            username = request.POST['username']
-            password = request.POST['password']
+            username = request.POST['login_username']
+            password = request.POST['login_password']
             user = authenticate(username=username, password=password)
             if user is not None:
                 login(request, user)
@@ -97,7 +109,6 @@ def auth_login(request):
             else:
                 # todo make this into an actual error
                 error_messages = {'message': 'Invalid username / password. Try again?'}
-
 
     createuserform = UserForm()
     loginform = LoginForm()
@@ -125,9 +136,9 @@ def get_user_proxy(request):
     logged_in_user = request.user
     if logged_in_user.id is None:
         #  no user is logged in:
-        obj, created = UserProxy.objects.get_or_create(session=request.session.session_key, user=None)
+        obj, created = models.UserProxy.objects.get_or_create(session=request.session.session_key, user=None)
     else:
-        obj, created = UserProxy.objects.get_or_create(user=logged_in_user, session='')
+        obj, created = models.UserProxy.objects.get_or_create(user=logged_in_user, session='')
 
     user_proxy = obj
 
@@ -141,9 +152,9 @@ def cookbook(request):
     user_proxy = get_user_proxy(request)
 
     if request.GET.get('public_search', False):
-        recipes = Recipe.objects.filter(Q(public=True) | Q(user_proxy=user_proxy)).order_by('recipe_name')
+        recipes = models.Recipe.objects.filter(Q(public=True) | Q(user_proxy=user_proxy)).order_by('recipe_name')
     else:
-        recipes = Recipe.objects.filter(user_proxy=user_proxy).order_by('recipe_name')
+        recipes = models.Recipe.objects.filter(user_proxy=user_proxy).order_by('recipe_name')
 
     if request.method == 'GET':
         search_text = request.GET.get('search', None)
@@ -197,7 +208,7 @@ def add_recipe(request):
 
 def edit_recipe(request, slug, pk):
 
-    recipe = get_object_or_404(Recipe, pk=pk)
+    recipe = get_object_or_404(models.Recipe, pk=pk)
     if request.method == "POST":
         if check_if_owned_by_user(request, recipe):
             # instance = recipe tells this that it's an update
@@ -247,7 +258,7 @@ def change_units(request, pk, change_units='original'):
 
 
 def recipe_detail(request, slug, pk, units='original'):
-    recipe = get_object_or_404(Recipe, pk=pk)
+    recipe = get_object_or_404(models.Recipe, pk=pk)
 
     context = {
         'recipe': recipe,
@@ -296,7 +307,7 @@ def recipe_detail(request, slug, pk, units='original'):
 
 
 def delete_recipe(request, pk):
-    recipe = get_object_or_404(Recipe, pk=pk)
+    recipe = get_object_or_404(models.Recipe, pk=pk)
 
     if recipe:
         if check_if_owned_by_user(request, recipe):
