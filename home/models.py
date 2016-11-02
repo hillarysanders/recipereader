@@ -253,35 +253,3 @@ class Recipe(models.Model):
         time = '' if (time == '') else 'Ready In: {}'.format(time)
         return time
 
-# class NumberMatch(models.Model):
-#     start = models.IntegerField()
-#     end = models.IntegerField()
-#     pattern = models.CharField()
-#     replacement = models.CharField()
-#     value = models.FloatField()
-#     ingredient_line = models.ForeignKey(IngredientLine, on_delete=models.CASCADE)
-
-#
-# class IngredientLine(models.Model):
-#     raw_text = models.TextField(max_length=2048*2, blank=False, null=False)
-#     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
-#     # todo add in more fields that are created upon save, based on conversion text parsing of raw_text.
-#
-#     def save(self, *args, **kwargs):
-#         # if self.raw_text:
-#         #     # make attributes that are the output of parsing the line:
-#         #     parsed = conversions.parse_ingredient_line(self.raw_text)
-#         #     # todo this doesn't work still:
-#         #     self.new_text = parsed['parsed_line']
-#
-#         super(IngredientLine, self).save(*args, **kwargs)
-#
-#         # TODO would using postgres mean we could use multiple fields in django?
-
-# class IngredientNumber(models.Model):
-#     start = models.IntegerField()
-#     end = models.IntegerField()
-#     pattern = models.CharField()
-#     number_name = models.CharField()
-#     number_value = models.FloatField()
-#     ingredient_line = models.ForeignKey(IngredientLine)

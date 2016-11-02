@@ -11,7 +11,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.serializers.json import DjangoJSONEncoder
 import json
 from . import models
-from .forms import UserForm, LoginForm, AddRecipeForm, ServingsForm, UnitsForm
+from .forms import UserForm, LoginForm, AddRecipeForm, ServingsForm
 from .conversions_utils import get_highlighted_ingredients, highlight_changed_amounts
 from . import conversions
 # Create your views here.
@@ -250,7 +250,6 @@ def recipe_detail(request, slug, pk, units='original'):
     context = {
         'recipe': recipe,
         'servings_form': ServingsForm(initial={'servings': recipe.num_servings}),
-        'units_form': UnitsForm(),
         'changed_servings': False,
         'placeholder_unit_message': None
     }
@@ -277,11 +276,6 @@ def recipe_detail(request, slug, pk, units='original'):
                 context['servings_form'] = ServingsForm(initial={'servings': new_servings})
 
                 context['changed_servings'] = True
-
-        if request.POST.get('unit_class'):
-            uform = UnitsForm(data=request.POST)
-            if uform.is_valid():
-                context['placeholder_unit_message'] = uform.cleaned_data['unit_class']
 
     context['ingredients'] = json.dumps(ingredients, cls=DjangoJSONEncoder)
     context['instructions'] = json.dumps(instructions, cls=DjangoJSONEncoder)
