@@ -56,9 +56,9 @@
                     <li class="divider"></li>
                     <li class="units_dropdown_btn"><a id="change_units_metric"
                                                       class="units_dropdown">metric</a></li>
-                    <li class="divider"></li>
-                    <li class="units_dropdown_btn"><a id="change_units_original"
-                                                      class="units_dropdown">original</a></li>
+                    <!--<li class="divider"></li>-->
+                    <!--<li class="units_dropdown_btn"><a id="change_units_original"-->
+                                                      <!--class="units_dropdown">original</a></li>-->
                 </ul>
 
             </div>
@@ -216,7 +216,7 @@ function change_units(kind) {
 function addClickHandlers() {
   $("#change_units_metric").click( function() { change_units("metric") });
   $("#change_units_us").click( function() { change_units("us") });
-  $("#change_units_original").click( function() { change_units("original") });
+  <!--$("#change_units_original").click( function() { change_units("original") });-->
 }
 $(document).ready(addClickHandlers);
 
