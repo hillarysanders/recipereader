@@ -157,92 +157,138 @@ class UnitConversions:
 
     # if you have fewer than MIN unit values, then convert to smaller_unit
     # if you have over or equal to MAX unit values, then covert to larger_unit
+
+
+    # units = dict(mass=['kilogram', 'gram', 'milligram', 'ounce', 'pound'],
+    #          volume_us=['teaspoon', 'tablespoon', 'fluid ounce', 'cup', 'pint', 'quart', 'gallon'],
+    #          volume_metric=['liter', 'milliliter', 'centiliter'],
+    #          pcs=['pcs'])
     thresholds = {
         'milligram': {
             'min': -np.Inf,
             'smaller_unit': None,
             'max': 1000.,
-            'larger_unit': 'gram'
+            'larger_unit': 'gram',
+            'decimals_ok': True,
+            'us_unit': 'ounce',
+            'metric_unit': None
         },
         'gram': {
             'min': 1.,
             'smaller_unit': 'milligram',
             'max': 1000.,
-            'larger_unit': 'kilogram'
+            'larger_unit': 'kilogram',
+            'decimals_ok': True,
+            'us_unit': 'ounce',
+            'metric_unit': None
         },
         'kilogram': {
             'min': 1.,
             'smaller_unit': 'gram',
             'max': np.Inf,
-            'larger_unit': None
+            'larger_unit': None,
+            'decimals_ok': True,
+            'us_unit': 'pound',
+            'metric_unit': None
         },
         'ounce': {
             'min': -np.Inf,
             'smaller_unit': None,
             'max': 32.,
-            'larger_unit': 'pound'
+            'larger_unit': 'pound',
+            'decimals_ok': True,
+            'us_unit': None,
+            'metric_unit': 'gram'
         },
         'pound': {
             'min': 1.,
             'smaller_unit': 'ounce',
             'max': np.Inf,
-            'larger_unit': None
+            'larger_unit': None,
+            'decimals_ok': False,
+            'us_unit': None,
+            'metric_unit': 'kilogram'
         },
         'fluid ounce': {
             'min': -np.Inf,
             'smaller_unit': None,
             'max': 8.,
-            'larger_unit': 'cup'
+            'larger_unit': 'cup',
+            'decimals_ok': True,
+            'us_unit': None,
+            'metric_unit': 'milliliter'
         },
         'teaspoon': {
             'min': -np.Inf,
             'smaller_unit': None,
             'max': 3.,
-            'larger_unit': 'tablespoon'
+            'larger_unit': 'tablespoon',
+            'decimals_ok': True,
+            'us_unit': None,
+            'metric_unit': 'milliliter'
         },
         'tablespoon': {
             'min': 1.,
             'smaller_unit': 'teaspoon',
             'max': 8,
-            'larger_unit': 'cup'
+            'larger_unit': 'cup',
+            'decimals_ok': False,
+            'us_unit': None,
+            'metric_unit': 'milliliter'
         },
         'cup': {
             'min': 1./8,
             'smaller_unit': 'tablespoon',
             # usually people like to stay in cups over pints / quarts
             'max': np.Inf,
-            'larger_unit': None
+            'larger_unit': None,
+            'decimals_ok': False,
+            'us_unit': None,
+            'metric_unit': 'milliliter'
         },
         'pint': {
             'min': 1.,
             'smaller_unit': 'cup',
             'max': 2,
-            'larger_unit': 'quart'
+            'larger_unit': 'quart',
+            'decimals_ok': False,
+            'us_unit': None,
+            'metric_unit': 'milliliter'
         },
         'quart': {
             'min': 1.,
             'smaller_unit': 'cup',
             'max': 4.,
-            'larger_unit': 'gallon'
+            'larger_unit': 'gallon',
+            'decimals_ok': False,
+            'us_unit': None,
+            'metric_unit': 'liter'
         },
         'gallon': {
             'min': 1.,
             'smaller_unit': 'cup',
             'max': np.Inf,
-            'larger_unit': None
+            'larger_unit': None,
+            'decimals_ok': False,
+            'us_unit': None,
+            'metric_unit': 'liter'
         },
         'milliliter': {
             'min': -np.Inf,
             'smaller_unit': None,
             'max': 1000.,
-            'larger_unit': 'liter'
+            'larger_unit': 'liter',
+            'decimals_ok': True,
+            'us_unit': 'cup',
+            'metric_unit': None
         },
         'centiliter': {
             'min': 1.,
             'smaller_unit': 'milliliter',
             'max': 100.,
             'larger_unit': 'liter',
-            'imperial_unit': 'teaspoon',
+            'decimals_ok': True,
+            'us_unit': 'cup',
             'metric_unit': None
         },
         'liter': {
@@ -250,7 +296,8 @@ class UnitConversions:
             'smaller_unit': 'milliliter',
             'max': np.Inf,
             'larger_unit': None,
-            'imperial_unit': 'quart',
+            'decimals_ok': True,
+            'us_unit': 'quart',
             'metric_unit': None
         },
         'pcs': {
@@ -258,7 +305,8 @@ class UnitConversions:
             'smaller_unit': None,
             'max': np.Inf,
             'larger_unit': None,
-            'imperial_unit': None,
+            'decimals_ok': True,
+            'us_unit': None,
             'metric_unit': None
         }
     }
@@ -277,7 +325,8 @@ class UnitConversions:
             'gram': 1.0,
             'kilogram': 1 / 1000.0,
             'ounce': 0.035274,
-            'pound': 0.00220462},
+            'pound': 0.00220462
+        },
         'milligram': {
             'milligram': 1.0,
             'gram': 1e-3,

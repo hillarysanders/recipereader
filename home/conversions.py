@@ -19,9 +19,81 @@ X = """2 1/4 cups all-purpose flour
 2 cups (12-oz. pkg.) NESTLÉ® TOLL HOUSE® Semi-Sweet Chocolate Morsels
 1 cup chopped nuts"""
 
-def change_units(ingredients):
-    # TODO TODO TODO
-    return ingredients
+
+def change_units_line(line, units_type):
+
+    # todo if units_type=='original', then you just re-query the recipe, and then change the servings
+    amounts = conv_utils.json_dict_to_df(line['amounts'])
+    match_info = conv_utils.json_dict_to_df(line['match_info'])
+
+    if len(amounts) > 0:
+        amounts, match_info = conv_utils.merge_amounts_meant_to_be_together(amounts, match_info)
+
+        for aidx in amounts.index:
+            amount = amounts.loc[aidx, :]
+            # so, this is unit conversion, so we only care about changing the amount IF the amount has a number
+            # and a unit. Amounts always have numbers but only sometimes have units, so we need to check:
+            if isinstance(amount.get('unit_pattern'), str):
+                # Okay, now that we have an amount that has both a number and a unit, we need to find the
+                # unit that matches this unit x units_type.
+
+                unit_name = name_maps.loc[amount.unit_pattern, 'singular']
+                # for now, we'll only change units w/ singular / plural values (just weight and volume atm).
+                # things like temperature can come later.
+                if unit_name != '':
+                    change_to_unit = CONVERSION_FACTORS.thresholds.get(unit_name)
+                    if change_to_unit is not None:
+                        change_to_unit = change_to_unit.get('{}_unit'.format(units_type))
+                    if change_to_unit is not None:
+
+                        amount = conv_utils.multiply_amount(amount, convert_to=change_to_unit, multiplier=None)
+
+                        # this function says: given the new amount value given to us due to the changes above,
+                        # now see if units should be converted up or downwards.
+                        # If they do need to be converted; do that
+                        amount = conv_utils.convert_amount_to_appropriate_unit(amount=amount)
+                        # aaand again for good measure: (could do recursion here, but shouldn't be more
+                        # than 3 steps ever, really)
+                        amount = conv_utils.convert_amount_to_appropriate_unit(amount=amount)
+                        amount = conv_utils.convert_amount_to_appropriate_unit(amount=amount)
+                        # now, after that, see if the new amounts number is a decimal. If it is, does that
+                        # decimal cross the threshold to be converted into a lower unit? (e.g. tbsp --> tsp?)
+                        # If it does, change the match_info data frame
+                        # by inserting four new rows (' |plus|fraction| ') into match_info. Also augment the
+                        # amount row to show that it is a 'plus' amount.
+
+                        if not isinstance(amount.number_value, str):
+                            match_info, amounts, amount = conv_utils.insert_rows_if_amount_decimal_crosses_threshold(
+                                amount=amount,
+                                amounts=amounts,
+                                match_info=match_info
+                            )
+
+                amounts.loc[amount.name, :] = amount
+
+        # now the multiplication has happened, insert number info into the match_info object:
+        for aidx in amounts.index:
+            amount = amounts.loc[aidx, :]
+            match_info.loc[amount.name, 'name'] = conv_utils.multiply_number_to_str(number_val=amount.number_value, multiplier=1.)
+            match_info.loc[amount.name, 'value'] = amount.number_value
+
+    # optional...
+    amounts = amounts.sort_index()
+    match_info = match_info.sort_index()
+
+    # this is where the (possibly changed) units are inserted into the match_info object
+    match_info = conv_utils.update_plurality(match_info, amounts, only_change_multipliable=False)
+    match_info = conv_utils.df_to_json_ready_dict(match_info)
+    amounts = conv_utils.df_to_json_ready_dict(amounts)
+    return dict(match_info=match_info, amounts=amounts)
+
+
+def change_units(ingredients, units_type='metric'):
+
+    results_dict = {str(i): change_units_line(ingredients[i], units_type=units_type) for i in
+                    ingredients.keys()}
+
+    return results_dict
 
 
 def find_matches_in_line(line):
@@ -267,6 +339,8 @@ def change_servings_line(line, convert_sisterless_numbers, multiplier):
                         # multiply_amount() above, now see if units should be converted up or downwards.
                         # If they do need to be converted; do that
                         amount = conv_utils.convert_amount_to_appropriate_unit(amount=amount)
+                        # and again for good measure:
+                        amount = conv_utils.convert_amount_to_appropriate_unit(amount=amount)
                         # now, after that, see if the new amounts number is a decimal. If it is, does that
                         # decimal cross the threshold to be converted into a lower unit? (e.g. tbsp --> tsp?)
                         # If it does, change the match_info data frame
@@ -292,6 +366,8 @@ def change_servings_line(line, convert_sisterless_numbers, multiplier):
 
     # this is where the (possibly changed) units are inserted into the match_info object
     match_info = conv_utils.update_plurality(match_info, amounts)
+    match_info = conv_utils.df_to_json_ready_dict(match_info)
+    amounts = conv_utils.df_to_json_ready_dict(amounts)
     return dict(match_info=match_info, amounts=amounts)
 
 

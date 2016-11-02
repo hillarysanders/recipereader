@@ -82,7 +82,7 @@
             <!--ingredients:-->
             <div class="col s12 m6 l6 ingredients">
                 <h5 class="center">Ingredients</h5>
-                <div id="hi_ingredients" class="red">{{ hi_ingredients }}</div>
+                <div id="hi_ingredients">{{ hi_ingredients | safe }}</div>
 
             </div>
         </div>
@@ -159,6 +159,35 @@
 </script>
 <script>
 
+function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = jQuery.trim(cookies[i]);
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+var csrftoken = getCookie('csrftoken');
+
+function csrfSafeMethod(method) {
+    // these HTTP methods do not require CSRF protection
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+}
+
+$.ajaxSetup({
+    beforeSend: function(xhr, settings) {
+        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        }
+    }
+});
 
 function change_units(kind) {
   var ingredients = document.getElementById("ingredients").innerHTML
@@ -166,6 +195,8 @@ function change_units(kind) {
 
   $.ajax({
     url: '/ajax/change_units/',
+    type: 'POST',
+    <!--proccessData: false,-->
     data: {
       'ingredients': ingredients,
       'instructions': instructions,

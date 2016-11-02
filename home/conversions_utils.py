@@ -8,21 +8,23 @@ from .utils import which_min
 from .unit_conversion_matrices import CONVERSION_FACTORS
 
 
-def update_plurality(match_info, amounts, replace_name=True):
+def update_plurality(match_info, amounts, replace_name=True, only_change_multipliable=True):
     if len(amounts) > 0:
         for i in amounts.index[~amounts.isnull().unit_idx]:
             row = amounts.loc[i, :]
-            if multipliable[row['unit_sub_type']]:
-                if isinstance(row.number_value, str):
-                    number_name = number_to_string(float(row.number_value.split(' ')[-1]))
-                else:
-                    number_name = number_to_string(row.number_value)
-                    if replace_name:
-                        match_info.loc[row.name, 'name'] = number_name
+            if multipliable[row['unit_sub_type']] or not only_change_multipliable:
+                unit_name = name_maps.loc[row.unit_pattern, 'singular']
+                if unit_name != '':
+                    if isinstance(row.number_value, str):
+                        number_name = number_to_string(float(row.number_value.split(' ')[-1]))
+                    else:
+                        number_name = number_to_string(row.number_value)
+                        if replace_name:
+                            match_info.loc[row.name, 'name'] = number_name
 
-                column = get_plurality_from_string(number_name=number_name)
-                unit_name = name_maps.loc[row['unit_pattern'], column]
-                match_info.loc[row['unit_idx'], 'name'] = unit_name
+                    column = get_plurality_from_string(number_name=number_name)
+                    unit_name = name_maps.loc[row['unit_pattern'], column]
+                    match_info.loc[row['unit_idx'], 'name'] = unit_name
 
     return match_info
 
@@ -74,6 +76,7 @@ def multiply_amount(amount, convert_to=None, multiplier=None):
     if multiplier is None and convert_to is not None:
         unit_name = name_maps['singular'].get(str(amount.unit_pattern))
         if unit_name is None:
+            # todo I think this should be != '' not 'not None'
             unit_name = 'pcs'
         multiplier = CONVERSION_FACTORS.conversions[unit_name][convert_to]
         amount.unit_pattern = convert_to
@@ -94,6 +97,15 @@ def multiply_amount(amount, convert_to=None, multiplier=None):
     return amount
 
 
+def get_number_value_avg(amount):
+    if isinstance(amount.number_value, str):
+        number_value = np.mean([float(v) for v in amount.number_value.split(' ')])
+    else:
+        number_value = amount.number_value
+
+    return number_value
+
+
 def convert_amount_to_appropriate_unit(amount):
     """
     # if value is below unit's threshold, convert to that unit.
@@ -101,11 +113,13 @@ def convert_amount_to_appropriate_unit(amount):
     """
     unit_name = name_maps.loc[amount.unit_pattern, 'singular']
     unit_thresholds = CONVERSION_FACTORS.thresholds.get(unit_name)
+    number_value = get_number_value_avg(amount)
+
     if unit_thresholds is not None:
-        if amount.number_value < unit_thresholds['min']:
+        if number_value < unit_thresholds['min']:
             convert_to = unit_thresholds['smaller_unit']
             amount = multiply_amount(amount=amount, convert_to=convert_to, multiplier=None)
-        elif amount.number_value >= unit_thresholds['max']:
+        elif number_value >= unit_thresholds['max']:
             convert_to = unit_thresholds['larger_unit']
             amount = multiply_amount(amount=amount, convert_to=convert_to, multiplier=None)
 
@@ -127,44 +141,45 @@ def insert_rows_if_amount_decimal_crosses_threshold(amount, amounts, match_info,
     unit_thresholds = CONVERSION_FACTORS.thresholds.get(unit_name)
     if unit_thresholds is not None:
         if 0 < decimal < unit_thresholds['min']:
-            convert_to = unit_thresholds['smaller_unit']
-            dec_multiplier = CONVERSION_FACTORS.conversions[unit_name][convert_to]
-            add_number_name = multiply_number_to_str(number_val=decimal,
-                                                     multiplier=dec_multiplier)
-            # todo don't think this line is needed:
-            add_unit_name = name_maps.loc[convert_to, get_plurality_from_string(add_number_name)]
+            if not unit_thresholds['decimals_ok'] or amount.number_value < 1:
+                convert_to = unit_thresholds['smaller_unit']
+                dec_multiplier = CONVERSION_FACTORS.conversions[unit_name][convert_to]
+                add_number_name = multiply_number_to_str(number_val=decimal,
+                                                         multiplier=dec_multiplier)
+                # todo don't think this line is needed:
+                add_unit_name = name_maps.loc[convert_to, get_plurality_from_string(add_number_name)]
 
-            # the new index will be a little past the start of the second to last phrase, since
-            # with characters, start and end indices overlap (so we don't want the start of the insert
-            # to go over the end of the last phrase, since that will also cause the insert to go over the beginning
-            # of the next. Also could just do minus.
-            add_on_start_end = float(match_info.loc[amount.name:amount.end, 'end'].tail(2).iloc[0])
-            new_dec_number = np.round(dec_multiplier * decimal, round)
-            mi_row = pd.DataFrame(dict(pattern=[np.nan, np.nan, np.nan, convert_to],
-                                       # start=add_on_start_end, end=add_on_start_end,
-                                       type=['text', 'number', 'spacer', 'unit'],
-                                       sub_type=['plus', amount.number_sub_type,
-                                                 np.nan, amount.unit_sub_type],
-                                       value=[np.nan, new_dec_number, np.nan, np.nan],
-                                       original='',
-                                       name=[' plus ', add_number_name, ' ', add_unit_name]),
-                                  index=[add_on_start_end + .01, add_on_start_end + .02,
-                                         add_on_start_end + .03, add_on_start_end + .04])
+                # the new index will be a little past the start of the second to last phrase, since
+                # with characters, start and end indices overlap (so we don't want the start of the insert
+                # to go over the end of the last phrase, since that will also cause the insert to go over the beginning
+                # of the next. Also could just do minus.
+                add_on_start_end = float(match_info.loc[amount.name:amount.end, 'end'].tail(2).iloc[0])
+                new_dec_number = np.round(dec_multiplier * decimal, round)
+                mi_row = pd.DataFrame(dict(pattern=[np.nan, np.nan, np.nan, convert_to],
+                                           # start=add_on_start_end, end=add_on_start_end,
+                                           type=['text', 'number', 'spacer', 'unit'],
+                                           sub_type=['plus', amount.number_sub_type,
+                                                     np.nan, amount.unit_sub_type],
+                                           value=[np.nan, new_dec_number, np.nan, np.nan],
+                                           original='',
+                                           name=[' plus ', add_number_name, ' ', add_unit_name]),
+                                      index=[add_on_start_end + .01, add_on_start_end + .02,
+                                             add_on_start_end + .03, add_on_start_end + .04])
 
-            # modify the amounts  dataframe so it contains two amounts, now:
-            amount_new_row = pd.DataFrame(dict(number_value=new_dec_number,
-                                               number_sub_type='fraction',
-                                               unit_sub_type=amount.unit_sub_type,
-                                               unit_idx=add_on_start_end + .04,
-                                               end=add_on_start_end + .04,
-                                               unit_pattern=convert_to), index=[add_on_start_end + .02])
+                # modify the amounts  dataframe so it contains two amounts, now:
+                amount_new_row = pd.DataFrame(dict(number_value=new_dec_number,
+                                                   number_sub_type='fraction',
+                                                   unit_sub_type=amount.unit_sub_type,
+                                                   unit_idx=add_on_start_end + .04,
+                                                   end=add_on_start_end + .04,
+                                                   unit_pattern=convert_to), index=[add_on_start_end + .02])
 
-            # modify the original amount row so that it's just an int now:
-            amount.number_value = int(amount.number_value)
+                # modify the original amount row so that it's just an int now:
+                amount.number_value = int(amount.number_value)
 
-            # final prep:
-            match_info = match_info.append(mi_row)
-            amounts = amounts.append(amount_new_row)
+                # final prep:
+                match_info = match_info.append(mi_row)
+                amounts = amounts.append(amount_new_row)
 
     return match_info, amounts, amount
 
