@@ -3,19 +3,19 @@
 {% block content %}
 {% load materialize %}
 
-<h2> My Cookbook </h2>
+<a href="{% url 'home:cookbook' %}"><h2>My Cookbook</h2></a>
 
 
 <nav class="searchnav col2">
     <div class="nav-wrapper">
-        <form method="get" action="{% url 'home:cookbook' %}">
+        <form method="GET" action="{% url 'home:cookbook' %}">
             <div class="input-field">
-                <input id="search" type="search" name="search">
+                <input id="search" type="search" name="search" value="{{search_text}}">
                 <label for="search"><i class="material-icons">search</i></label>
                 <i class="material-icons">close</i>
             </div>
             <div class="col s12">
-                <input type="checkbox" id="bool_search" name="public_search" {{public_search_attr}}/>
+                <input type="checkbox" onChange="this.form.submit()" id="bool_search" name="public_search" {{public_search_attr}}/>
                 <label for="bool_search">Include public recipes</label>
             </div>
         </form>

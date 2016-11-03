@@ -157,17 +157,18 @@ def cookbook(request):
     else:
         recipes = models.Recipe.objects.filter(user_proxy=user_proxy).order_by('recipe_name')
 
+    search_text = ''
     if request.method == 'GET':
-        search_text = request.GET.get('search', None)
-        if search_text:
-            if search_text != '':
-                vector = SearchVector('recipe_name', 'ingredients_text', 'description')
-                query = SearchQuery(search_text)
-                recipes = recipes.annotate(rank=SearchRank(vector, query)).order_by('-rank').filter(rank__gt=0)
+        search_text = request.GET.get('search', '')
+        if search_text != '':
+            vector = SearchVector('recipe_name', 'ingredients_text', 'description')
+            query = SearchQuery(search_text)
+            recipes = recipes.annotate(rank=SearchRank(vector, query)).order_by('-rank').filter(rank__gt=0)
 
     context = {
         'recipes': recipes,
-        'public_search_attr': 'checked="checked"' if request.GET.get('public_search', False) else ''
+        'public_search_attr': 'checked="checked"' if request.GET.get('public_search', False) else '',
+        'search_text': search_text
     }
 
     # all = Recipe.objects.order_by('recipe_name')
