@@ -95,7 +95,7 @@ def auth_login(request):
 
                 # go ahead and login the user:
                 login(request, user)
-                return HttpResponseRedirect('/welcome/')
+                return HttpResponseRedirect('/')
             else:
                 error_messages = uform.errors
         # if the user clicked the login submit button:
