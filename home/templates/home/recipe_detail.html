@@ -34,10 +34,10 @@
                     <form action="." method="post">
                         {% csrf_token %}
                         {{ servings_form.servings|as_material:"" }}
-                        <input type="submit" id="servbtn" value="Submit" name="servingsSubmit" style="display: none;"/>
+
 
                         <a class="tooltipped" data-position="bottom" data-delay="50">
-                            <label for="servbtn" class="btn-floating btn-med waves-effect col2 center servgo">Go</label>
+                            <div id="servings_btn" class="btn-floating btn-med waves-effect col2 center servgo">Go</div>
                         </a>
                     </form>
                 </div>
@@ -62,10 +62,8 @@
                 </ul>
 
             </div>
-
-
-
         </div>
+
 
     </div>
     <div class="col s12 spacer10px"></div>
@@ -111,12 +109,8 @@
         <!--the javascript / ajax friendly (json) versions of these:-->
         <div id="ingredients"class="blue hide">{{ ingredients }}</div>
         <div id="instructions" class="blue hide">{{ instructions }}</div>
+        <div id="initial_servings" class="blue hide">{{ initial_servings }}</div>
         <!--the reader-friendly versions of these:-->
-
-
-
-
-
 
     </div>
 </div>
@@ -149,6 +143,7 @@
         <!--<li><a class="waves-effect waves-light btn ghostbtn col1" href="#!">change units</a></li>-->
     </ul>
 </div>
+
 {% endblock %}
 
 {% block javascript %}
@@ -213,10 +208,38 @@ function change_units(kind) {
   });
 }
 
+function change_servings() {
+  var ingredients = document.getElementById("ingredients").innerHTML
+  var instructions = document.getElementById("instructions").innerHTML
+  var servings = document.getElementById("id_servings").value;
+  var initial_servings = document.getElementById("initial_servings").innerHTML
+
+  $.ajax({
+    url: '/ajax/change_servings/',
+    type: 'POST',
+    <!--proccessData: false,-->
+    data: {
+      'ingredients': ingredients,
+      'instructions': instructions,
+      'servings': servings,
+      'initial_servings': initial_servings
+    },
+    dataType: 'json',
+    success: function (data) {
+        console.log('Yay. Ajax servings conversion <3')
+        document.getElementById("hi_ingredients").innerHTML = data.hi_ingredients;
+        document.getElementById("ingredients").innerHTML = data.ingredients;
+        document.getElementById("hi_instructions").innerHTML = data.hi_instructions;
+        document.getElementById("instructions").innerHTML = data.instructions;
+    }
+  });
+}
+
 function addClickHandlers() {
   $("#change_units_metric").click( function() { change_units("metric") });
   $("#change_units_us").click( function() { change_units("us") });
   <!--$("#change_units_original").click( function() { change_units("original") });-->
+  $("#servings_btn").click( function() { change_servings() });
 }
 $(document).ready(addClickHandlers);
 

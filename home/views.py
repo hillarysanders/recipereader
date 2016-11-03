@@ -244,14 +244,15 @@ def bad_perm(request):
     return render(request, 'home/message.html', context)
 
 
-def recipe_detail(request, slug, pk, units='original'):
+def recipe_detail(request, slug, pk):
     recipe = get_object_or_404(models.Recipe, pk=pk)
 
     context = {
         'recipe': recipe,
         'servings_form': ServingsForm(initial={'servings': recipe.num_servings}),
         'changed_servings': False,
-        'placeholder_unit_message': None
+        'placeholder_unit_message': None,
+        'initial_servings': recipe.num_servings
     }
 
     ingredients = recipe.ingredients
@@ -286,7 +287,39 @@ def recipe_detail(request, slug, pk, units='original'):
     return render(request, 'home/recipe_detail.html', context)
 
 
-def change_units(request):
+def ajax_change_servings(request):
+
+    ingredients = json.loads(request.POST.get('ingredients', None))
+    instructions = json.loads(request.POST.get('instructions', None))
+    initial_servings = request.POST.get('initial_servings', None)
+    servings = request.POST.get('servings', None)
+
+    ingredients = conversions.change_servings(ingredients=ingredients,
+                                              convert_sisterless_numbers=True,
+                                              servings0=initial_servings,
+                                              servings1=servings)
+
+    instructions = conversions.change_servings(ingredients=instructions,
+                                               convert_sisterless_numbers=True,
+                                               servings0=initial_servings,
+                                               servings1=servings)
+
+    data = dict(
+        servings=servings,
+        ingredients=json.dumps(ingredients, cls=DjangoJSONEncoder),
+        instructions=json.dumps(instructions, cls=DjangoJSONEncoder),
+        hi_ingredients=highlight_changed_amounts(ingredients,
+                                                 convert_sisterless_numbers=True,
+                                                 ingredients=True),
+        hi_instructions=highlight_changed_amounts(instructions,
+                                                  convert_sisterless_numbers=True,
+                                                  ingredients=False)
+    )
+
+    return JsonResponse(data)
+
+
+def ajax_change_units(request):
     # todo now we just need to create the conversions.change_units() function,
     # todo and then after than, make it so servings conversion is done via ajax as well! :)
     ingredients = json.loads(request.POST.get('ingredients', None))
@@ -298,19 +331,18 @@ def change_units(request):
     # ingredients['0']['match_info']['0.0']['name'] = '{} {}'.format('Changed units to {}'.format(units_type),
     #                                                                ingredients['0']['match_info']['0.0']['name'])
 
-    data = dict()
-    data['units_type'] = units_type
 
-    data['ingredients'] = json.dumps(ingredients, cls=DjangoJSONEncoder)
-    data['instructions'] = json.dumps(instructions, cls=DjangoJSONEncoder)
-    # these changes WILL stack when the changes are made to ingredients, instructions :)
-    # to test, you can uncomment the 'name' change line above.
-    data['hi_ingredients'] = highlight_changed_amounts(ingredients,
-                                                       convert_sisterless_numbers=True,
-                                                       ingredients=True)
-    data['hi_instructions'] = units_type, highlight_changed_amounts(instructions,
-                                                                    convert_sisterless_numbers=True,
-                                                                    ingredients=False)
+    data = dict(
+        units_type=units_type,
+        ingredients=json.dumps(ingredients, cls=DjangoJSONEncoder),
+        instructions=json.dumps(instructions, cls=DjangoJSONEncoder),
+        hi_ingredients=highlight_changed_amounts(ingredients,
+                                                 convert_sisterless_numbers=True,
+                                                 ingredients=True),
+        hi_instructions=highlight_changed_amounts(instructions,
+                                                  convert_sisterless_numbers=True,
+                                                  ingredients=False)
+    )
     return JsonResponse(data)
 
 
