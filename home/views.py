@@ -1,5 +1,5 @@
 from __future__ import unicode_literals
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, get_object_or_404
 from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
@@ -11,8 +11,8 @@ from django.contrib.auth.decorators import login_required
 from django.core.serializers.json import DjangoJSONEncoder
 import json
 from . import models
-from .forms import UserForm, LoginForm, AddRecipeForm, ServingsForm
-from .conversions_utils import get_highlighted_ingredients, highlight_changed_amounts
+from .forms import UserForm, LoginForm, AddRecipeForm
+from .conversions_utils import highlight_changed_amounts
 from . import conversions
 # Create your views here.
 
@@ -249,42 +249,11 @@ def recipe_detail(request, slug, pk):
 
     context = {
         'recipe': recipe,
-        'servings_form': ServingsForm(initial={'servings': recipe.num_servings}),
-        'changed_servings': False,
-        'placeholder_unit_message': None,
         'initial_servings': recipe.num_servings
     }
 
-
-
-    # todo change form to less buggy number input
-
-
-
-
-
     ingredients = recipe.ingredients
     instructions = recipe.instructions
-
-    if request.method == "POST":
-        # if the user clicked the create user submit button:
-        if request.POST.get("servingsSubmit"):
-            sform = ServingsForm(data=request.POST)
-            if sform.is_valid():
-                ingredients = conversions.change_servings(ingredients=ingredients,
-                                                          convert_sisterless_numbers=True,
-                                                          servings0=recipe.num_servings,
-                                                          servings1=sform.cleaned_data['servings'])
-
-                instructions = conversions.change_servings(ingredients=instructions,
-                                                           convert_sisterless_numbers=True,
-                                                           servings0=recipe.num_servings,
-                                                           servings1=sform.cleaned_data['servings'])
-                new_servings = sform.cleaned_data['servings']
-                new_servings = int(new_servings) if new_servings % 1 == 0 else new_servings
-                context['servings_form'] = ServingsForm(initial={'servings': new_servings})
-
-                context['changed_servings'] = True
 
     context['ingredients'] = json.dumps(ingredients, cls=DjangoJSONEncoder)
     context['instructions'] = json.dumps(instructions, cls=DjangoJSONEncoder)

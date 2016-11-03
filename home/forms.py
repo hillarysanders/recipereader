@@ -4,15 +4,6 @@ from django.contrib.auth.forms import UserCreationForm
 from .models import Recipe
 
 
-class ServingsForm(forms.Form):
-    servings = forms.FloatField(
-        label='',
-        help_text='',
-        widget=forms.NumberInput(attrs={'class': "input_serving",
-                                        'placeholder': ''})
-    )
-
-
 class UserForm(UserCreationForm):
     class Meta:
         model = User
