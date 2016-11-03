@@ -291,17 +291,17 @@ def ajax_change_servings(request):
 
     ingredients = json.loads(request.POST.get('ingredients', None))
     instructions = json.loads(request.POST.get('instructions', None))
-    initial_servings = request.POST.get('initial_servings', None)
+    most_recent_servings = request.POST.get('most_recent_servings', None)
     servings = request.POST.get('servings', None)
 
     ingredients = conversions.change_servings(ingredients=ingredients,
                                               convert_sisterless_numbers=True,
-                                              servings0=initial_servings,
+                                              servings0=most_recent_servings,
                                               servings1=servings)
 
     instructions = conversions.change_servings(ingredients=instructions,
                                                convert_sisterless_numbers=True,
-                                               servings0=initial_servings,
+                                               servings0=most_recent_servings,
                                                servings1=servings)
 
     data = dict(

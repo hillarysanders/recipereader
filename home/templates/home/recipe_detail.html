@@ -35,7 +35,6 @@
                         {% csrf_token %}
                         {{ servings_form.servings|as_material:"" }}
 
-
                         <a class="tooltipped" data-position="bottom" data-delay="50">
                             <div id="servings_btn" class="btn-floating btn-med waves-effect col2 center servgo">Go</div>
                         </a>
@@ -110,6 +109,7 @@
         <div id="ingredients"class="blue hide">{{ ingredients }}</div>
         <div id="instructions" class="blue hide">{{ instructions }}</div>
         <div id="initial_servings" class="blue hide">{{ initial_servings }}</div>
+        <div id="most_recent_servings" class="blue hide">{{ initial_servings }}</div>
         <!--the reader-friendly versions of these:-->
 
     </div>
@@ -213,6 +213,7 @@ function change_servings() {
   var instructions = document.getElementById("instructions").innerHTML
   var servings = document.getElementById("id_servings").value;
   var initial_servings = document.getElementById("initial_servings").innerHTML
+  var most_recent_servings = document.getElementById("most_recent_servings").innerHTML
 
   $.ajax({
     url: '/ajax/change_servings/',
@@ -222,7 +223,7 @@ function change_servings() {
       'ingredients': ingredients,
       'instructions': instructions,
       'servings': servings,
-      'initial_servings': initial_servings
+      'most_recent_servings': most_recent_servings
     },
     dataType: 'json',
     success: function (data) {
@@ -231,6 +232,7 @@ function change_servings() {
         document.getElementById("ingredients").innerHTML = data.ingredients;
         document.getElementById("hi_instructions").innerHTML = data.hi_instructions;
         document.getElementById("instructions").innerHTML = data.instructions;
+        document.getElementById("most_recent_servings").innerHTML = data.servings;
     }
   });
 }
