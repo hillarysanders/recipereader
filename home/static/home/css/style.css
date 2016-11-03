@@ -104,28 +104,13 @@ input::-webkit-inner-spin-button {
 
 /* recipe detail page */
 
-/* the servings input form */
-.input_serving {
-    width: 30px !important;
-    font-size: 18px !important;
-    align: center;
-    text-align: center;
-    margin-left: -20px !important;
-    margin-top: 10px !important;
-}
-
+/* the servings / units inputs */
 .unitsform {
     font-size: 18px !important;
     margin-top: 24px;
     max-width: 130px;
 }
 /* the servings input button */
-.servgo {
-    margin-top: 28px;
-    margin-left: -6px;
-    font-size: 14px;
-    margin-right: 0px;
-}
 
 .servtext {
  margin-right: -8px;
@@ -136,6 +121,16 @@ input::-webkit-inner-spin-button {
 }
 .recipe_topper {
     background-color: #f3ecdc;
+}
+.servgo {
+    font-size: 14px;
+    margin-left: -4px;
+}
+#id_servings {
+    width: 30px;
+    margin-left: -8px;
+    margin-top: 20px;
+    font-size: 18px;
 }
 
 text_indent {

@@ -255,6 +255,14 @@ def recipe_detail(request, slug, pk):
         'initial_servings': recipe.num_servings
     }
 
+
+
+    # todo change form to less buggy number input
+
+
+
+
+
     ingredients = recipe.ingredients
     instructions = recipe.instructions
 

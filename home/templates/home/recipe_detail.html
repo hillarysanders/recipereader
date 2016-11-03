@@ -31,14 +31,12 @@
                     <p class="servtext">Servings:</p>
                 </div>
                 <div class="col s6 left-align">
-                    <form action="." method="post">
-                        {% csrf_token %}
-                        {{ servings_form.servings|as_material:"" }}
-
+                        <input id="id_servings" type="number" value="{{ servings }}"
+                               onkeydown = "if (event.keyCode == 13)
+                                                document.getElementById('servings_btn').click()"  >
                         <a class="tooltipped" data-position="bottom" data-delay="50">
                             <div id="servings_btn" class="btn-floating btn-med waves-effect col2 center servgo">Go</div>
                         </a>
-                    </form>
                 </div>
             </div>
 
@@ -183,6 +181,7 @@ $.ajaxSetup({
         }
     }
 });
+
 
 function change_units(kind) {
   var ingredients = document.getElementById("ingredients").innerHTML
