@@ -71,7 +71,7 @@ def profile(request):
 
 def logout_user(request):
     logout(request)
-    return HttpResponseRedirect('/')
+    return HttpResponseRedirect('/login/')
 
 
 def auth_login(request):
@@ -106,7 +106,7 @@ def auth_login(request):
             if user is not None:
                 login(request, user)
                 # Redirect to a success page.
-                return HttpResponseRedirect('/welcome/')
+                return HttpResponseRedirect('/')
             else:
                 # todo make this into an actual error
                 error_messages = {'message': 'Invalid username / password. Try again?'}
