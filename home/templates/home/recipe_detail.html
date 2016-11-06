@@ -114,10 +114,15 @@
 
     <div class="col s12 spacer10px col1"></div>
 
-    <div class="recipe_text">
-        <img src="{% static 'home/images/author_icon.png' %}" class="responsive-img author_icon">
-        <i><a href="{% url 'home:public_profile' recipe.user_proxy.user.username %}">&nbsp;&nbsp;&nbsp;&nbsp;{{ recipe.user_proxy.user.username }}</a></i>
+    <div class="col s12 recipe_text">
+        <div class="recipe_footer valign-wrapper">
+            <img src="{% static 'home/images/author_icon.png' %}" class="responsive-img author_icon">
+            <i><a href="{% url 'home:public_profile' recipe.user_proxy.user.username %}">
+                &nbsp;&nbsp;&nbsp;&nbsp;{{ recipe.user_proxy.user.username }}
+            </a></i>
+        </div>
     </div>
+
 
 </div>
 

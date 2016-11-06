@@ -145,6 +145,9 @@ text_indent {
     background-color: #f3ecdc;
     min-height: 100px;
 }
+.recipe_footer {
+    height: 45px;
+}
 .image_ingredients_holder {
     background-color: #fff9e0;
     margin: 10px;
@@ -322,11 +325,9 @@ ul.dropdown-content li span:hover {
 }
 .author_icon {
     max-height: 25px;
-    margin-top: 5px;
-    margin-bottom: -3px;
+    margin-top: -2px;
     margin-left: 2px;
     margin-right: -10px;
-
 }
 
 
