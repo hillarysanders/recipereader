@@ -18,6 +18,7 @@ urlpatterns = [
     url(r'^cookbook/$', views.cookbook, name='cookbook'),
     url(r'^about/$', views.about, name='about'),
     url(r'^profile/$', views.profile, name='profile'),
+    url(r'^public_profile/(?P<username>[+-@_.\w]+)$', views.public_profile, name='public_profile'),
     # ajax stuff:
     url(r'^ajax/change_units/$', views.ajax_change_units, name='ajax_change_units'),
     url(r'^ajax/change_servings/$', views.ajax_change_servings, name='ajax_change_servings'),

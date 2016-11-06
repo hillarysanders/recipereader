@@ -26,11 +26,7 @@ def index(request):
 
 
 def welcome(request):
-    user = request.user
-    context = {
-        'user': user
-    }
-    return render(request, 'home/welcome.html', context)
+    return render(request, 'home/welcome.html', {})
 
 
 def ajax_validate_username(request):
@@ -44,25 +40,45 @@ def ajax_validate_username(request):
     return JsonResponse(data)
 
 
+def public_profile(request, username):
+    user = models.User.objects.filter(username=username)
+    if len(user) > 0:
+        user = user[0]
+        user_proxy = models.UserProxy.objects.filter(user=user)
+        recipes = models.Recipe.objects.filter(user_proxy=user_proxy)
+
+        if len(recipes) > 0:
+            most_recent_recipe = str(max([r.pub_date for r in recipes]))[:10]
+            n_recipes = '1 recipe' if len(recipes) == 1 else '{} recipes'.format(len(recipes))
+        else:
+            most_recent_recipe = "Aw man, they haven't saved any yet"
+            n_recipes = '0 recipes so far'
+
+        context = {
+            'this_user': user,
+            'n_recipes': n_recipes,
+            'most_recent_recipe': most_recent_recipe
+        }
+        return render(request, 'home/profile.html', context)
+    else:
+        return render(request, 'home/message.html', dict(message="hrm, sorry, I don't think that user exists."))
+
+
 @login_required
 def profile(request):
-    # todo add to this view. first need to sup up userProxy model.
 
     user = request.user  # can this be anonymous?
     user_proxy = get_user_proxy(request)
     recipes = models.Recipe.objects.filter(user_proxy=user_proxy)
-    for r in recipes:
-        print(r)
-    print(len(recipes))
 
-    if len(recipes)>0:
+    if len(recipes) > 0:
         most_recent_recipe = str(max([r.pub_date for r in recipes]))[:10]
         n_recipes = '1 recipe' if len(recipes) == 1 else '{} recipes'.format(len(recipes))
     else:
         most_recent_recipe = "Aw man, you haven't saved any yet"
         n_recipes = '0 recipes so far'
     context = {
-        'user': user,
+        'this_user': user,
         'n_recipes': n_recipes,
         'most_recent_recipe': most_recent_recipe
     }
@@ -102,6 +118,8 @@ def auth_login(request):
         elif request.POST.get("loginSubmit"):
             username = request.POST['login_username']
             password = request.POST['login_password']
+
+            # import pdb; pdb.set_trace()
             user = authenticate(username=username, password=password)
             if user is not None:
                 login(request, user)
@@ -171,7 +189,7 @@ def cookbook(request):
         'search_text': search_text
     }
 
-    # all = Recipe.objects.order_by('recipe_name')
+    # all = models.Recipe.objects.order_by('recipe_name')
     # for r in all:
     #     r.save()
 
