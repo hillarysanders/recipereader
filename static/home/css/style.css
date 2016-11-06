@@ -143,6 +143,19 @@ text_indent {
 
 .recipe_text {
     background-color: #f3ecdc;
+    min-height: 100px;
+}
+
+.detail_edit_btn {
+    margin: 5px;
+}
+.detail_delete_btn {
+    margin: 5px;
+}
+.author_icon {
+    max-height: 40px;
+    margin-left: 2px;
+    margin-right: -10px;
 }
 .image_ingredients_holder {
     background-color: #fff9e0;
@@ -188,7 +201,7 @@ text_indent {
 }
 
 .pale_red {
-    background-color: #cc8888;
+    background-color: #af8888;
 }
 
 /* tooltip for servings multiplication: */
