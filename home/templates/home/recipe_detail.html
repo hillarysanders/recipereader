@@ -114,46 +114,47 @@
 
     <div class="col s12 spacer10px col1"></div>
 
-    <div class="col s12 recipe_text">
-        <div class="recipe_footer valign-wrapper">
-            <img src="{% static 'home/images/author_icon.png' %}" class="responsive-img author_icon">
-            <i><a href="{% url 'home:public_profile' recipe.user_proxy.user.username %}">
-                &nbsp;&nbsp;&nbsp;&nbsp;{{ recipe.user_proxy.user.username }}
-            </a></i>
+    <div class="col s12 recipe_text valign-wrapper">
+
+        recipe by:
+        <a href="{% url 'home:public_profile' recipe.user_proxy.user.username %}">
+            <i>{{ recipe.user_proxy.user.username }}</i>
+        </a>
+        <!-- why is this needed? (footer breaks when removed) -->
+        <div class="col s1"></div>
+
+
+        <div class="right">
+            {% if request.user == recipe.user_proxy.user %}
+                <a class="btn-floating btn-med pale_red modal-trigger detail_delete_btn" href="#confirmdeletemodal">
+                    <i class="large material-icons">delete</i>
+                </a>
+            {% endif %}
+            <a class="btn-floating btn-large col2 detail_edit_btn" href="{% url 'home:edit_recipe' recipe.slug recipe.id %}">
+                <i class="large material-icons">mode_edit</i>
+            </a>
         </div>
+
+        <!-- Modal Trigger -->
+        <div id="confirmdeletemodal" class="modal modal-fixed-footer">
+            <div class="modal-content pale_red">
+                <h4>Are you sure you want to delete your recipe?</h4>
+
+                <p>Are you sure you want to delete {{recipe.recipe_name}}?</p>
+            </div>
+            <div class="modal-footer">
+                <a href="{% url 'home:delete_recipe' recipe.id %}"
+                   class="red modal-action modal-close waves-effect waves-white btn-flat">Yes, Delete</a>
+                <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Nevermind!</a>
+            </div>
+        </div>
+
+
     </div>
 
 
 </div>
 
-<!-- Modal Trigger -->
-<div id="confirmdeletemodal" class="modal modal-fixed-footer">
-    <div class="modal-content pale_red">
-        <h4>Are you sure you want to delete your recipe?</h4>
-
-        <p>Are you sure you want to delete {{recipe.recipe_name}}?</p>
-    </div>
-    <div class="modal-footer">
-        <a href="{% url 'home:delete_recipe' recipe.id %}"
-           class="red modal-action modal-close waves-effect waves-white btn-flat">Yes, Delete</a>
-        <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Nevermind!</a>
-    </div>
-</div>
-
-<!--buttons for editing, commenting on recipe:-->
-<div class="fixed-action-btn horizontal" style="bottom: 45px; right: 24px;">
-
-    <a class="btn-floating btn-large col2">
-        <i class="large material-icons">mode_edit</i>
-    </a>
-    <ul>
-        <li><a class="modal-trigger waves-effect waves-light btn ghostbtn" href="#confirmdeletemodal">delete recipe</a>
-        </li>
-        <li><a class="waves-effect waves-light btn ghostbtn" href="{% url 'home:edit_recipe' recipe.slug recipe.id %}">edit
-            recipe</a></li>
-        <!--<li><a class="waves-effect waves-light btn ghostbtn col1" href="#!">change units</a></li>-->
-    </ul>
-</div>
 
 {% endblock %}
 
