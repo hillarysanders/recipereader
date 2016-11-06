@@ -119,6 +119,10 @@ input::-webkit-inner-spin-button {
 .spacer10px {
     height: 10px;
 }
+.up_10 {
+    margin-top: -15px;
+    margin-bottom: 5px;
+}
 .recipe_topper {
     background-color: #f3ecdc;
     height: 86px;
