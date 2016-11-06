@@ -121,6 +121,7 @@ input::-webkit-inner-spin-button {
 }
 .recipe_topper {
     background-color: #f3ecdc;
+    height: 86px;
 }
 .servgo {
     font-size: 14px;
@@ -156,6 +157,9 @@ text_indent {
     max-height: 40px;
     margin-left: 2px;
     margin-right: -10px;
+}
+.recipe_time {
+    margin-top: 13px;
 }
 .image_ingredients_holder {
     background-color: #fff9e0;
