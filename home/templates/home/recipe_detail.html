@@ -5,20 +5,16 @@
 <!--{% load materialize %}-->
 
 <h2 class="center"> {{ recipe.recipe_name }} </h2>
-
+<div class="center">
+    <i>{{ recipe.description }}</i>
+</div>
 <div class="row">
+
+
     <div class="red center-align">{{ form.name.errors }}</div>
-
     <div class="col s12 recipe_topper">
-        <div class="col s12">
-            <div class="col s12 m12 l3 left">
-                <br>
-                <i class="left-align">{{ recipe.description }}</i>
-            </div>
-
-
-            <div class="col s12 m4 l3">
-                <br>
+        <div class="col s12" style="height: 100%;">
+            <div class="col s12 m4 l3 recipe_time">
                 <div class="center col s12">{{ recipe.get_prep_time }}</div>
                 <div class="center col s12">{{ recipe.get_cook_time }}</div>
                 <div class="center col s12">{{ recipe.get_ready_in_time }}</div>
@@ -115,11 +111,14 @@
     <div class="col s12 spacer10px col1"></div>
 
     <div class="col s12 recipe_text valign-wrapper">
-
         recipe by:
-        <a href="{% url 'home:public_profile' recipe.user_proxy.user.username %}">
-            <i>{{ recipe.user_proxy.user.username }}</i>
-        </a>
+        {% if recipe.user_proxy.user %}
+            <a href="{% url 'home:public_profile' recipe.user_proxy.user.username %}">
+                <i>{{ recipe.user_proxy.user.username }}</i>
+            </a>
+        {% else %}
+            <i>anonymous</i>
+        {% endif %}
         <!-- why is this needed? (footer breaks when removed) -->
         <div class="col s1"></div>
 
@@ -129,10 +128,11 @@
                 <a class="btn-floating btn-med pale_red modal-trigger detail_delete_btn" href="#confirmdeletemodal">
                     <i class="large material-icons">delete</i>
                 </a>
+                <a class="btn-floating btn-large col2 detail_edit_btn" href="{% url 'home:edit_recipe' recipe.slug recipe.id %}">
+                    <i class="large material-icons">mode_edit</i>
+                </a>
             {% endif %}
-            <a class="btn-floating btn-large col2 detail_edit_btn" href="{% url 'home:edit_recipe' recipe.slug recipe.id %}">
-                <i class="large material-icons">mode_edit</i>
-            </a>
+
         </div>
 
         <!-- Modal Trigger -->
