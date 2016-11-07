@@ -10,6 +10,23 @@ nav .brand-logo {
     font-size: 43px;
     margin-top: 5px;
 }
+
+/* main navigation menu: */
+div.nav-wrapper li a:link {
+    font-size: 14px;
+}
+
+/* side navigation menu: */
+.sidenav_btn {
+    border: 6px solid grey;
+    margin-top: 3px;
+    border-radius: 50px;
+}
+div.nav-wrapper li.sidenav_btn a:link {
+    font-size: 30px;
+}
+
+
 main {
     flex: 1 0 auto;
 }
@@ -355,22 +372,6 @@ footer.page-footer .footer-copyright {
     height: 30%;
     max-height: 300px;
 }
-
-/* main navigation menu: */
-div.nav-wrapper li a:link {
-    font-size: 14px;
-}
-/* side navigation menu: */
-.sidenav_btn {
-    border: 6px solid grey;
-    margin-top: 3px;
-    border-radius: 50px;
-}
-div.nav-wrapper li.sidenav_btn a:link {
-    font-size: 30px;
-    font-family: 'Great Vibes', cursive;
-}
-
 
 
 /*welcome page circle*/
