@@ -10,6 +10,7 @@ from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.core.serializers.json import DjangoJSONEncoder
 import json
+import itertools
 from . import models
 from .forms import UserForm, LoginForm, AddRecipeForm
 from .conversions_utils import highlight_changed_amounts
@@ -169,7 +170,9 @@ def cookbook(request):
     if request.GET.get('public_search', False):
         recipes = models.Recipe.objects.filter(Q(public=True) | Q(user_proxy=user_proxy)).order_by('recipe_name')
     else:
-        recipes = models.Recipe.objects.filter(user_proxy=user_proxy).order_by('recipe_name')
+        user_recipes = models.Recipe.objects.filter(user_proxy=user_proxy).order_by('recipe_name')
+        stashed = user_proxy.stashed_recipes.all()
+        recipes = list(itertools.chain(stashed, user_recipes))
 
     search_text = ''
     if request.method == 'GET':
