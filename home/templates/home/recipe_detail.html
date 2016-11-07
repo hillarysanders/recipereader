@@ -105,6 +105,7 @@
         <div id="initial_servings" class="blue hide">{{ initial_servings }}</div>
         <div id="most_recent_servings" class="blue hide">{{ initial_servings }}</div>
         <div id="recipe_pk" class="blue hide">{{ recipe.pk }}</div>
+        <div id="stash_tooltip" class="blue hide">{{ stash_tooltip }}</div>
         <!--the reader-friendly versions of these:-->
 
     </div>
@@ -133,8 +134,7 @@
                     <i class="large material-icons">mode_edit</i>
                 </a>
             {% else %}
-                <a class="tooltipped" id="stash_recipe_tooltip" data-position="bottom" data-delay="50"
-                        data-tooltip="{{ stash_tooltip }}">
+                <a class="tooltipped" id="stash_recipe_tooltip" data-position="bottom" data-delay="50">
                     <div id="stash_recipe_btn" class="detail_footer_btn btn-floating col2 center">{{ stash_plus_or_minus }}</div>
                 </a>
 
@@ -175,6 +175,7 @@
 <script>
 
 
+
 function  add_recipe_to_stash() {
   var recipe_pk = document.getElementById("recipe_pk").innerHTML
   var stash_plus_or_minus = document.getElementById("stash_recipe_btn").innerHTML
@@ -192,8 +193,7 @@ function  add_recipe_to_stash() {
         $('#stash_recipe_tooltip').tooltip('remove');
         $("#stash_recipe_tooltip").tooltip({'tooltip': data.stash_tooltip});
 
-        <!-- todo change button to minus on success -->
-        <!-- todo also add user_proxy to detail page, which informs initial button type (plus or minus) -->
+
     }
   });
 }
@@ -289,7 +289,14 @@ function addClickHandlers() {
   $("#servings_btn").click( function() { change_servings() });
   $("#stash_recipe_btn").click( add_recipe_to_stash );
 }
+
+
 $(document).ready(addClickHandlers);
+
+$(document).ready(function(){
+    var stash_tooltip = document.getElementById("stash_tooltip").innerHTML
+    $('#stash_recipe_tooltip').tooltip({delay: 50, tooltip: stash_tooltip});
+});
 
 </script>
 {% endblock %}
