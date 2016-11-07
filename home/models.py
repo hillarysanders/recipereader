@@ -48,6 +48,8 @@ class UserProxy(models.Model):
     user = models.ForeignKey(User, null=True, blank=True, default=None)
     # if a user is logged in, their session = None. Else, request.session.session_key.
     session = models.CharField(max_length=40, blank=True, default='')
+    # users can have recipe favorites, that are moved into their private stash:
+    stashed_recipes = models.ManyToManyField('Recipe')
 
     def __str__(self):
         if self.user:

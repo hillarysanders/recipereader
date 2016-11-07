@@ -29,7 +29,7 @@
                         <input id="id_servings" type="number" value="{{ initial_servings }}" placeholder="{{ initial_servings }}"
                                onkeydown = "if (event.keyCode == 13)
                                                 document.getElementById('servings_btn').click()" >
-                        <a class="tooltipped" data-position="bottom" data-delay="50">
+                        <a class="tooltipped" id="servings_tooltip" data-position="bottom" data-delay="50">
                             <div id="servings_btn" class="btn-floating btn-med waves-effect col2 center servgo">Go</div>
                         </a>
                 </div>
@@ -104,6 +104,7 @@
         <div id="instructions" class="blue hide">{{ instructions }}</div>
         <div id="initial_servings" class="blue hide">{{ initial_servings }}</div>
         <div id="most_recent_servings" class="blue hide">{{ initial_servings }}</div>
+        <div id="recipe_pk" class="blue hide">{{ recipe.pk }}</div>
         <!--the reader-friendly versions of these:-->
 
     </div>
@@ -125,12 +126,19 @@
 
         <div class="right">
             {% if request.user == recipe.user_proxy.user %}
-                <a class="btn-floating btn-med pale_red modal-trigger detail_delete_btn" href="#confirmdeletemodal">
+                <a class="btn-floating btn-med pale_red modal-trigger detail_footer_btn" href="#confirmdeletemodal">
                     <i class="large material-icons">delete</i>
                 </a>
-                <a class="btn-floating btn-large col2 detail_edit_btn" href="{% url 'home:edit_recipe' recipe.slug recipe.id %}">
+                <a class="btn-floating btn-large col2 detail_footer_btn" href="{% url 'home:edit_recipe' recipe.slug recipe.id %}">
                     <i class="large material-icons">mode_edit</i>
                 </a>
+            {% else %}
+                <a class="tooltipped" id="stash_recipe_tooltip" data-position="bottom" data-delay="50"
+                        data-tooltip="{{ stash_tooltip }}">
+                    <div id="stash_recipe_btn" class="detail_footer_btn btn-floating col2 center">{{ stash_plus_or_minus }}</div>
+                </a>
+
+            <!--add an onclick that submits the thingy (ajax) and also pops up a cute modal-->
             {% endif %}
 
         </div>
@@ -165,6 +173,30 @@
 });
 </script>
 <script>
+
+
+function  add_recipe_to_stash() {
+  var recipe_pk = document.getElementById("recipe_pk").innerHTML
+  var stash_plus_or_minus = document.getElementById("stash_recipe_btn").innerHTML
+  $.ajax({
+    url: '/ajax/add_recipe_to_stash/',
+    type: 'GET',
+    data: {
+      'recipe_pk': recipe_pk,
+      'stash_plus_or_minus': stash_plus_or_minus,
+    },
+    dataType: 'json',
+    success: function (data) {
+        console.log('Yay. Recipe added <3')
+        document.getElementById("stash_recipe_btn").innerHTML = data.stash_plus_or_minus;
+        $('#stash_recipe_tooltip').tooltip('remove');
+        $("#stash_recipe_tooltip").tooltip({'tooltip': data.stash_tooltip});
+
+        <!-- todo change button to minus on success -->
+        <!-- todo also add user_proxy to detail page, which informs initial button type (plus or minus) -->
+    }
+  });
+}
 
 function getCookie(name) {
     var cookieValue = null;
@@ -255,6 +287,7 @@ function addClickHandlers() {
   $("#change_units_us").click( function() { change_units("us") });
   <!--$("#change_units_original").click( function() { change_units("original") });-->
   $("#servings_btn").click( function() { change_servings() });
+  $("#stash_recipe_btn").click( add_recipe_to_stash );
 }
 $(document).ready(addClickHandlers);
 

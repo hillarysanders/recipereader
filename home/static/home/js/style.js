@@ -11,7 +11,7 @@ $('.modal-trigger').leanModal();
 
 
 $(document).ready(function(){
-$('.tooltipped').tooltip({delay: 50, tooltip: '<text_indent><multiplied_amount>highlighted amounts</multiplied_amount> will be adjusted</text_indent>', html: true});
+$('#servings_tooltip').tooltip({delay: 50, tooltip: '<text_indent><multiplied_amount>highlighted amounts</multiplied_amount> will be adjusted</text_indent>', html: true});
 });
 
 

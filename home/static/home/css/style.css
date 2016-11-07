@@ -151,11 +151,12 @@ text_indent {
     min-height: 100px;
 }
 
-.detail_edit_btn {
+.detail_footer_btn {
     margin: 5px;
+    font-size: 25px;
 }
-.detail_delete_btn {
-    margin: 5px;
+.footer_tooltip {
+    padding-bottom: -10px;
 }
 .author_icon {
     max-height: 40px;

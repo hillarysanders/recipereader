@@ -22,5 +22,6 @@ urlpatterns = [
     # ajax stuff:
     url(r'^ajax/change_units/$', views.ajax_change_units, name='ajax_change_units'),
     url(r'^ajax/change_servings/$', views.ajax_change_servings, name='ajax_change_servings'),
+    url(r'^ajax/add_recipe_to_stash/$', views.ajax_add_recipe_to_stash, name='ajax_add_recipe_to_stash'),
     url(r'^ajax/validate_username/$', views.ajax_validate_username, name='ajax_validate_username'),
 ]

@@ -17,6 +17,10 @@ from . import conversions
 # Create your views here.
 
 
+stash_tooltips = {'-': 'Remove recipe from personal stash?',
+                  '+': 'Add recipe to personal stash?'}
+
+
 def index(request):
     user = request.user
     context = {
@@ -41,10 +45,9 @@ def ajax_validate_username(request):
 
 
 def public_profile(request, username):
-    user = models.User.objects.filter(username=username)
-    if len(user) > 0:
-        user = user[0]
-        user_proxy = models.UserProxy.objects.filter(user=user)
+    user = models.User.objects.get(username=username)
+    if user:
+        user_proxy = models.UserProxy.objects.get(user=user)
         recipes = models.Recipe.objects.filter(user_proxy=user_proxy)
 
         if len(recipes) > 0:
@@ -138,13 +141,6 @@ def auth_login(request):
         'error_messages': error_messages
     }
     return render(request, 'home/login.html', context)
-
-
-# def get_or_none(model, *args, **kwargs):
-#     try:
-#         return model.objects.get(*args, **kwargs)
-#     except model.DoesNotExist:
-#         return None
 
 
 def get_user_proxy(request):
@@ -263,26 +259,6 @@ def bad_perm(request):
     return render(request, 'home/message.html', context)
 
 
-def recipe_detail(request, slug, pk):
-    recipe = get_object_or_404(models.Recipe, pk=pk)
-
-    context = {
-        'recipe': recipe,
-        'initial_servings': recipe.num_servings
-    }
-
-    ingredients = recipe.ingredients
-    instructions = recipe.instructions
-
-    context['ingredients'] = json.dumps(ingredients, cls=DjangoJSONEncoder)
-    context['instructions'] = json.dumps(instructions, cls=DjangoJSONEncoder)
-    context['hi_ingredients'] = highlight_changed_amounts(ingredients, convert_sisterless_numbers=True,
-                                                          ingredients=True)
-    context['hi_instructions'] = highlight_changed_amounts(instructions, convert_sisterless_numbers=True)
-
-    return render(request, 'home/recipe_detail.html', context)
-
-
 def ajax_change_servings(request):
 
     ingredients = json.loads(request.POST.get('ingredients', None))
@@ -327,7 +303,6 @@ def ajax_change_units(request):
     # ingredients['0']['match_info']['0.0']['name'] = '{} {}'.format('Changed units to {}'.format(units_type),
     #                                                                ingredients['0']['match_info']['0.0']['name'])
 
-
     data = dict(
         units_type=units_type,
         ingredients=json.dumps(ingredients, cls=DjangoJSONEncoder),
@@ -367,3 +342,65 @@ def delete_recipe(request, pk):
 def about(request):
     context = dict()
     return render(request, 'home/about.html')
+
+
+def recipe_detail(request, slug, pk):
+    recipe = get_object_or_404(models.Recipe, pk=pk)
+
+    context = {
+        'recipe': recipe,
+        'initial_servings': recipe.num_servings
+    }
+
+    ingredients = recipe.ingredients
+    instructions = recipe.instructions
+
+    context['ingredients'] = json.dumps(ingredients, cls=DjangoJSONEncoder)
+    context['instructions'] = json.dumps(instructions, cls=DjangoJSONEncoder)
+    context['hi_ingredients'] = highlight_changed_amounts(ingredients, convert_sisterless_numbers=True,
+                                                          ingredients=True)
+    context['hi_instructions'] = highlight_changed_amounts(instructions, convert_sisterless_numbers=True)
+
+    user_proxy = get_user_proxy(request)
+    if user_proxy.stashed_recipes.filter(pk=recipe.pk).exists():
+        stash_plus_or_minus = '-'
+    else:
+        stash_plus_or_minus = '+'
+    context['stash_plus_or_minus'] = stash_plus_or_minus
+    context['stash_tooltip'] = stash_tooltips.get(stash_plus_or_minus)
+
+    return render(request, 'home/recipe_detail.html', context)
+
+
+def ajax_add_recipe_to_stash(request):
+
+    recipe_pk = request.GET.get('recipe_pk', None)
+    stash_plus_or_minus = request.GET.get('stash_plus_or_minus', None)
+    user_proxy = get_user_proxy(request)
+    recipe = models.Recipe.objects.get(pk=recipe_pk)
+
+    if stash_plus_or_minus == '+':
+        user_proxy.stashed_recipes.add(recipe)
+        stash_plus_or_minus = '-'
+    else:
+        user_proxy.stashed_recipes.remove(recipe)
+        stash_plus_or_minus = '+'
+
+    stash_tooltip = stash_tooltips.get(stash_plus_or_minus)
+
+    data = dict(stash_plus_or_minus=stash_plus_or_minus,
+                stash_tooltip=stash_tooltip)
+
+    return JsonResponse(data)
+
+
+
+
+
+
+
+
+
+
+
+
