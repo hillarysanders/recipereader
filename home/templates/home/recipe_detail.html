@@ -112,6 +112,7 @@
 
     <div class="col s12 spacer10px col1"></div>
 
+
     <div class="col s12 recipe_text valign-wrapper">
         recipe by:
         {% if recipe.user_proxy.user %}
@@ -160,9 +161,11 @@
 
     </div>
 
-
 </div>
 
+<div class="center">
+    <img src="{% static 'home/images/loading.gif' %}" alt="loading" id="loading_id" class="hide">
+</div>
 
 {% endblock %}
 
@@ -233,6 +236,9 @@ function change_units(kind) {
   var ingredients = document.getElementById("ingredients").innerHTML
   var instructions = document.getElementById("instructions").innerHTML
 
+  <!--load loading gif:-->
+  document.getElementById("loading_id").className = ''
+
   $.ajax({
     url: '/ajax/change_units/',
     type: 'POST',
@@ -249,6 +255,9 @@ function change_units(kind) {
         document.getElementById("ingredients").innerHTML = data.ingredients;
         document.getElementById("hi_instructions").innerHTML = data.hi_instructions;
         document.getElementById("instructions").innerHTML = data.instructions;
+        <!--remove loading gif:-->
+        document.getElementById("loading_id").className = 'hide'
+
     }
   });
 }
@@ -259,6 +268,9 @@ function change_servings() {
   var servings = document.getElementById("id_servings").value;
   var initial_servings = document.getElementById("initial_servings").innerHTML
   var most_recent_servings = document.getElementById("most_recent_servings").innerHTML
+
+  <!--load loading gif:-->
+  document.getElementById("loading_id").className = ''
 
   $.ajax({
     url: '/ajax/change_servings/',
@@ -278,6 +290,9 @@ function change_servings() {
         document.getElementById("hi_instructions").innerHTML = data.hi_instructions;
         document.getElementById("instructions").innerHTML = data.instructions;
         document.getElementById("most_recent_servings").innerHTML = data.servings;
+        <!--remove loading gif:-->
+        document.getElementById("loading_id").className = 'hide'
+
     }
   });
 }

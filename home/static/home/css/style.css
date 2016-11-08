@@ -142,7 +142,7 @@ input::-webkit-inner-spin-button {
 }
 .recipe_topper {
     background-color: #f3ecdc;
-    height: 86px;
+    _height: 86px;
 }
 .servgo {
     font-size: 14px;
@@ -447,4 +447,14 @@ footer.page-footer .footer-copyright {
     max-height: 50px;
     margin-top: 5px;
     height: auto;
+}
+
+#loading_id {
+    width:10vw;
+    height:10vw;
+    position: absolute;
+    left: 45vw;
+    top: 20vh;
+    z-index: 99;
+
 }
