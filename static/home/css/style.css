@@ -10,6 +10,23 @@ nav .brand-logo {
     font-size: 43px;
     margin-top: 5px;
 }
+
+/* main navigation menu: */
+div.nav-wrapper li a:link {
+    font-size: 14px;
+}
+
+/* side navigation menu: */
+.sidenav_btn {
+    border: 6px solid grey;
+    margin-top: 3px;
+    border-radius: 50px;
+}
+div.nav-wrapper li.sidenav_btn a:link {
+    font-size: 30px;
+}
+
+
 main {
     flex: 1 0 auto;
 }
@@ -125,7 +142,7 @@ input::-webkit-inner-spin-button {
 }
 .recipe_topper {
     background-color: #f3ecdc;
-    height: 86px;
+    _height: 86px;
 }
 .servgo {
     font-size: 14px;
@@ -356,22 +373,6 @@ footer.page-footer .footer-copyright {
     max-height: 300px;
 }
 
-/* main navigation menu: */
-div.nav-wrapper li a:link {
-    font-size: 14px;
-}
-/* side navigation menu: */
-.sidenav_btn {
-    border: 6px solid grey;
-    margin-top: 3px;
-    border-radius: 50px;
-}
-div.nav-wrapper li.sidenav_btn a:link {
-    font-size: 30px;
-    font-family: 'Great Vibes', cursive;
-}
-
-
 
 /*welcome page circle*/
 .welcome_circle {
@@ -446,4 +447,14 @@ div.nav-wrapper li.sidenav_btn a:link {
     max-height: 50px;
     margin-top: 5px;
     height: auto;
+}
+
+#loading_id {
+    width:10vw;
+    height:10vw;
+    position: absolute;
+    left: 45vw;
+    top: 20vh;
+    z-index: 99;
+
 }
