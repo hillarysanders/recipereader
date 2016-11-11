@@ -122,8 +122,8 @@ input::-webkit-inner-spin-button {
 /* recipe detail page */
 
 .bw_png {
-    max-height: 175px;
-    max-width: 175px;
+    max-height: 15vw;
+    max-width: 13vw;
 }
 /* the servings / units inputs */
 .unitsform {
