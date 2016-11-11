@@ -4,6 +4,34 @@ import numpy as np
 import pandas as pd
 
 
+def png_premultiply(im):
+    pixels = im.load()
+    for y in range(im.size[1]):
+        for x in range(im.size[0]):
+            r, g, b, a = pixels[x, y]
+            if a != 255:
+                r = r * a // 255
+                g = g * a // 255
+                b = b * a // 255
+                pixels[x, y] = (r, g, b, a)
+
+    return im
+
+
+def png_unmultiply(im):
+    pixels = im.load()
+    for y in range(im.size[1]):
+        for x in range(im.size[0]):
+            r, g, b, a = pixels[x, y]
+            if a != 255 and a != 0:
+                r = 255 if r >= a else 255 * r // a
+                g = 255 if g >= a else 255 * g // a
+                b = 255 if b >= a else 255 * b // a
+                pixels[x, y] = (r, g, b, a)
+
+    return im
+
+
 def flatten(l):
     """
     Recursively flatten a list of lists (of lists of lists, etc).

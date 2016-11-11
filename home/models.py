@@ -2,12 +2,12 @@ from __future__ import unicode_literals
 from django.db import models
 from django import forms
 from django.contrib.auth.models import User
-from django.contrib.postgres.fields import JSONField
-from django.core.files.uploadedfile import SimpleUploadedFile
+from django.contrib.postgres.fields import JSONField, ArrayField
 from django.db.models.fields.related import ManyToManyField
 from django.template.defaultfilters import slugify
-from django.core.files.uploadedfile import InMemoryUploadedFile
+from django.core.files import uploadedfile
 from django.utils.deconstruct import deconstructible
+
 import io
 import math
 import requests
@@ -17,6 +17,8 @@ from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage as storage
 from PIL import Image
 from . import conversions
+from . import bw_pngs
+from . import utils
 from .utils import Timer
 
 # Create your models here.
@@ -115,6 +117,9 @@ class Recipe(models.Model):
     slug = models.SlugField(max_length=40, default='default-slug')
     public = models.BooleanField(default=True, verbose_name='make recipe public?')
 
+    bw_pngs = ArrayField(base_field=models.CharField(max_length=128),
+                         null=True, blank=True)
+
     # invisible to the user stuff:
     pub_date = models.DateTimeField('date published', auto_now_add=True)
     # # each recipe is related to a single user.
@@ -137,7 +142,37 @@ class Recipe(models.Model):
             self.image = self.reduce_image_size(image=image)
             self.thumbnail = self.make_thumbnail(thumb=image)
 
+        # import pdb; pdb.set_trace()
+        matches = self.get_bw_png_paths(str(self.ingredients_text))
+        if len(matches) > 0:
+            # if not self.thumbnail:
+                # thumbnail = Image.open(matches.thumb.iloc[0])
+                # print(matches.thumb.iloc[0])
+                # self.thumbnail = matches.thumb.iloc[0]
+                # self.thumbnail = uploadedfile.UploadedFile(file=matches.thumb.iloc[0],
+                #                                                    name=matches.file.iloc[0],
+                #                                                    content_type='image/png',
+                #                                                    charset=None,
+                #                                                    size=matches.thumb_size.iloc[0])
+                # self.thumbnail = uploadedfile.InMemoryUploadedFile(file=matches.thumb.iloc[0],
+                #                                                    name=matches.file.iloc[0],
+                #                                                    content_type='image/png',
+                #                                                    field_name=None,
+                #                                                    charset=None,
+                #                                                    size=matches.thumb_size.iloc[0])
+            self.bw_pngs = matches['file'].tolist()
+            # for f in  self.bw_pngs:
+            #     print(f)
+
         super(Recipe, self).save(*args, **kwargs)
+
+    def get_bw_png_paths(self, ingredients_text):
+        name_maps = bw_pngs.bw_name_maps
+        matches = [i for i in name_maps.index if name_maps.loc[i, 'key'] in ingredients_text]
+        matches = name_maps.loc[matches, :]
+        matches = matches.drop_duplicates(subset='file')
+
+        return matches
 
     def reduce_image_size(self, image, size_limit=850000):
         image_size = image.size[0] * image.size[1]
@@ -149,11 +184,12 @@ class Recipe(models.Model):
             size = int(image.width / reduce_by), int(image.height / reduce_by)
             image = image.resize(size, Image.ANTIALIAS)
             image_io = io.BytesIO()
+
             image.save(image_io, format='JPEG')
-            image_file = InMemoryUploadedFile(file=image_io, field_name=None,
-                                              name=os.path.split(self.image.name)[-1],
-                                              content_type='image/jpeg',
-                                              size=image_io.getbuffer().nbytes, charset=None)
+            image_file = uploadedfile.InMemoryUploadedFile(file=image_io, field_name=None,
+                                                           name=os.path.split(self.image.name)[-1],
+                                                           content_type='image/jpeg',
+                                                           size=image_io.getbuffer().nbytes, charset=None)
         return image_file
 
     def make_thumbnail(self, thumb):
@@ -163,10 +199,10 @@ class Recipe(models.Model):
         # thumb = thumb.convert('L')
         thumb_io = io.BytesIO()
         thumb.save(thumb_io, format='JPEG')
-        thumb_file = InMemoryUploadedFile(file=thumb_io, field_name=None,
-                                          name=os.path.split(self.image.name)[-1],
-                                          content_type='image/jpeg',
-                                          size=thumb_io.getbuffer().nbytes, charset=None)
+        thumb_file = uploadedfile.InMemoryUploadedFile(file=thumb_io, field_name=None,
+                                                       name=os.path.split(self.image.name)[-1],
+                                                       content_type='image/jpeg',
+                                                       size=thumb_io.getbuffer().nbytes, charset=None)
         return thumb_file
 
     def __str__(self):
