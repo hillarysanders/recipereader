@@ -2,17 +2,17 @@ import os
 import pandas as pd
 from . import utils
 
-path_to_images = os.path.join(os.path.dirname(__file__), 'static/home/images/bw_pngs/')
-# path_to_images = 'static/home/images/bw_pngs/'
-thumb_dir = 'thumbnail/'
-med_dir = 'medium/'
-utils.safe_mkdir(path_to_images+thumb_dir)
-utils.safe_mkdir(path_to_images+med_dir)
-
-# first, read in all the names from both dirs and find the intersect of names:
-thumb_files = os.listdir(path_to_images + thumb_dir)
-med_files = os.listdir(path_to_images + med_dir)
-files = list(set(thumb_files + med_files))
+# path_to_images = os.path.join(os.path.dirname(__file__), 'static/home/images/bw_pngs/')
+# # path_to_images = 'static/home/images/bw_pngs/'
+# thumb_dir = 'thumbnail/'
+# med_dir = 'medium/'
+# utils.safe_mkdir(path_to_images+thumb_dir)
+# utils.safe_mkdir(path_to_images+med_dir)
+#
+# # first, read in all the names from both dirs and find the intersect of names:
+# thumb_files = os.listdir(path_to_images + thumb_dir)
+# med_files = os.listdir(path_to_images + med_dir)
+# files = list(set(thumb_files + med_files))
 
 # for file in sorted(files):
 #     if file != '.DS_Store':
@@ -157,10 +157,10 @@ bw_name_maps = [
 ]
 
 bw_name_maps = pd.concat([pd.DataFrame(d) for d in bw_name_maps])
-bw_name_maps = bw_name_maps.loc[[f in files for f in bw_name_maps['file']], :]
-bw_name_maps['thumb'] = path_to_images + thumb_dir + bw_name_maps['file']
-bw_name_maps['med'] = path_to_images + med_dir + bw_name_maps['file']
-bw_name_maps['size'] = [os.path.getsize(path) for path in bw_name_maps['med']]
-bw_name_maps['thumb_size'] = [os.path.getsize(path) for path in bw_name_maps['thumb']]
-bw_name_maps = bw_name_maps.sort_values(by='size', axis=0, ascending=False)
+# bw_name_maps = bw_name_maps.loc[[f in files for f in bw_name_maps['file']], :]
+# bw_name_maps['thumb'] = path_to_images + thumb_dir + bw_name_maps['file']
+# bw_name_maps['med'] = path_to_images + med_dir + bw_name_maps['file']
+# bw_name_maps['size'] = [os.path.getsize(path) for path in bw_name_maps['med']]
+# bw_name_maps['thumb_size'] = [os.path.getsize(path) for path in bw_name_maps['thumb']]
+# bw_name_maps = bw_name_maps.sort_values(by='size', axis=0, ascending=False)
 bw_name_maps.index = range(len(bw_name_maps))
