@@ -2,7 +2,11 @@ import collections
 import time
 import numpy as np
 import pandas as pd
+import os
 
+def safe_mkdir(directory):
+    if not os.path.exists(directory):
+        os.makedirs(directory)
 
 def png_premultiply(im):
     pixels = im.load()

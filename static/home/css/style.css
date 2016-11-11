@@ -121,6 +121,10 @@ input::-webkit-inner-spin-button {
 
 /* recipe detail page */
 
+.bw_png {
+    max-height: 175px;
+    max-width: 175px;
+}
 /* the servings / units inputs */
 .unitsform {
     font-size: 18px !important;

@@ -101,7 +101,7 @@
         {% for path in recipe.bw_pngs %}
 
             {% with 'home/images/bw_pngs/medium/'|add:path as image_static %}
-                <img src="{% static image_static %}" width="150px">
+                <img src="{% static image_static %}" class="bw_png">
 
             {% endwith %}
         {% endfor %}

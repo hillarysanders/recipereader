@@ -1,10 +1,13 @@
 import os
 import pandas as pd
+from . import utils
 
 path_to_images = os.path.join(os.path.dirname(__file__), 'static/home/images/bw_pngs/')
 # path_to_images = 'static/home/images/bw_pngs/'
 thumb_dir = 'thumbnail/'
 med_dir = 'medium/'
+utils.safe_mkdir(path_to_images+thumb_dir)
+utils.safe_mkdir(path_to_images+med_dir)
 
 # first, read in all the names from both dirs and find the intersect of names:
 thumb_files = os.listdir(path_to_images + thumb_dir)
