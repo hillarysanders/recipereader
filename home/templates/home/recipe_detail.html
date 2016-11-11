@@ -99,7 +99,6 @@
         {% if recipe.bw_pngs %}
 
         {% for path in recipe.bw_pngs %}
-
             {% with 'https://s3-us-west-2.amazonaws.com/bw-pngs/medium/'|add:path as src %}
                 <img src="{{src}}" class="bw_png">
             {% endwith %}

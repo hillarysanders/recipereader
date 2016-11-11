@@ -100,8 +100,6 @@ bw_name_maps = [
      'key': ['lemon']},
     {'file': 'lemon_1.png',
      'key': ['lemon']},
-    {'file': 'lemon_2.png',
-     'key': ['lemon']},
     {'file': 'lettuce.png',
      'key': ['lettuce']},
     {'file': 'lime_leaf.png',
