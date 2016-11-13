@@ -372,7 +372,7 @@ def recipe_detail(request, slug, pk):
     context['stash_plus_or_minus'] = stash_plus_or_minus
     context['stash_tooltip'] = stash_tooltips.get(stash_plus_or_minus)
 
-    return render(request, 'home/recipe_detail.html', context)
+    return render(request, 'home/recipe_view.html', context)
 
 
 def ajax_add_recipe_to_stash(request):

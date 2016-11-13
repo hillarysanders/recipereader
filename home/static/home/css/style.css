@@ -31,17 +31,6 @@ main {
     flex: 1 0 auto;
 }
 
-.col1 {
-    background: #7893A6 !important;
-}
-.col2 {
-    background: #688396 !important;
-}
-
-
-
-
-
 
 .col1 {
     background: #ffffe6 !important;
@@ -122,9 +111,13 @@ input::-webkit-inner-spin-button {
 /* recipe detail page */
 
 .bw_png {
-    max-height: 15vw;
-    max-width: 13vw;
+    z-index: -10;
+    _position: absolute;
+    max-height: 250px;
+    _background-color: #ccccec;
 }
+
+
 /* the servings / units inputs */
 .unitsform {
     font-size: 18px !important;
@@ -134,20 +127,20 @@ input::-webkit-inner-spin-button {
 /* the servings input button */
 
 .servtext {
- margin-right: -8px;
- font-size: 18px;
+     margin-right: -8px;
+     font-size: 18px;
 }
 .spacer10px {
     height: 10px;
 }
 .up_10 {
-    margin-top: -15px;
+    margin-top: -20px;
     margin-bottom: 5px;
 }
-.recipe_topper {
-    background-color: #f3ecdc;
-    _height: 86px;
+.up_25 {
+    margin-top: -25px;
 }
+
 .servgo {
     font-size: 14px;
     margin-left: -4px;
@@ -158,9 +151,6 @@ input::-webkit-inner-spin-button {
     margin-left: -8px;
     margin-top: 20px;
     font-size: 18px;
-}
-.servings_holder {
-    min-width: 185px;
 }
 
 text_indent {
@@ -191,21 +181,45 @@ text_indent {
 .recipe_time {
     margin-top: 13px;
 }
-.image_ingredients_holder {
-    background-color: #fff9e0;
-    margin: 10px;
-}
-.recipe_image img {
-    .background-color: green;
-    width: 100%;
-}
-.recipe_image {
-    padding: 0px !important;
-    margin-top: 10px;
-}
 .ingredients {
-    margin-top: -4px;
-    margin-bottom: 10px;
+    padding: 4vw !important;
+    padding-right: 2vw !important;
+}
+.directions {
+    padding: 4vw !important;
+    padding-left: 2vw !important;
+}
+@media (max-width: 600px) {
+.ingredients {
+    padding: 4vw !important;
+}
+.directions {
+    padding: 4vw !important;
+    padding-top: 0vw !important;
+}
+.recipe_title {
+    font-size: 2.5rem !important;
+}
+.servtext {
+    font-size: 16px;
+}
+}
+.servings_holder {
+    min-width: 165px;
+}
+
+.nopadding {
+    padding: 0px !important;
+}
+
+
+.ing_or_dir {
+    border: 1.5px solid grey;
+    padding: 2vw !important;
+}
+
+.ing_dir_holder {
+    padding: 0px !important;
 }
 
 
@@ -213,9 +227,7 @@ text_indent {
 . cookbook_recipe_holder {
     margin-bottom: -30px;
 }
-.recipe_title {
-    font-size: 23px;
-}
+
 .recipe_stuff {
     margin-top: -5px;
     margin-bottom: 5px;
