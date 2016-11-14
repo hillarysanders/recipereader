@@ -7,7 +7,7 @@ body {
 
 
     background-color: #ffffe6;
-    background-image: url("https://www.transparenttextures.com/patterns/xv.png");
+    background-image: url("../images/texture-floral.png")
     /* This is mostly intended for prototyping; please download the pattern and re-host for production environments. Thank you! */
 
 
@@ -49,6 +49,10 @@ main {
 }
 .col3 {
     background: #eeecd9 !important;
+}
+.col3_6 {
+    background: rgba(238, 236, 217, .6) !important;
+
 }
 .colaccent {
     background: #d9e6e2 !important;
@@ -224,7 +228,7 @@ text_indent {
     border: 1.5px solid grey;
     padding: 2vw !important;
     background-color: #ffffe6;
-    background-image: url("https://www.transparenttextures.com/patterns/paper-fibers.png");
+    background-image: url("../images/texture-paper.png")
     /* This is mostly intended for prototyping; please download the pattern and re-host for production environments. Thank you! */
 }
 

@@ -50,6 +50,10 @@ main {
 .col3 {
     background: #eeecd9 !important;
 }
+.col3_6 {
+    background: rgba(238, 236, 217, .6) !important;
+
+}
 .colaccent {
     background: #d9e6e2 !important;
 }
