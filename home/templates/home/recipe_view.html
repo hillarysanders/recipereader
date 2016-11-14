@@ -8,32 +8,34 @@
 
     <div class="col s12 valign-wrapper">
 
-        <div class="col s3 m3 l3">
+        <div class="col s3 m3 l3 center">
             {% if recipe.bw_pngs.0 %}
                 {% with 'https://s3-us-west-2.amazonaws.com/bw-pngs/medium/'|add:recipe.bw_pngs.0 as src %}
-                    <img src="{{src}}" class="responsive-img bw_png left">
+                    <img src="{{src}}" class="responsive-img bw_png center">
                 {% endwith %}
             {% endif %}
         </div>
 
         <div class="col s6 m6 l6 center">
             <h2 class="center recipe_title"> {{ recipe.recipe_name }} </h2>
+
+            <div class="center">
+                <i>{{ recipe.description }}</i>
+            </div>
+
         </div>
 
-        <div class="col s3 m3 l3 right">
+        <div class="col s3 m3 l3 center">
             {% if recipe.bw_pngs.1 %}
                 {% with 'https://s3-us-west-2.amazonaws.com/bw-pngs/medium/'|add:recipe.bw_pngs.1 as src %}
-                    <img src="{{src}}" class="responsive-img bw_png right">
+                    <img src="{{src}}" class="responsive-img bw_png center">
                 {% endwith %}
             {% endif %}
         </div>
     </div>
 
-    <div class="center up_10">
-        <i>{{ recipe.description }}</i>
-    </div>
 
-    <div class="col s12 nopadding">
+    <div class="col s12 l6 push-l3 nopadding up_25">
         <!--<div class="col s12" style="height: 100%;">-->
             <div class="col s12 m4 l3 recipe_time">
                 <div class="center col s12">{{ recipe.get_prep_time }}</div>
@@ -77,7 +79,7 @@
         <!--</div>-->
     </div>
 
-    <div class="col s12 spacer10px"></div>
+    <!--<div class="col s12 spacer10px"></div>-->
 
     <div class="col s12 ing_dir_holder col2">
         <!--ingredients:-->

@@ -50,8 +50,8 @@ main {
 .col3 {
     background: #eeecd9 !important;
 }
-.col3_6 {
-    background: rgba(238, 236, 217, .6) !important;
+.col1_6 {
+    background: rgba(255, 255, 230, .5) !important;
 
 }
 .colaccent {
@@ -478,12 +478,17 @@ footer.page-footer .footer-copyright {
 }
 
 /* cookbook page, recipe search */
-
+.valign_helper {
+    display: inline-block;
+    height: 100%;
+    vertical-align: middle;
+}
 .cookbook_thumbnail {
     max-height: 50px;
+    max-width: 50px;
     margin-top: 5px;
-    height: auto;
-}
+
+    }
 
 #loading_id {
     width:15vw;
@@ -494,3 +499,5 @@ footer.page-footer .footer-copyright {
     z-index: 99;
 
 }
+
+

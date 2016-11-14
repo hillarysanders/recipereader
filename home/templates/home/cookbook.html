@@ -25,15 +25,16 @@
 
 <br><br><br>
 <div class="row">
-    {% for recipe in recipes %}
+    <div class="col s12">
+         {% for recipe in recipes %}
 
-     {% if forloop.counter|divisibleby:2 %}
-        <div class="col s12">
+            {% if forloop.counter|divisibleby:2 %}
+            <div class="col s12">
             {% else %}
-        <div class="col s12 col3_6">
+            <div class="col s12 col3">
             {% endif %}
 
-            <div class="cookbook_recipe_holder col s10">
+            <div class="cookbook_recipe_holder col s6">
                 <div class="col s12">
                     <h5>
                     <a href="{% url 'home:recipe_detail' recipe.slug recipe.pk %}">{{recipe.recipe_name|capfirst}}</a>
@@ -46,13 +47,40 @@
 
             </div>
 
-            {% if recipe.thumbnail %}
-                <div class="col s2 right center">
-                    <img class="circle responsive-img cookbook_thumbnail" src="{{ recipe.thumbnail.url }}">
-                </div>
-            {% endif %}
-        </div>
+            <!--{% if recipe.thumbnail %}-->
+                <!--<div class="col s2 right center">-->
+                    <!--<img class="circle responsive-img cookbook_thumbnail" src="{{ recipe.thumbnail.url }}">-->
+                <!--</div>-->
+            <!--{% endif %}-->
 
-    {% endfor %}
+            <div class="col s2 l1 push-l3 center">
+
+                {% if recipe.bw_pngs.0 %}
+                    {% with 'https://s3-us-west-2.amazonaws.com/bw-pngs/thumbnail/'|add:recipe.bw_pngs.0 as src %}
+                        <span class="valign_helper"></span><img src="{{src}}" class="cookbook_thumbnail">
+                    {% endwith %}
+                {% endif %}
+            </div>
+            <div class="col s2 l1 push-l3 center">
+                {% if recipe.bw_pngs.1 %}
+                    {% with 'https://s3-us-west-2.amazonaws.com/bw-pngs/thumbnail/'|add:recipe.bw_pngs.1 as src %}
+                        <span class="valign_helper"></span><img src="{{src}}" class="cookbook_thumbnail">
+                    {% endwith %}
+                {% endif %}
+            </div>
+            <div class="col s2 l1 push-l3 center">
+                {% if recipe.bw_pngs.2 %}
+                    {% with 'https://s3-us-west-2.amazonaws.com/bw-pngs/thumbnail/'|add:recipe.bw_pngs.2 as src %}
+                        <span class="valign_helper"></span><img src="{{src}}" class="cookbook_thumbnail">
+                    {% endwith %}
+                {% endif %}
+            </div>
+            </div>
+
+        {% endfor %}
+        </div>
+    </div>
 </div>
+
 {% endblock %}
+
