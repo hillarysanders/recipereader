@@ -1,0 +1,359 @@
+{% extends "home/index.html" %}
+
+{% block content %}
+{% load static %}
+<!--{% load materialize %}-->
+<div class="row">
+    <div class="red center-align">{{ form.name.errors }}</div>
+
+    <div class="col s12 valign-wrapper">
+
+        <div class="col s3 m3 l3">
+            {% if recipe.bw_pngs.0 %}
+                {% with 'https://s3-us-west-2.amazonaws.com/bw-pngs/medium/'|add:recipe.bw_pngs.0 as src %}
+                    <img src="{{src}}" class="responsive-img bw_png left">
+                {% endwith %}
+            {% endif %}
+        </div>
+
+        <div class="col s6 m6 l6 center">
+            <h2 class="center recipe_title"> {{ recipe.recipe_name }} </h2>
+        </div>
+
+        <div class="col s3 m3 l3 right">
+            {% if recipe.bw_pngs.1 %}
+                {% with 'https://s3-us-west-2.amazonaws.com/bw-pngs/medium/'|add:recipe.bw_pngs.1 as src %}
+                    <img src="{{src}}" class="responsive-img bw_png right">
+                {% endwith %}
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="center up_10">
+        <i>{{ recipe.description }}</i>
+    </div>
+
+    <div class="col s12 nopadding">
+        <!--<div class="col s12" style="height: 100%;">-->
+            <div class="col s12 m4 l3 recipe_time">
+                <div class="center col s12">{{ recipe.get_prep_time }}</div>
+                <div class="center col s12">{{ recipe.get_cook_time }}</div>
+                <div class="center col s12">{{ recipe.get_ready_in_time }}</div>
+            </div>
+
+            <!--servings_box-->
+            <div class="col s7 m5 l4 valign-wrapper servings_holder nopadding center">
+                <div class="col s5 right-align">
+                    <p class="servtext">Servings:</p>
+                </div>
+                <div class="col s7 left-align">
+                        <input id="id_servings" type="number" value="{{ initial_servings }}" placeholder="{{ initial_servings }}"
+                               onkeydown = "if (event.keyCode == 13)
+                                                document.getElementById('servings_btn').click()" >
+                        <a class="tooltipped" id="servings_tooltip" data-position="bottom" data-delay="50">
+                            <div id="servings_btn" class="btn-floating btn-med waves-effect col2 center servgo">Go</div>
+                        </a>
+                </div>
+            </div>
+
+            <div class="col s5 m3 l2 left-align valign-wrapper center nopadding">
+                <!-- Dropdown Trigger -->
+                <br><br><br><br>
+                <a class='dropdown-button btn col2 units_dropdown_btn' href='#' data-activates='dropdown1'
+                   data-hover="true" data-beloworigin="true">Δ Units</a>
+
+                <!-- Dropdown Structure -->
+                <ul id='dropdown1' class='dropdown-content'>
+                    <li class="units_dropdown_btn"><a id="change_units_us"
+                                                      class="units_dropdown">U.S.</a></li>
+                    <li class="divider"></li>
+                    <li class="units_dropdown_btn"><a id="change_units_metric"
+                                                      class="units_dropdown">metric</a></li>
+                    <!--<li class="divider"></li>-->
+                    <!--<li class="units_dropdown_btn"><a id="change_units_original"-->
+                                                      <!--class="units_dropdown">original</a></li>-->
+                </ul>
+            </div>
+        <!--</div>-->
+    </div>
+
+    <div class="col s12 spacer10px"></div>
+
+    <div class="col s12 ing_dir_holder col2">
+        <!--ingredients:-->
+        <div class="col s12 m6 l6 ingredients">
+            <div class="col s12 ing_or_dir col1">
+                <h5 class="center">Ingredients</h5>
+                <div id="hi_ingredients">{{ hi_ingredients | safe }}</div>
+            </div>
+        </div>
+        <!--directions:-->
+
+        <div class="col s12 m6 l6 directions">
+            <div class="col s12 ing_or_dir col1">
+                <h5 class="center">Directions</h5>
+                <div id="hi_instructions">{{ hi_instructions | safe }}</div>
+            </div>
+        </div>
+
+
+
+        <!--<div class="col s6 m3">-->
+            <!--{% if recipe.bw_pngs.3 %}-->
+                <!--{% with 'https://s3-us-west-2.amazonaws.com/bw-pngs/medium/'|add:recipe.bw_pngs.3 as src %}-->
+                    <!--<img src="{{src}}" class="responsive-img bw_png left recipe_box_bw_img">-->
+                <!--{% endwith %}-->
+            <!--{% endif %}-->
+        <!--</div>-->
+
+        <!--<div class="col s6 m3" style="margin-top: 60px;">-->
+            <!--{% if recipe.bw_pngs.4 %}-->
+                <!--{% with 'https://s3-us-west-2.amazonaws.com/bw-pngs/medium/'|add:recipe.bw_pngs.4 as src %}-->
+                    <!--<img src="{{src}}" class="responsive-img bw_png right recipe_box_bw_img">-->
+                <!--{% endwith %}-->
+            <!--{% endif %}-->
+        <!--</div>-->
+
+        <div class="col s12">
+            <div class="center">
+                {% if recipe.bw_pngs.3 %}
+                    {% with 'https://s3-us-west-2.amazonaws.com/bw-pngs/medium/'|add:recipe.bw_pngs.3 as src %}
+                        <img src="{{src}}" class="responsive-img bw_png center recipe_box_bw_img">
+                    {% endwith %}
+                {% endif %}
+
+                {% if recipe.bw_pngs.4 %}
+                    {% with 'https://s3-us-west-2.amazonaws.com/bw-pngs/medium/'|add:recipe.bw_pngs.4 as src %}
+                        <img src="{{src}}" class="responsive-img bw_png center recipe_box_bw_img">
+                    {% endwith %}
+                {% endif %}
+
+                {% if recipe.bw_pngs.5 %}
+                    {% with 'https://s3-us-west-2.amazonaws.com/bw-pngs/medium/'|add:recipe.bw_pngs.5 as src %}
+                        <img src="{{src}}" class="responsive-img bw_png center recipe_box_bw_img">
+                    {% endwith %}
+                {% endif %}
+            </div>
+        </div>
+
+
+
+
+
+
+        <!--the javascript / ajax friendly (json) versions of these:-->
+        <div id="ingredients"class="blue hide">{{ ingredients }}</div>
+        <div id="instructions" class="blue hide">{{ instructions }}</div>
+        <div id="initial_servings" class="blue hide">{{ initial_servings }}</div>
+        <div id="most_recent_servings" class="blue hide">{{ initial_servings }}</div>
+        <div id="recipe_pk" class="blue hide">{{ recipe.pk }}</div>
+        <div id="stash_tooltip" class="blue hide">{{ stash_tooltip }}</div>
+    </div>
+
+
+    <!--<div class="col s12 spacer10px col1"></div>-->
+
+
+    <div class="col s3 left">
+        recipe by:
+        {% if recipe.user_proxy.user %}
+            <a href="{% url 'home:public_profile' recipe.user_proxy.user.username %}">
+                <i>{{ recipe.user_proxy.user.username }}</i>
+            </a>
+        {% else %}
+            <i>anonymous</i>
+        {% endif %}
+    </div>
+    <div class="col s9">
+        <!-- why is this needed? (footer breaks when removed) -->
+        <div class="col s1"></div>
+        <div class="right">
+            {% if request.user == recipe.user_proxy.user %}
+                <a class="btn-floating btn-med pale_red modal-trigger detail_footer_btn" href="#confirmdeletemodal">
+                    <i class="large material-icons">delete</i>
+                </a>
+                <a class="btn-floating btn-large col2 detail_footer_btn" href="{% url 'home:edit_recipe' recipe.slug recipe.id %}">
+                    <i class="large material-icons">mode_edit</i>
+                </a>
+            {% else %}
+                <a class="tooltipped" id="stash_recipe_tooltip" data-position="bottom" data-delay="50">
+                    <div id="stash_recipe_btn" class="detail_footer_btn btn-floating col2 center">{{ stash_plus_or_minus }}</div>
+                </a>
+
+            <!--add an onclick that submits the thingy (ajax) and also pops up a cute modal-->
+            {% endif %}
+
+        </div>
+
+        <!-- Modal Trigger -->
+        <div id="confirmdeletemodal" class="modal modal-fixed-footer">
+            <div class="modal-content pale_red">
+                <h4>Are you sure you want to delete your recipe?</h4>
+
+                <p>Are you sure you want to delete {{recipe.recipe_name}}?</p>
+            </div>
+            <div class="modal-footer">
+                <a href="{% url 'home:delete_recipe' recipe.id %}"
+                   class="red modal-action modal-close waves-effect waves-white btn-flat">Yes, Delete</a>
+                <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Nevermind!</a>
+            </div>
+        </div>
+
+
+    </div>
+
+</div>
+
+<div class="center">
+    <img src="https://s3-us-west-2.amazonaws.com/bw-pngs/other/loading.gif" alt="loading" id="loading_id" class="hide">
+</div>
+
+{% endblock %}
+
+{% block javascript %}
+<script>
+ $(document).ready(function() {
+    $('select').material_select();
+});
+</script>
+<script>
+
+
+
+function  add_recipe_to_stash() {
+  var recipe_pk = document.getElementById("recipe_pk").innerHTML
+  var stash_plus_or_minus = document.getElementById("stash_recipe_btn").innerHTML
+  $.ajax({
+    url: '/ajax/add_recipe_to_stash/',
+    type: 'GET',
+    data: {
+      'recipe_pk': recipe_pk,
+      'stash_plus_or_minus': stash_plus_or_minus,
+    },
+    dataType: 'json',
+    success: function (data) {
+        console.log('Yay. Recipe added <3')
+        document.getElementById("stash_recipe_btn").innerHTML = data.stash_plus_or_minus;
+        $('#stash_recipe_tooltip').tooltip('remove');
+        $("#stash_recipe_tooltip").tooltip({'tooltip': data.stash_tooltip});
+
+
+    }
+  });
+}
+
+function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = jQuery.trim(cookies[i]);
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+var csrftoken = getCookie('csrftoken');
+
+function csrfSafeMethod(method) {
+    // these HTTP methods do not require CSRF protection
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+}
+
+$.ajaxSetup({
+    beforeSend: function(xhr, settings) {
+        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        }
+    }
+});
+
+
+function change_units(kind) {
+  var ingredients = document.getElementById("ingredients").innerHTML
+  var instructions = document.getElementById("instructions").innerHTML
+
+  <!--load loading gif:-->
+  document.getElementById("loading_id").className = ''
+
+  $.ajax({
+    url: '/ajax/change_units/',
+    type: 'POST',
+    <!--proccessData: false,-->
+    data: {
+      'ingredients': ingredients,
+      'instructions': instructions,
+      'units_type': kind
+    },
+    dataType: 'json',
+    success: function (data) {
+        console.log('Yay. Ajax unit conversion <3')
+        document.getElementById("hi_ingredients").innerHTML = data.hi_ingredients;
+        document.getElementById("ingredients").innerHTML = data.ingredients;
+        document.getElementById("hi_instructions").innerHTML = data.hi_instructions;
+        document.getElementById("instructions").innerHTML = data.instructions;
+        <!--remove loading gif:-->
+        document.getElementById("loading_id").className = 'hide'
+
+    }
+  });
+}
+
+function change_servings() {
+  var ingredients = document.getElementById("ingredients").innerHTML
+  var instructions = document.getElementById("instructions").innerHTML
+  var servings = document.getElementById("id_servings").value;
+  var initial_servings = document.getElementById("initial_servings").innerHTML
+  var most_recent_servings = document.getElementById("most_recent_servings").innerHTML
+
+  <!--load loading gif:-->
+  document.getElementById("loading_id").className = ''
+
+  $.ajax({
+    url: '/ajax/change_servings/',
+    type: 'POST',
+    <!--proccessData: false,-->
+    data: {
+      'ingredients': ingredients,
+      'instructions': instructions,
+      'servings': servings,
+      'most_recent_servings': most_recent_servings
+    },
+    dataType: 'json',
+    success: function (data) {
+        console.log('Yay. Ajax servings conversion <3')
+        document.getElementById("hi_ingredients").innerHTML = data.hi_ingredients;
+        document.getElementById("ingredients").innerHTML = data.ingredients;
+        document.getElementById("hi_instructions").innerHTML = data.hi_instructions;
+        document.getElementById("instructions").innerHTML = data.instructions;
+        document.getElementById("most_recent_servings").innerHTML = data.servings;
+        <!--remove loading gif:-->
+        document.getElementById("loading_id").className = 'hide'
+
+    }
+  });
+}
+
+function addClickHandlers() {
+  $("#change_units_metric").click( function() { change_units("metric") });
+  $("#change_units_us").click( function() { change_units("us") });
+  <!--$("#change_units_original").click( function() { change_units("original") });-->
+  $("#servings_btn").click( function() { change_servings() });
+  $("#stash_recipe_btn").click( add_recipe_to_stash );
+}
+
+
+$(document).ready(addClickHandlers);
+
+$(document).ready(function(){
+    var stash_tooltip = document.getElementById("stash_tooltip").innerHTML
+    $('#stash_recipe_tooltip').tooltip({delay: 50, tooltip: stash_tooltip});
+});
+
+</script>
+{% endblock %}
+

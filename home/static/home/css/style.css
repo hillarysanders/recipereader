@@ -4,7 +4,16 @@ body {
     min-height: 100vh;
     flex-direction: column;
     font-family: 'David Libre', serif;
+
+
+    background-color: #ffffe6;
+    background-image: url("https://www.transparenttextures.com/patterns/xv.png");
+    /* This is mostly intended for prototyping; please download the pattern and re-host for production environments. Thank you! */
+
+
 }
+
+
 nav .brand-logo {
     font-family: 'Great Vibes', cursive;
     font-size: 43px;
@@ -44,9 +53,7 @@ main {
 .colaccent {
     background: #d9e6e2 !important;
 }
-body {
-    background: #ffffe6;
-}
+
 a:link {
 color: #445570;
 }
@@ -216,6 +223,9 @@ text_indent {
 .ing_or_dir {
     border: 1.5px solid grey;
     padding: 2vw !important;
+    background-color: #ffffe6;
+    background-image: url("https://www.transparenttextures.com/patterns/asfalt-dark.png");
+    /* This is mostly intended for prototyping; please download the pattern and re-host for production environments. Thank you! */
 }
 
 .ing_dir_holder {
