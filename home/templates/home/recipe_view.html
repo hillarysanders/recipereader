@@ -118,6 +118,12 @@
 
         <div class="col s12">
             <div class="center">
+                {% if recipe.bw_pngs.2 %}
+                    {% with 'https://s3-us-west-2.amazonaws.com/bw-pngs/medium/'|add:recipe.bw_pngs.2 as src %}
+                        <img src="{{src}}" class="responsive-img bw_png center recipe_box_bw_img">
+                    {% endwith %}
+                {% endif %}
+
                 {% if recipe.bw_pngs.3 %}
                     {% with 'https://s3-us-west-2.amazonaws.com/bw-pngs/medium/'|add:recipe.bw_pngs.3 as src %}
                         <img src="{{src}}" class="responsive-img bw_png center recipe_box_bw_img">
