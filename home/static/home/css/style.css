@@ -139,6 +139,9 @@ input::-webkit-inner-spin-button {
 .spacer10px {
     height: 10px;
 }
+.spacer15px {
+    height: 15px;
+}
 .up_10 {
     margin-top: -20px;
     margin-bottom: 5px;
@@ -231,7 +234,6 @@ text_indent {
 }
 .recipe_header {
     padding: 0px !important;
-    padding-top: 15px !important;
     background-color: RGBA(172, 191, 204, .7);
 }
 

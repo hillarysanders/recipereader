@@ -35,7 +35,9 @@
 
     <div class="col s12 up_15">
         <div class="col s12 m10 l10 push-m1 push-l1 recipe_header">
-
+            {% if recipe.description %}
+                <div class="col s12 spacer15px"></div>
+            {% endif %}
             <div class="col s12 center">
                 <i>{{ recipe.description }}</i>
             </div>
