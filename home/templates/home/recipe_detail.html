@@ -38,48 +38,48 @@
     </div>
 
 
-    <div class="col s12 l6 push-l3 nopadding up_25">
-        <div class="col s12 m4 l3 recipe_time">
-            <div class="center col s12">{{ recipe.get_prep_time }}</div>
-            <div class="center col s12">{{ recipe.get_cook_time }}</div>
-            <div class="center col s12">{{ recipe.get_ready_in_time }}</div>
-        </div>
-
-        <!--servings_box-->
-        <div class="col s7 m5 l4 valign-wrapper servings_holder nopadding center">
-            <div class="col s6 right-align">
-                <p class="servtext">Servings:</p>
-            </div>
-            <div class="col s6 left-align">
-                    <input id="id_servings" type="number" value="{{ initial_servings }}" placeholder="{{ initial_servings }}"
-                           onkeydown = "if (event.keyCode == 13)
-                                            document.getElementById('servings_btn').click()" >
-                    <a class="tooltipped" id="servings_tooltip" data-position="bottom" data-delay="50">
-                        <div id="servings_btn" class="btn-floating btn-med waves-effect col2 center servgo">Go</div>
-                    </a>
-            </div>
-        </div>
-
-        <div class="col s5 m3 l2 left-align valign-wrapper center nopadding">
-            <!-- Dropdown Trigger -->
-            <br><br><br><br>
-            <a class='dropdown-button btn col2 units_dropdown_btn' href='#' data-activates='dropdown1'
-               data-hover="true" data-beloworigin="true">Δ Units</a>
-
-            <!-- Dropdown Structure -->
-            <ul id='dropdown1' class='dropdown-content'>
-                <li class="units_dropdown_btn"><a id="change_units_us"
-                                                  class="units_dropdown">U.S.</a></li>
-                <li class="divider"></li>
-                <li class="units_dropdown_btn"><a id="change_units_metric"
-                                                  class="units_dropdown">metric</a></li>
-            </ul>
-        </div>
-    </div>
-
-
     <div class="col s12">
-        <div class="col s12 m10 l8 push-m1 push-l2 ing_dir_holder">
+        <div class="col s12 l8 push-l2">
+            <div class="col s12 m4 l3 recipe_time">
+                <div class="center col s12">{{ recipe.get_prep_time }}</div>
+                <div class="center col s12">{{ recipe.get_cook_time }}</div>
+                <div class="center col s12">{{ recipe.get_ready_in_time }}</div>
+            </div>
+
+            <!--servings_box-->
+            <div class="col s7 m5 l4 valign-wrapper servings_holder nopadding center">
+                <div class="col s6 right-align">
+                    <p class="servtext">Servings:</p>
+                </div>
+                <div class="col s6 left-align">
+                        <input id="id_servings" type="number" value="{{ initial_servings }}" placeholder="{{ initial_servings }}"
+                               onkeydown = "if (event.keyCode == 13)
+                                                document.getElementById('servings_btn').click()" >
+                        <a class="tooltipped" id="servings_tooltip" data-position="bottom" data-delay="50">
+                            <div id="servings_btn" class="btn-floating btn-med waves-effect col2 center servgo">Go</div>
+                        </a>
+                </div>
+            </div>
+
+            <div class="col s5 m3 l2 left-align valign-wrapper center nopadding">
+                <!-- Dropdown Trigger -->
+                <br><br><br><br>
+                <a class='dropdown-button btn col2 units_dropdown_btn' href='#' data-activates='dropdown1'
+                   data-hover="true" data-beloworigin="true">Δ Units</a>
+
+                <!-- Dropdown Structure -->
+                <ul id='dropdown1' class='dropdown-content'>
+                    <li class="units_dropdown_btn"><a id="change_units_us"
+                                                      class="units_dropdown">U.S.</a></li>
+                    <li class="divider"></li>
+                    <li class="units_dropdown_btn"><a id="change_units_metric"
+                                                      class="units_dropdown">metric</a></li>
+                </ul>
+            </div>
+        </div>
+
+
+        <div class="col s12 m10 l10 push-m1 push-l1 ing_dir_holder">
             <!--ingredients:-->
             <div class="col s12 m6 l6 ingredients">
                 <div class="col s12 ing_or_dir">

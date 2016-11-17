@@ -54,6 +54,9 @@ main {
     background: rgba(255, 255, 230, .5) !important;
 
 }
+.col2_4 {
+    background-color: RGBA(172, 191, 204, .4);
+}
 .colaccent {
     background: #d9e6e2 !important;
 }
@@ -140,8 +143,8 @@ input::-webkit-inner-spin-button {
     margin-top: -20px;
     margin-bottom: 5px;
 }
-.up_25 {
-    margin-top: -25px;
+.up_15 {
+    margin-top: -15px;
 }
 
 .servgo {
@@ -185,14 +188,14 @@ text_indent {
     margin-top: 13px;
 }
 .ingredients {
-    padding: 4vw !important;
-    padding-right: 2vw !important;
+    padding: 2vw !important;
+    padding-right: 1vw !important;
     padding-bottom: 0vw !important;
 }
 .directions {
-    padding: 4vw !important;
-    padding-left: 2vw !important;
-    padding-bottom: 0vw !important;
+    padding: 2vw !important;
+    padding-left: 1vw !important;
+    padding-bottom: .5vw !important;
 }
 @media (max-width: 600px) {
 .ingredients {
@@ -222,7 +225,8 @@ text_indent {
     border: 1.5px solid grey;
     padding: 2vw !important;
     background-color: #ffffe6;
-    background-image: url("https://s3-us-west-2.amazonaws.com/bw-pngs/other/texture-paper.png")
+    background-image: url("https://s3-us-west-2.amazonaws.com/bw-pngs/other/texture-paper.png");
+    opacity: .9;
     /* This is mostly intended for prototyping; please download the pattern and re-host for production environments. Thank you! */
 }
 
