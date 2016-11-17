@@ -230,7 +230,8 @@ text_indent {
     /* This is mostly intended for prototyping; please download the pattern and re-host for production environments. Thank you! */
 }
 .recipe_header {
-    padding: 20px !important;
+    padding: 0px !important;
+    padding-top: 15px !important;
     background-color: RGBA(172, 191, 204, .7);
 }
 
