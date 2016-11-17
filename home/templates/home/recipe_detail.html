@@ -355,7 +355,7 @@ $(document).ready(function(){
     $('#stash_recipe_tooltip').tooltip({delay: 50, tooltip: stash_tooltip});
 });
 
-$(document).ready(bwPngPlacement);
+window.onload = bwPngPlacement;
 window.onresize = bwPngPlacement;
 </script>
 {% endblock %}
