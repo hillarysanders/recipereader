@@ -139,6 +139,9 @@ input::-webkit-inner-spin-button {
 .spacer10px {
     height: 10px;
 }
+.spacer15px {
+    height: 15px;
+}
 .up_10 {
     margin-top: -20px;
     margin-bottom: 5px;
@@ -228,6 +231,10 @@ text_indent {
     background-image: url("https://s3-us-west-2.amazonaws.com/bw-pngs/other/texture-paper.png");
     opacity: .9;
     /* This is mostly intended for prototyping; please download the pattern and re-host for production environments. Thank you! */
+}
+.recipe_header {
+    padding: 0px !important;
+    background-color: RGBA(172, 191, 204, .7);
 }
 
 .ing_dir_holder {
