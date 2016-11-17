@@ -372,7 +372,16 @@ def recipe_detail(request, slug, pk):
     context['stash_plus_or_minus'] = stash_plus_or_minus
     context['stash_tooltip'] = stash_tooltips.get(stash_plus_or_minus)
 
-    return render(request, 'home/recipe_view.html', context)
+    if len(recipe.bw_pngs) == 0:
+        context['bw_pngs'] = None
+    else:
+        degrees = range(0, 360, int(360./(len(recipe.bw_pngs)+1)))[:-1]
+        bw_classes = ['deg{}'.format(d) for d in degrees]
+        context['bw_pngs'] = dict(zip(recipe.bw_pngs, bw_classes))
+        print(context['bw_pngs'])
+
+    # import pdb; pdb.set_trace()
+    return render(request, 'home/recipe_detail.html', context)
 
 
 def ajax_add_recipe_to_stash(request):

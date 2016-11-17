@@ -121,14 +121,6 @@ input::-webkit-inner-spin-button {
 
 /* recipe detail page */
 
-.bw_png {
-    z-index: -10;
-    _position: absolute;
-    max-height: 250px;
-    _background-color: #ccccec;
-}
-
-
 /* the servings / units inputs */
 .unitsform {
     font-size: 18px !important;
@@ -195,10 +187,12 @@ text_indent {
 .ingredients {
     padding: 4vw !important;
     padding-right: 2vw !important;
+    padding-bottom: 0vw !important;
 }
 .directions {
     padding: 4vw !important;
     padding-left: 2vw !important;
+    padding-bottom: 0vw !important;
 }
 @media (max-width: 600px) {
 .ingredients {
@@ -234,8 +228,13 @@ text_indent {
 
 .ing_dir_holder {
     padding: 0px !important;
+    background-color: RGBA(172, 191, 204, .4);
+    position: relative;
 }
-
+#recipe_by {
+    position: absolute;
+    bottom: 0px;
+}
 
 /* cookbook page */
 . cookbook_recipe_holder {
@@ -487,8 +486,7 @@ footer.page-footer .footer-copyright {
     max-height: 50px;
     max-width: 50px;
     margin-top: 5px;
-
-    }
+}
 
 #loading_id {
     width:15vw;
@@ -500,4 +498,26 @@ footer.page-footer .footer-copyright {
 
 }
 
+.bw_png {
+    z-index: -10;
+    max-height: 20vw;
+    max-width: 20vh;
+    opacity: 0.5;
+    filter: alpha(opacity=50); /* For IE8 and earlier */
+}
 
+
+#circle-container {
+    /* Why does 96, 3 work better than 96, 2??? */
+    width: 96%;
+    margin-left: -3%;
+    height: 85%;
+    position: absolute;
+    _border: 3px solid red;
+    z-index: -10;
+}
+.field {
+    position: absolute;
+    background-color: transparent;
+
+}

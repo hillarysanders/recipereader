@@ -3,171 +3,160 @@
 {% block content %}
 {% load static %}
 <!--{% load materialize %}-->
-
-<h2 class="center"> {{ recipe.recipe_name }} </h2>
-<div class="center up_10">
-    <i>{{ recipe.description }}</i>
+<div id="circle-container">
+    {% if bw_pngs %}
+        {% for path, class in bw_pngs.items %}
+            <!--{{path}}-->
+            <!--{{class}}-->
+            <!--{{forloop.counter}}-->
+            {% with 'https://s3-us-west-2.amazonaws.com/bw-pngs/medium/'|add:path as src %}
+                <div class="field"><img class="bw_png center" src="{{src}}"></div>
+            {% endwith %}
+        {% endfor %}
+    {% endif %}
+    <!--
+    <div class="field">5</div>
+    <div class="field">6</div>
+    -->
 </div>
 <div class="row">
 
 
+
     <div class="red center-align">{{ form.name.errors }}</div>
 
-    {% if recipe.bw_pngs %}
-    <div class="center">
-    {% for path in recipe.bw_pngs %}
-        {% with 'https://s3-us-west-2.amazonaws.com/bw-pngs/medium/'|add:path as src %}
-            <img src="{{src}}" class="bw_png center">
-        {% endwith %}
-    {% endfor %}
+    <div class="col s12 valign-wrapper">
+
+        <div class="col s12 center">
+            <h2 class="center recipe_title"> {{ recipe.recipe_name }} </h2>
+
+            <div class="center">
+                <i>{{ recipe.description }}</i>
+            </div>
+
+        </div>
     </div>
-    {% endif %}
 
-    <div class="col s12 recipe_topper">
-        <div class="col s12" style="height: 100%;">
-            <div class="col s12 m4 l3 recipe_time">
-                <div class="center col s12">{{ recipe.get_prep_time }}</div>
-                <div class="center col s12">{{ recipe.get_cook_time }}</div>
-                <div class="center col s12">{{ recipe.get_ready_in_time }}</div>
+
+    <div class="col s12 l6 push-l3 nopadding up_25">
+        <div class="col s12 m4 l3 recipe_time">
+            <div class="center col s12">{{ recipe.get_prep_time }}</div>
+            <div class="center col s12">{{ recipe.get_cook_time }}</div>
+            <div class="center col s12">{{ recipe.get_ready_in_time }}</div>
+        </div>
+
+        <!--servings_box-->
+        <div class="col s7 m5 l4 valign-wrapper servings_holder nopadding center">
+            <div class="col s6 right-align">
+                <p class="servtext">Servings:</p>
             </div>
-
-            <!--servings_box-->
-            <div class="col s7 m5 l4 valign-wrapper servings_holder center">
-                <div class="col s6 right-align">
-                    <p class="servtext">Servings:</p>
-                </div>
-                <div class="col s6 left-align">
-                        <input id="id_servings" type="number" value="{{ initial_servings }}" placeholder="{{ initial_servings }}"
-                               onkeydown = "if (event.keyCode == 13)
-                                                document.getElementById('servings_btn').click()" >
-                        <a class="tooltipped" id="servings_tooltip" data-position="bottom" data-delay="50">
-                            <div id="servings_btn" class="btn-floating btn-med waves-effect col2 center servgo">Go</div>
-                        </a>
-                </div>
-            </div>
-
-            <div class="col s5 m3 l2 left-align valign-wrapper center">
-                <!-- Dropdown Trigger -->
-                <br><br><br><br>
-                <a class='dropdown-button btn col2 units_dropdown_btn' href='#' data-activates='dropdown1'
-                   data-hover="true" data-beloworigin="true">Δ Units</a>
-
-                <!-- Dropdown Structure -->
-                <ul id='dropdown1' class='dropdown-content'>
-                    <li class="units_dropdown_btn"><a id="change_units_us"
-                                                      class="units_dropdown">U.S.</a></li>
-                    <li class="divider"></li>
-                    <li class="units_dropdown_btn"><a id="change_units_metric"
-                                                      class="units_dropdown">metric</a></li>
-                    <!--<li class="divider"></li>-->
-                    <!--<li class="units_dropdown_btn"><a id="change_units_original"-->
-                                                      <!--class="units_dropdown">original</a></li>-->
-                </ul>
-
+            <div class="col s6 left-align">
+                    <input id="id_servings" type="number" value="{{ initial_servings }}" placeholder="{{ initial_servings }}"
+                           onkeydown = "if (event.keyCode == 13)
+                                            document.getElementById('servings_btn').click()" >
+                    <a class="tooltipped" id="servings_tooltip" data-position="bottom" data-delay="50">
+                        <div id="servings_btn" class="btn-floating btn-med waves-effect col2 center servgo">Go</div>
+                    </a>
             </div>
         </div>
 
+        <div class="col s5 m3 l2 left-align valign-wrapper center nopadding">
+            <!-- Dropdown Trigger -->
+            <br><br><br><br>
+            <a class='dropdown-button btn col2 units_dropdown_btn' href='#' data-activates='dropdown1'
+               data-hover="true" data-beloworigin="true">Δ Units</a>
 
+            <!-- Dropdown Structure -->
+            <ul id='dropdown1' class='dropdown-content'>
+                <li class="units_dropdown_btn"><a id="change_units_us"
+                                                  class="units_dropdown">U.S.</a></li>
+                <li class="divider"></li>
+                <li class="units_dropdown_btn"><a id="change_units_metric"
+                                                  class="units_dropdown">metric</a></li>
+            </ul>
+        </div>
     </div>
 
-    <div class="col s12 spacer10px"></div>
 
-    <div class="col s12 recipe_text">
-
-        {% if recipe.image %}
-        <div class="col s12 m12 l8 image_ingredients_holder">
-            <div class="col s12 m6 l6 recipe_image">
-                <br>
-                <img src="{{ recipe.image.url }}"/>
-            </div>
-
+    <div class="col s12">
+        <div class="col s12 m10 l8 push-m1 push-l2 ing_dir_holder">
             <!--ingredients:-->
             <div class="col s12 m6 l6 ingredients">
-                <h5 class="center">Ingredients</h5>
-                <div id="hi_ingredients">{{ hi_ingredients | safe }}</div>
+                <div class="col s12 ing_or_dir">
+                    <h5 class="center">Ingredients</h5>
+                    <div id="hi_ingredients">{{ hi_ingredients | safe }}</div>
+                </div>
+            </div>
+            <!--directions:-->
 
+            <div class="col s12 m6 l6 directions">
+                <div class="col s12 ing_or_dir">
+                    <h5 class="center">Directions</h5>
+                    <div id="hi_instructions">{{ hi_instructions | safe }}</div>
+                </div>
+            </div>
+
+
+            <!--the javascript / ajax friendly (json) versions of these:-->
+            <div id="ingredients"class="blue hide">{{ ingredients }}</div>
+            <div id="instructions" class="blue hide">{{ instructions }}</div>
+            <div id="initial_servings" class="blue hide">{{ initial_servings }}</div>
+            <div id="most_recent_servings" class="blue hide">{{ initial_servings }}</div>
+            <div id="recipe_pk" class="blue hide">{{ recipe.pk }}</div>
+            <div id="stash_tooltip" class="blue hide">{{ stash_tooltip }}</div>
+
+            <div class="col s12">
+            <div class="left" id="recipe_by">
+                recipe by:
+                {% if recipe.user_proxy.user %}
+                    <a href="{% url 'home:public_profile' recipe.user_proxy.user.username %}">
+                        <i>{{ recipe.user_proxy.user.username }}</i>
+                    </a>
+                {% else %}
+                    <i>anonymous</i>
+                {% endif %}
+            </div>
+            <div class="col s12">
+                <!-- why is this needed? (footer breaks when removed) -->
+                <div class="col s1"></div>
+                <div class="right">
+                    {% if request.user == recipe.user_proxy.user %}
+                        <a class="btn-floating btn-med pale_red modal-trigger detail_footer_btn" href="#confirmdeletemodal">
+                            <i class="large material-icons">delete</i>
+                        </a>
+                        <a class="btn-floating btn-large col2 detail_footer_btn" href="{% url 'home:edit_recipe' recipe.slug recipe.id %}">
+                            <i class="large material-icons">mode_edit</i>
+                        </a>
+                    {% else %}
+                        <a class="tooltipped" id="stash_recipe_tooltip" data-position="bottom" data-delay="50">
+                            <div id="stash_recipe_btn" class="detail_footer_btn btn-floating col2 center">{{ stash_plus_or_minus }}</div>
+                        </a>
+
+                    <!--add an onclick that submits the thingy (ajax) and also pops up a cute modal-->
+                    {% endif %}
+
+                </div>
+
+                <!-- Modal Trigger -->
+                <div id="confirmdeletemodal" class="modal modal-fixed-footer">
+                    <div class="modal-content pale_red">
+                        <h4>Are you sure you want to delete your recipe?</h4>
+
+                        <p>Are you sure you want to delete {{recipe.recipe_name}}?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="{% url 'home:delete_recipe' recipe.id %}"
+                           class="red modal-action modal-close waves-effect waves-white btn-flat">Yes, Delete</a>
+                        <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Nevermind!</a>
+                    </div>
+                </div>
             </div>
         </div>
-
-        {% elif True %}
-        <!--ingredients:-->
-
-
-        <div class="col s12 m6 l6 image_ingredients_holder">
-
-            <div class="col s12 ingredients">
-                <h5 class="center">Ingredients</h5>
-                <div id="hi_ingredients">{{ hi_ingredients | safe }}</div>
-            </div>
-        </div>
-
-        {% endif %}
-        <!--directions:-->
-
-        <h5 class="center">Directions</h5>
-        <div id="hi_instructions">{{ hi_instructions | safe }}</div>
-
-        <!--the javascript / ajax friendly (json) versions of these:-->
-        <div id="ingredients"class="blue hide">{{ ingredients }}</div>
-        <div id="instructions" class="blue hide">{{ instructions }}</div>
-        <div id="initial_servings" class="blue hide">{{ initial_servings }}</div>
-        <div id="most_recent_servings" class="blue hide">{{ initial_servings }}</div>
-        <div id="recipe_pk" class="blue hide">{{ recipe.pk }}</div>
-        <div id="stash_tooltip" class="blue hide">{{ stash_tooltip }}</div>
-        <!--the reader-friendly versions of these:-->
-
     </div>
-
-    <div class="col s12 spacer10px col1"></div>
-
-
-    <div class="col s12 recipe_text valign-wrapper">
-        recipe by:
-        {% if recipe.user_proxy.user %}
-            <a href="{% url 'home:public_profile' recipe.user_proxy.user.username %}">
-                <i>{{ recipe.user_proxy.user.username }}</i>
-            </a>
-        {% else %}
-            <i>anonymous</i>
-        {% endif %}
-        <!-- why is this needed? (footer breaks when removed) -->
-        <div class="col s1"></div>
+</div>
 
 
-        <div class="right">
-            {% if request.user == recipe.user_proxy.user %}
-                <a class="btn-floating btn-med pale_red modal-trigger detail_footer_btn" href="#confirmdeletemodal">
-                    <i class="large material-icons">delete</i>
-                </a>
-                <a class="btn-floating btn-large col2 detail_footer_btn" href="{% url 'home:edit_recipe' recipe.slug recipe.id %}">
-                    <i class="large material-icons">mode_edit</i>
-                </a>
-            {% else %}
-                <a class="tooltipped" id="stash_recipe_tooltip" data-position="bottom" data-delay="50">
-                    <div id="stash_recipe_btn" class="detail_footer_btn btn-floating col2 center">{{ stash_plus_or_minus }}</div>
-                </a>
-
-            <!--add an onclick that submits the thingy (ajax) and also pops up a cute modal-->
-            {% endif %}
-
-        </div>
-
-        <!-- Modal Trigger -->
-        <div id="confirmdeletemodal" class="modal modal-fixed-footer">
-            <div class="modal-content pale_red">
-                <h4>Are you sure you want to delete your recipe?</h4>
-
-                <p>Are you sure you want to delete {{recipe.recipe_name}}?</p>
-            </div>
-            <div class="modal-footer">
-                <a href="{% url 'home:delete_recipe' recipe.id %}"
-                   class="red modal-action modal-close waves-effect waves-white btn-flat">Yes, Delete</a>
-                <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Nevermind!</a>
-            </div>
-        </div>
-
-
-    </div>
+    <!--<div class="col s12 spacer10px col1"></div>-->
 
 </div>
 
@@ -313,6 +302,44 @@ function addClickHandlers() {
   $("#stash_recipe_btn").click( add_recipe_to_stash );
 }
 
+function bwPngPlacement() {
+    var x_radius = $('#circle-container').width() / 2
+    var y_radius = $('#circle-container').height() / 2
+    var fields = $('.field'), container = $('#circle-container'), width = container.width(), height = container.height();
+    var angle = 0, step = (2*Math.PI) / fields.length;
+    fields.each(function() {
+        console.log(angle)
+        if ((angle > 5.75) || (angle <= .52)) { // right hand side of oval
+            var x = Math.round(width/2 + x_radius * Math.cos(angle) - $(this).width());
+            var y = Math.round(height/2 + y_radius * Math.sin(angle) - $(this).height()/2);
+            console.log('RIGHT!');
+        } else if ((2.6 < angle) && (angle  <= 3.66)) { // left hand side of oval
+            var x = Math.round(width/2 + x_radius * Math.cos(angle) - 0);
+            var y = Math.round(height/2 + y_radius * Math.sin(angle) - $(this).height()/2);
+            console.log('LEFT!');
+        } else if ((4.18 < angle) && (angle  <= 5.23)) { // bottom side of oval
+            var x = Math.round(width/2 + x_radius * Math.cos(angle) - $(this).width()/2);
+            var y = Math.round(height/2 + y_radius * Math.sin(angle));
+            console.log('Bottom!');
+        } else if ((1.04 < angle) && (angle  <= 2.09)) { // top hand side of oval
+            var x = Math.round(width/2 + x_radius * Math.cos(angle) - $(this).width()/2);
+            var y = Math.round(height/2 + y_radius * Math.sin(angle) - $(this).height());
+            console.log('TOP');
+        } else {
+            var x = Math.round(width/2 + x_radius * Math.cos(angle) - $(this).width()/2);
+            var y = Math.round(height/2 + y_radius * Math.sin(angle) - $(this).height()/2);
+        }
+
+        <!--if(window.console) {-->
+            <!--console.log($(this).text(), x, y);-->
+        <!--}-->
+        $(this).css({
+            left: x + 'px',
+            top: y + 'px'
+        });
+        angle += step;
+    })
+}
 
 $(document).ready(addClickHandlers);
 
@@ -321,6 +348,8 @@ $(document).ready(function(){
     $('#stash_recipe_tooltip').tooltip({delay: 50, tooltip: stash_tooltip});
 });
 
+$(document).ready(bwPngPlacement);
+window.onresize = bwPngPlacement;
 </script>
 {% endblock %}
 

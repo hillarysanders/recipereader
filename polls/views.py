@@ -18,6 +18,7 @@ def index(request, **kwargs):
     # return HttpResponse(template.render(context, request))
     return render(request, 'polls/index.html', context)
 
+
 class DetailView(generic.DetailView):
     # note that this uses a generic.DetailView
     model = Question
@@ -28,6 +29,7 @@ class ResultsView(generic.DetailView):
     # note that this uses a generic.DetailView
     model = Question
     template_name = 'polls/results.html'
+
 
 def vote(request, question_id):
     question = get_object_or_404(Question, pk=question_id)
