@@ -229,6 +229,10 @@ text_indent {
     opacity: .9;
     /* This is mostly intended for prototyping; please download the pattern and re-host for production environments. Thank you! */
 }
+.recipe_header {
+    padding: 20px !important;
+    background-color: RGBA(172, 191, 204, .7);
+}
 
 .ing_dir_holder {
     padding: 0px !important;

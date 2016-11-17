@@ -29,17 +29,17 @@
 
         <div class="col s12 center">
             <h2 class="center recipe_title"> {{ recipe.recipe_name }} </h2>
-
-            <div class="center">
-                <i>{{ recipe.description }}</i>
-            </div>
-
         </div>
     </div>
 
 
-    <div class="col s12">
-        <div class="col s12 l8 push-l2">
+    <div class="col s12 up_15">
+        <div class="col s12 m10 l10 push-m1 push-l1 recipe_header">
+
+            <div class="col s12 center">
+                <i>{{ recipe.description }}</i>
+            </div>
+
             <div class="col s12 m4 l3 recipe_time">
                 <div class="center col s12">{{ recipe.get_prep_time }}</div>
                 <div class="center col s12">{{ recipe.get_cook_time }}</div>
@@ -77,9 +77,9 @@
                 </ul>
             </div>
         </div>
-
-
+        <div class="col s12 spacer10px"></div>
         <div class="col s12 m10 l10 push-m1 push-l1 ing_dir_holder">
+
             <!--ingredients:-->
             <div class="col s12 m6 l6 ingredients">
                 <div class="col s12 ing_or_dir">
