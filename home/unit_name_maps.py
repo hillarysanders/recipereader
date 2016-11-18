@@ -204,7 +204,7 @@ for ing in ['apple', 'banana', 'egg', 'apricot', 'aubergine', 'eggplant', 'avoca
             'sweet potato', 'potato', 'tomato', 'turnip', 'plum', 'zucchini',
             'chicken thigh', 'chicken breast',
 
-            'clove', 'shallot', 'chunk',
+            'clove', 'shallot', 'chunk', 'knob',
 
             'serving']:
     name_maps_pcs.append(dict(pattern=[ing, '{}s'.format(ing)],

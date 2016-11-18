@@ -10,7 +10,7 @@
             <!--{{class}}-->
             <!--{{forloop.counter}}-->
             {% with 'https://s3-us-west-2.amazonaws.com/bw-pngs/medium/'|add:path as src %}
-                <div class="field"><img class="bw_png center" src="{{src}}"></div>
+                <div class="field hide"><img class="bw_png center" src="{{src}}"></div>
             {% endwith %}
         {% endfor %}
     {% endif %}
