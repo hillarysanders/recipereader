@@ -106,7 +106,7 @@ name_maps_volume = [
                   'fluid oz\.', 'oz (fluid)', 'oz\. (fluid)'],
          singular='fluid ounce',
          plural='fluid oz.'),
-    dict(pattern=['cup', 'cups', 'c', 'c\.'],
+    dict(pattern=['cup', 'cups', 'c\.'],
          singular='cup',
          plural='cups'),
     dict(pattern=['pint', 'pints', 'pts', 'pts\.', 'pt', 'pt\.'],
