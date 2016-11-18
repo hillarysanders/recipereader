@@ -519,11 +519,13 @@ footer.page-footer .footer-copyright {
 
 
 #circle-container {
-    /* Why does 96, 3 work better than 96, 2??? */
-    width: 96%;
-    margin-left: -3%;
-    height: 85%;
     position: absolute;
+    left: 0;
+    top: 65px;
+    width: 100%;
+    height: -webkit-calc(100% - 75px);
+
+
     _border: 3px solid red;
     z-index: -10;
 }

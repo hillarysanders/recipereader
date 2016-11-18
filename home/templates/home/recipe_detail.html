@@ -305,12 +305,15 @@ function addClickHandlers() {
 }
 
 function bwPngPlacement() {
+
     var x_radius = $('#circle-container').width() / 2
     var y_radius = $('#circle-container').height() / 2
     var fields = $('.field'), container = $('#circle-container'), width = container.width(), height = container.height();
     var angle = 0, step = (2*Math.PI) / fields.length;
     fields.each(function() {
         console.log(angle)
+        // make sure that the class 'hide' is removed so that images appear once they are loaded and positioned!
+        this.className = this.className.replace(/\bhide\b/,'');
         this.removeAttribute('hide');
         if ((angle > 5.75) || (angle <= .52)) { // right hand side of oval
             var x = Math.round(width/2 + x_radius * Math.cos(angle) - $(this).width());
@@ -338,17 +341,12 @@ function bwPngPlacement() {
             console.log('no effects!');
         }
 
-        <!--if(window.console) {-->
-            <!--console.log($(this).text(), x, y);-->
-        <!--}-->
         $(this).css({
             left: x + 'px',
             top: y + 'px'
         });
         angle += step;
 
-        // make sure that the class 'hide' is removed so that images appear once they are loaded and positioned!
-        this.className = this.className.replace(/\bhide\b/,'');
         console.log(this.className);
     })
 }
