@@ -170,14 +170,6 @@
 
 {% block javascript %}
 <script>
- $(document).ready(function() {
-    $('select').material_select();
-});
-</script>
-<script>
-
-
-
 function  add_recipe_to_stash() {
   var recipe_pk = document.getElementById("recipe_pk").innerHTML
   var stash_plus_or_minus = document.getElementById("stash_recipe_btn").innerHTML
@@ -351,11 +343,13 @@ function bwPngPlacement() {
     })
 }
 
-$(document).ready(addClickHandlers);
-
-$(document).ready(function(){
-    var stash_tooltip = document.getElementById("stash_tooltip").innerHTML
-    $('#stash_recipe_tooltip').tooltip({delay: 50, tooltip: stash_tooltip});
+$(document).ready(function() {
+    $('select').material_select();
+    // unit and servings buttons (AJAX):
+    addClickHandlers();
+    // tooltip:
+    var $stash_tooltip = $('#stash_tooltip').html // jQuery collection's html
+    $('#stash_recipe_tooltip').tooltip({delay: 50, tooltip: $stash_tooltip});
 });
 
 window.onload = bwPngPlacement;

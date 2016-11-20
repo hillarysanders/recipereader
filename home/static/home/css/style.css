@@ -9,10 +9,7 @@ body {
     background-color: #ffffe6;
     background-image: url("https://s3-us-west-2.amazonaws.com/bw-pngs/other/texture-floral.png")
     /* This is mostly intended for prototyping; please download the pattern and re-host for production environments. Thank you! */
-
-
 }
-
 
 nav .brand-logo {
     font-family: 'Great Vibes', cursive;
@@ -523,7 +520,7 @@ footer.page-footer .footer-copyright {
     left: 0;
     top: 65px;
     width: 100%;
-    height: -webkit-calc(100% - 75px);
+    height: -webkit-calc(100% - 100px);
 
 
     _border: 3px solid red;
