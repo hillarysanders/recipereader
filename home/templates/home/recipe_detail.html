@@ -66,7 +66,8 @@
             <div class="col s5 m3 l2 push-l1 left-align valign-wrapper center nopadding">
                 <!-- Dropdown Trigger -->
                 <br><br><br><br>
-                <a class='dropdown-button btn col2 units_dropdown_btn' href='#' data-activates='dropdown1'
+                <a class='dropdown-button btn col2 units_dropdown_btn' id="units_dropdown_btn"
+                   href='#' data-activates='dropdown1'
                    data-hover="true" data-beloworigin="true">Δ Units</a>
 
                 <!-- Dropdown Structure -->
@@ -230,6 +231,9 @@ function change_units(kind) {
   <!--load loading gif:-->
   document.getElementById("loading_id").className = ''
 
+  // close dropdown:
+  $('.dropdown-button').dropdown('close');
+
   $.ajax({
     url: '/ajax/change_units/',
     type: 'POST',
@@ -283,7 +287,7 @@ function change_servings() {
         document.getElementById("most_recent_servings").innerHTML = data.servings;
         <!--remove loading gif:-->
         document.getElementById("loading_id").className = 'hide'
-
+        console.log('HELLO???')
     }
   });
 }
@@ -303,34 +307,34 @@ function bwPngPlacement() {
     var fields = $('.field'), container = $('#circle-container'), width = container.width(), height = container.height();
     var angle = 0, step = (2*Math.PI) / fields.length;
     fields.each(function() {
-        console.log(angle)
+        <!--console.log(angle)-->
         // make sure that the class 'hide' is removed so that images appear once they are loaded and positioned!
         this.className = this.className.replace(/\bhide\b/,'');
         this.removeAttribute('hide');
         if ((angle > 5.75) || (angle <= .52)) { // right hand side of oval
             var x = Math.round(width/2 + x_radius * Math.cos(angle) - $(this).width());
             var y = Math.round(height/2 + y_radius * Math.sin(angle) - $(this).height()/2);
-            console.log('RIGHT!');
+            <!--console.log('RIGHT!');-->
         } else if ((2.6 < angle) && (angle  <= 3.66)) { // left hand side of oval
             var x = Math.round(width/2 + x_radius * Math.cos(angle) - 0);
             var y = Math.round(height/2 + y_radius * Math.sin(angle) - $(this).height()/2);
-            console.log('LEFT!');
+            <!--console.log('LEFT!');-->
         } else if ((4.18 < angle) && (angle  <= 5.23)) { // bottom side of oval
             var x = Math.round(width/2 + x_radius * Math.cos(angle) - $(this).width()/2);
             var y = Math.round(height/2 + y_radius * Math.sin(angle));
-            console.log('Bottom!');
+            <!--console.log('Bottom!');-->
         } else if ((1.04 < angle) && (angle  <= 2.09)) { // top hand side of oval
             var x = Math.round(width/2 + x_radius * Math.cos(angle) - $(this).width()/2);
             var y = Math.round(height/2 + y_radius * Math.sin(angle) - $(this).height());
-            console.log('TOP');
+            <!--console.log('TOP');-->
         } else if ((3.66 < angle) && (angle  <= 5.75)) { // wider bottom side of oval
             var x = Math.round(width/2 + x_radius * Math.cos(angle) - $(this).width()/2);
             var y = Math.round(height/2 + y_radius * Math.sin(angle) - $(this).height()*.1);
-            console.log('wider bottom!');
+            <!--console.log('wider bottom!');-->
         } else {
             var x = Math.round(width/2 + x_radius * Math.cos(angle) - $(this).width()/2);
             var y = Math.round(height/2 + y_radius * Math.sin(angle) - $(this).height()/2);
-            console.log('no effects!');
+            <!--console.log('no effects!');-->
         }
 
         $(this).css({
@@ -339,12 +343,12 @@ function bwPngPlacement() {
         });
         angle += step;
 
-        console.log(this.className);
+        <!--console.log(this.className);-->
     })
 }
 
 $(document).ready(function() {
-    $('select').material_select();
+    <!--$('select').material_select();-->
     // unit and servings buttons (AJAX):
     addClickHandlers();
     // tooltip:
