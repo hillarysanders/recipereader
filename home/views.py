@@ -170,9 +170,8 @@ def cookbook(request):
     if request.GET.get('public_search', False):
         recipes = models.Recipe.objects.filter(Q(public=True) | Q(user_proxy=user_proxy)).order_by('recipe_name')
     else:
-        user_recipes = models.Recipe.objects.filter(user_proxy=user_proxy).order_by('recipe_name')
         stashed = user_proxy.stashed_recipes.all()
-        recipes = list(itertools.chain(stashed, user_recipes))
+        recipes = models.Recipe.objects.filter(Q(id__in=[r.id for r in stashed]) | Q(user_proxy=user_proxy))
 
     search_text = ''
     if request.method == 'GET':
