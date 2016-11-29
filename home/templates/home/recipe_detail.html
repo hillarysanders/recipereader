@@ -351,8 +351,10 @@ $(document).ready(function() {
     // unit and servings buttons (AJAX):
     addClickHandlers();
     // tooltip:
-    var $stash_tooltip = $('#stash_tooltip').html // jQuery collection's html
+    var $stash_tooltip = $('#stash_tooltip').html() // jQuery collection's html
+    console.log($stash_tooltip)
     $('#stash_recipe_tooltip').tooltip({delay: 50, tooltip: $stash_tooltip});
+
 });
 
 window.onload = bwPngPlacement;
