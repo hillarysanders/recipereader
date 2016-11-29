@@ -310,7 +310,6 @@ function bwPngPlacement() {
         <!--console.log(angle)-->
         // make sure that the class 'hide' is removed so that images appear once they are loaded and positioned!
         this.className = this.className.replace(/\bhide\b/,'');
-        this.removeAttribute('hide');
         if ((angle > 5.75) || (angle <= .52)) { // right hand side of oval
             var x = Math.round(width/2 + x_radius * Math.cos(angle) - $(this).width());
             var y = Math.round(height/2 + y_radius * Math.sin(angle) - $(this).height()/2);
