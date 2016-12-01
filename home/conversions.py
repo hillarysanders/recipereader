@@ -203,35 +203,40 @@ def tag_matches_from_line(match_info):
     match_info.loc[[re.match(pattern='^(,? and |,? ?\+ ?|,? plus )$', string=n) is not None for n in match_info.name],
                    'sub_type'] = 'plus'
     #######################################################################################################
-    # ### tag 1 (16 oz) package numbers:
+    # tag 1 (16 oz) package numbers:
     # e.g. "1 (16oz.) package"
-    idx = conv_utils.find_type_pattern(match_info=match_info, n=len(match_info),
-                                       columns=['type', 'type', 'type', 'type', 'type', 'sub_type'],
-                                       patterns=['number', 'spacer', 'number', 'unit', 'spacer', 'pcs'],
-                                       middle_name_matches=None)
+    print('SET 1')
+    idx = conv_utils.find_type_pattern(
+        match_info=match_info, n=len(match_info),
+        columns=['type', 'type', 'type', 'type'],  # + 'type', 'sub_type'
+        patterns=['number', 'spacer', 'number', 'unit'],  # + 'spacer', 'pcs'
+        middle_name_matches=None)
     for i in idx:
         match_info['sub_type'].iloc[i + 2] = 'package_number'
         match_info['sub_type'].iloc[i + 3] = 'package'
     # e.g. "1 (16 oz.) package"
-    idx = conv_utils.find_type_pattern(match_info=match_info, n=len(match_info),
-                                       columns=['type', 'type', 'type', 'type', 'type', 'type', 'sub_type'],
-                                       patterns=['number', 'spacer', 'number', 'spacer', 'unit', 'spacer', 'pcs'],
-                                       middle_name_matches=None)
+    print('SET 2')
+    idx = conv_utils.find_type_pattern(
+        match_info=match_info, n=len(match_info),
+        columns=['type', 'type', 'type', 'type', 'type'],  # 'type', 'sub_type'
+        patterns=['number', 'spacer', 'number', 'spacer', 'unit'],  # 'spacer', 'pcs'
+        middle_name_matches=None)
     for i in idx:
         match_info['sub_type'].iloc[i + 2] = 'package_number'
         match_info['sub_type'].iloc[i + 4] = 'package'
+
     #######################################################################################################
     idx = conv_utils.find_type_pattern(match_info=match_info, n=len(match_info),
                                        columns=['type', 'type', 'type'],
                                        patterns=['number', 'text', 'number'],
-                                       middle_name_matches=[' - ', '-', ' to ', '- to ', ' or '])
+                                       middle_name_matches=[' - ', '- ', ' -', '-', ' to ', '- to ', ' or '])
     match_info = conv_utils.replace_match_rows_with_aggregate(match_info=match_info, hits_gen=idx,
                                                               type='number', sub_type='range',
                                                               value_func=lambda val0, val2: '{} {}'.format(val0, val2))
     idx = conv_utils.find_type_pattern(match_info=match_info, n=len(match_info),
                                        columns=['type', 'type', 'type'],
                                        patterns=['number', 'spacer', 'number'],
-                                       middle_name_matches=[' - ', '-', ' to ', '- to ', ' or '])
+                                       middle_name_matches=[' - ', '- ', ' -', '-', ' to ', '- to ', ' or '])
     match_info = conv_utils.replace_match_rows_with_aggregate(match_info=match_info, hits_gen=idx,
                                                               type='number', sub_type='range',
                                                               value_func=lambda val0, val2: '{} {}'.format(val0, val2))

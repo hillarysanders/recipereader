@@ -216,7 +216,7 @@ for ing in ['radish']:
                               plural='{}es'.format(ing)))
 
 
-temperature_patterns = pd.DataFrame(dict(pattern=['ºC', 'ºF', 'º', 'degrees'],
+temperature_patterns = pd.DataFrame(dict(pattern=['ºc', 'ºf', '°c', '°f',  'c', 'f', '℃', '℉', 'degrees', '°', 'º'],
                                          type='unit', sub_type='temperature'))
 temperature_patterns['name'] = temperature_patterns['pattern']
 
