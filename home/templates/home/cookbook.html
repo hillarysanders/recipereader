@@ -29,52 +29,64 @@
          {% for recipe in recipes %}
 
             {% if forloop.counter|divisibleby:2 %}
-            <div class="col s12 cookbook_recipe_holder">
+            <div class="col s12 cookbook_recipe_holder valign-wrapper">
             {% else %}
-            <div class="col s12 cookbook_recipe_holder col3 shadow">
+            <div class="col s12 cookbook_recipe_holder col3 shadow valign-wrapper">
             {% endif %}
 
-            <div class="cookbook_recipe_sub_holder col s6">
-                <div class="col s12">
-                    <h5>
-                    <a href="{% url 'home:recipe_detail' recipe.slug recipe.pk %}">{{recipe.recipe_name|capfirst}}</a>
-                    </h5>
+                <div class="cookbook_recipe_sub_holder col s8 left">
+                    <div class="col s12">
+                        <h5>
+                        <a href="{% url 'home:recipe_detail' recipe.slug recipe.pk %}">{{recipe.recipe_name|capfirst}}</a>
+                        </h5>
+                    </div>
+
+                    <div class="recipe_stuff col s12 m10 truncate">
+                        {{recipe.description|safe}}
+                    </div>
+
+                </div>
+                <div class="col s2 center">
+                    <!--{{recipe.user_proxy.user.username}}-->
+                    {% if recipe.user_proxy.user %}
+                        <a class='cookbook_author' href="{% url 'home:public_profile' recipe.user_proxy.user.username %}">
+                            <i>{{ recipe.user_proxy.user.username }}</i>
+                        </a>
+                    {% endif %}
                 </div>
 
-                <div class="recipe_stuff col s12 m10 truncate">
-                    {{recipe.description|safe}}
-                </div>
 
-            </div>
-
-            <!--{% if recipe.thumbnail %}-->
-                <!--<div class="col s2 right center">-->
-                    <!--<img class="circle responsive-img cookbook_thumbnail" src="{{ recipe.thumbnail.url }}">-->
-                <!--</div>-->
-            <!--{% endif %}-->
-
-            <div class="col s2 l1 push-l3 center">
-
-                {% if recipe.bw_pngs.0 %}
+                <div class="col s0 m2 right center">
+                {% if recipe.thumbnail %}
+                    <img class="circle responsive-img cookbook_thumbnail" src="{{ recipe.thumbnail.url }}">
+                {% elif recipe.bw_pngs.0 %}
                     {% with 'https://s3-us-west-2.amazonaws.com/bw-pngs/thumbnail/'|add:recipe.bw_pngs.0 as src %}
                         <span class="valign_helper"></span><img src="{{src}}" class="cookbook_thumbnail">
                     {% endwith %}
                 {% endif %}
-            </div>
-            <div class="col s2 l1 push-l3 center">
-                {% if recipe.bw_pngs.1 %}
-                    {% with 'https://s3-us-west-2.amazonaws.com/bw-pngs/thumbnail/'|add:recipe.bw_pngs.1 as src %}
-                        <span class="valign_helper"></span><img src="{{src}}" class="cookbook_thumbnail">
-                    {% endwith %}
-                {% endif %}
-            </div>
-            <div class="col s2 l1 push-l3 center">
-                {% if recipe.bw_pngs.2 %}
-                    {% with 'https://s3-us-west-2.amazonaws.com/bw-pngs/thumbnail/'|add:recipe.bw_pngs.2 as src %}
-                        <span class="valign_helper"></span><img src="{{src}}" class="cookbook_thumbnail">
-                    {% endwith %}
-                {% endif %}
-            </div>
+                </div>
+
+                <!--<div class="col s2 l1 push-l3 center white">-->
+                    <!--{% if recipe.bw_pngs.0 %}-->
+                        <!--{% with 'https://s3-us-west-2.amazonaws.com/bw-pngs/thumbnail/'|add:recipe.bw_pngs.0 as src %}-->
+                            <!--<span class="valign_helper"></span><img src="{{src}}" class="cookbook_thumbnail">-->
+                        <!--{% endwith %}-->
+                    <!--{% endif %}-->
+                <!--</div>-->
+                <!--<div class="col s2 l1 push-l3 center grey">-->
+                    <!--{% if recipe.bw_pngs.1 %}-->
+                        <!--{% with 'https://s3-us-west-2.amazonaws.com/bw-pngs/thumbnail/'|add:recipe.bw_pngs.1 as src %}-->
+                            <!--<span class="valign_helper"></span><img src="{{src}}" class="cookbook_thumbnail">-->
+                        <!--{% endwith %}-->
+                    <!--{% endif %}-->
+                <!--</div>-->
+                <!--<div class="col s2 l1 push-l3 center white">-->
+                    <!--{% if recipe.bw_pngs.2 %}-->
+                        <!--{% with 'https://s3-us-west-2.amazonaws.com/bw-pngs/thumbnail/'|add:recipe.bw_pngs.2 as src %}-->
+                            <!--<span class="valign_helper"></span><img src="{{src}}" class="cookbook_thumbnail">-->
+                        <!--{% endwith %}-->
+                    <!--{% endif %}-->
+                <!--</div>-->
             </div>
 
         {% endfor %}
