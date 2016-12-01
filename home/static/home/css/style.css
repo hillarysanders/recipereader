@@ -222,22 +222,23 @@ text_indent {
 
 
 .ing_or_dir {
-    border: 1.5px solid grey;
     padding: 2vw !important;
     background-color: #ffffe6;
     background-image: url("https://s3-us-west-2.amazonaws.com/bw-pngs/other/texture-paper.png");
     opacity: .9;
-    /* This is mostly intended for prototyping; please download the pattern and re-host for production environments. Thank you! */
+    box-shadow: 1px 2px 10px #888888;
 }
 .recipe_header {
     padding: 0px !important;
     background-color: RGBA(172, 191, 204, .7);
+    box-shadow: 1px 2px 10px #888888;
 }
 
 .ing_dir_holder {
     padding: 0px !important;
     background-color: RGBA(172, 191, 204, .4);
     position: relative;
+    box-shadow: 1px 2px 10px #888888;
 }
 #recipe_by {
     position: absolute;
@@ -245,8 +246,18 @@ text_indent {
 }
 
 /* cookbook page */
-. cookbook_recipe_holder {
-    margin-bottom: -30px;
+.cookbook_recipe_sub_holder {
+    margin-bottom: -5px;
+    margin-top: -5px;
+}
+.cookbook_recipe_holder {
+    min-height: 60px !important;
+}
+#search {
+    box-shadow: 1px 1px 8px #888888;
+}
+.shadow {
+    box-shadow: .5px .5px 8px #BBBBBB;
 }
 
 .recipe_stuff {
@@ -283,9 +294,10 @@ text_indent {
 
 multiplied_amount {
     background-color: #acbfcc;
-    background-color: #ccdadf;
-    border-top: 3px solid #ccdadf;
-    border-bottom: 3px solid #ccdadf;
+
+    background-color: #E0E9E2;
+    border-top: 3px solid #E0E9E2;
+    border-bottom: 3px solid #E0E9E2;
 }
 
 /*highlights for text parsing:*/
@@ -431,6 +443,7 @@ footer.page-footer .footer-copyright {
     margin: auto;
     margin-top: 0px;
     transition: all .25s;
+    box-shadow: 1px 1px 8px #888888;
 }
 .welcome {
     font-family: 'Clicker Script', cursive;
@@ -452,6 +465,7 @@ footer.page-footer .footer-copyright {
   }
   .welcome_circle {
     border: 23px solid #607082;
+
   }
   .welcome {
     font-size: 190px;
