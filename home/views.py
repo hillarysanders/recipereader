@@ -2,7 +2,7 @@ from __future__ import unicode_literals
 from django.http import HttpResponseRedirect
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, get_object_or_404
-from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
+from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank, TrigramSimilarity
 from django.contrib import messages
 from django.urls import reverse
 from django.db.models import Q
@@ -28,6 +28,39 @@ def index(request):
         'user': user
     }
     return render(request, 'home/index.html', context)
+
+
+def cookbook(request):
+    user_proxy = get_user_proxy(request)
+
+    if request.GET.get('public_search', False):
+        recipes = models.Recipe.objects.filter(Q(public=True) | Q(user_proxy=user_proxy)).order_by('recipe_name')
+    else:
+        stashed = user_proxy.stashed_recipes.all()
+        recipes = models.Recipe.objects.filter(Q(id__in=[r.id for r in stashed]) | Q(user_proxy=user_proxy))
+
+    search_text = ''
+    if request.method == 'GET':
+        search_text = request.GET.get('search', '')
+        if search_text != '':
+            vector = SearchVector('recipe_name', weight='A') +\
+                     SearchVector('ingredients_text', weight='B') +\
+                     SearchVector('description', weights='C')
+            query = SearchQuery(search_text)
+            # recipes = recipes.annotate(rank=SearchRank(vector, query)).order_by('-rank').filter(rank__gt=0)
+            recipes = recipes.annotate(similarity=TrigramSimilarity(vector, query)).order_by('-similarity').filter(rank__gt=0)
+
+    context = {
+        'recipes': recipes,
+        'public_search_attr': 'checked="checked"' if request.GET.get('public_search', False) else '',
+        'search_text': search_text
+    }
+
+    # all = models.Recipe.objects.order_by('recipe_name')
+    # for r in all:
+    #     r.save()
+
+    return render(request, 'home/cookbook.html', context)
 
 
 def welcome(request):
@@ -162,36 +195,6 @@ def get_user_proxy(request):
     # request.session.modified = True
 
     return user_proxy
-
-
-def cookbook(request):
-    user_proxy = get_user_proxy(request)
-
-    if request.GET.get('public_search', False):
-        recipes = models.Recipe.objects.filter(Q(public=True) | Q(user_proxy=user_proxy)).order_by('recipe_name')
-    else:
-        stashed = user_proxy.stashed_recipes.all()
-        recipes = models.Recipe.objects.filter(Q(id__in=[r.id for r in stashed]) | Q(user_proxy=user_proxy))
-
-    search_text = ''
-    if request.method == 'GET':
-        search_text = request.GET.get('search', '')
-        if search_text != '':
-            vector = SearchVector('recipe_name', 'ingredients_text', 'description')
-            query = SearchQuery(search_text)
-            recipes = recipes.annotate(rank=SearchRank(vector, query)).order_by('-rank').filter(rank__gt=0)
-
-    context = {
-        'recipes': recipes,
-        'public_search_attr': 'checked="checked"' if request.GET.get('public_search', False) else '',
-        'search_text': search_text
-    }
-
-    # all = models.Recipe.objects.order_by('recipe_name')
-    # for r in all:
-    #     r.save()
-
-    return render(request, 'home/cookbook.html', context)
 
 
 def check_if_owned_by_user(request, recipe):
@@ -371,9 +374,7 @@ def recipe_detail(request, slug, pk):
     context['stash_plus_or_minus'] = stash_plus_or_minus
     context['stash_tooltip'] = stash_tooltips.get(stash_plus_or_minus)
 
-    if len(recipe.bw_pngs) == 0:
-        context['bw_pngs'] = None
-    else:
+    if recipe.bw_pngs is not None:
         degrees = range(0, 360, int(360./(len(recipe.bw_pngs)+1)))[:-1]
         bw_classes = ['deg{}'.format(d) for d in degrees]
         context['bw_pngs'] = dict(zip(recipe.bw_pngs, bw_classes))
