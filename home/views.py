@@ -47,8 +47,12 @@ def cookbook(request):
                      SearchVector('ingredients_text', weight='B') +\
                      SearchVector('description', weights='C')
             query = SearchQuery(search_text)
-            # recipes = recipes.annotate(rank=SearchRank(vector, query)).order_by('-rank').filter(rank__gt=0)
-            recipes = recipes.annotate(similarity=TrigramSimilarity(vector, query)).order_by('-similarity').filter(rank__gt=0)
+            recipes = recipes.annotate(rank=SearchRank(vector, query)).order_by('-rank').filter(rank__gt=0)
+            # recipes = recipes.annotate(similarity=TrigramSimilarity(vector, query)).order_by('-similarity') # .filter(similarity__gt=0)
+
+            # recipes = models.Recipe.objects.annotate(
+            #     similarity=TrigramSimilarity('recipe_name', query),
+            # )
 
     context = {
         'recipes': recipes,
