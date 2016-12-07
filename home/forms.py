@@ -52,7 +52,8 @@ class AddRecipeForm(forms.ModelForm):
     class Meta:
         model = Recipe
         fields = '__all__'
-        exclude = ('user_proxy', 'pub_date', 'ingredients', 'instructions', 'slug', 'bw_pngs')
+        exclude = ('user_proxy', 'pub_date', 'ingredients', 'instructions',
+                   'slug', 'bw_pngs', 'ingredients_sans_amounts')
 
     def __init__(self, *args, **kwargs):
         super(AddRecipeForm, self).__init__(*args, **kwargs)

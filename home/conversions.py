@@ -205,7 +205,6 @@ def tag_matches_from_line(match_info):
     #######################################################################################################
     # tag 1 (16 oz) package numbers:
     # e.g. "1 (16oz.) package"
-    print('SET 1')
     idx = conv_utils.find_type_pattern(
         match_info=match_info, n=len(match_info),
         columns=['type', 'type', 'type', 'type'],  # + 'type', 'sub_type'
@@ -215,7 +214,6 @@ def tag_matches_from_line(match_info):
         match_info['sub_type'].iloc[i + 2] = 'package_number'
         match_info['sub_type'].iloc[i + 3] = 'package'
     # e.g. "1 (16 oz.) package"
-    print('SET 2')
     idx = conv_utils.find_type_pattern(
         match_info=match_info, n=len(match_info),
         columns=['type', 'type', 'type', 'type', 'type'],  # 'type', 'sub_type'

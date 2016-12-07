@@ -43,16 +43,25 @@ def cookbook(request):
     if request.method == 'GET':
         search_text = request.GET.get('search', '')
         if search_text != '':
+
             vector = SearchVector('recipe_name', weight='A') +\
                      SearchVector('ingredients_text', weight='B') +\
                      SearchVector('description', weights='C')
             query = SearchQuery(search_text)
-            recipes = recipes.annotate(rank=SearchRank(vector, query)).order_by('-rank').filter(rank__gt=0)
-            # recipes = recipes.annotate(similarity=TrigramSimilarity(vector, query)).order_by('-similarity') # .filter(similarity__gt=0)
 
-            # recipes = models.Recipe.objects.annotate(
-            #     similarity=TrigramSimilarity('recipe_name', query),
-            # )
+            # tri_sim = 3*(TrigramSimilarity('recipe_name', search_text))+TrigramSimilarity('ingredients_sans_amounts',
+            #                                                                               search_text)
+            tri_sim = TrigramSimilarity('recipe_name', search_text)
+            recipes = recipes.annotate(similarity=tri_sim).filter(similarity__gt=0.01)
+            # now reorder by best full match, followed by best (fuzzy match) similarity:
+            recipes = recipes.annotate(rank=SearchRank(vector, query)).order_by('-rank', '-similarity')
+            # print(type(tri_sim))
+            # print(tri_sim)
+            # for r in recipes:
+            #     print(r.recipe_name)
+            #     print(r.similarity)
+            #     print(r.rank)
+            #     print('________________________________')
 
     context = {
         'recipes': recipes,

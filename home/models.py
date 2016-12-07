@@ -7,7 +7,7 @@ from django.db.models.fields.related import ManyToManyField
 from django.template.defaultfilters import slugify
 from django.core.files import uploadedfile
 from django.utils.deconstruct import deconstructible
-
+import re
 import io
 import math
 import requests
@@ -102,6 +102,7 @@ class Recipe(models.Model):
     instructions_text = models.TextField(max_length=2048 * 4, verbose_name='Instructions')
     ingredients = JSONField(default=dict)
     instructions = JSONField(default=dict)
+    ingredients_sans_amounts = models.TextField(max_length=2048*2, default='')
 
     # optional:
     prep_time_hours = models.IntegerField(blank=True, null=True, verbose_name='Prep time')
@@ -131,10 +132,15 @@ class Recipe(models.Model):
         # parse ingredients and instructions:
         # with Timer(name='Parsing ingredients') as t1:
         self.ingredients = conversions.parse_ingredients(self.ingredients_text)
-
         # with Timer('Parsing instructions') as t2:
         self.instructions = conversions.parse_ingredients(self.instructions_text)
 
+        ing_sans_amounts = ' '.join([' '.join([val['name'] for val in big_val['match_info'].values() if
+                                               val['type'] == 'text']) for big_val in self.ingredients.values()])
+        ing_sans_amounts = re.sub(' +', ' ', re.sub('\t|\n', '', ing_sans_amounts))
+        self.ingredients_sans_amounts = ing_sans_amounts
+
+        # print(self.ingredients_sans_amounts)
         self.slug = slugify(self.recipe_name[:40])
 
         if self.image:

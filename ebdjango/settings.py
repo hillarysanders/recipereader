@@ -97,8 +97,19 @@ WSGI_APPLICATION = 'ebdjango.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
-# from db import DB
-# conn = DB(dbtype='postgres', dbname='ebdb', username="hills", password="evergreen", hostname="aa6waj6g0kkg9u.cpa0rmdl6ahx.us-west-2.rds.amazonaws.com")
+x = """
+from db import DB
+conn = DB(dbtype='postgres',
+          dbname='{}',
+          username='{}',
+          password='{}',
+          hostname='{}')
+          """.format(os.environ['DB_NAME'],
+                      os.environ['DB_USER'],
+                      os.environ['DB_PASSWORD'],
+                      os.environ['DB_HOST'])
+print(x)
+
 DATABASES = {
     'default': {
         'ENGINE': os.environ['DB_ENGINE'],
