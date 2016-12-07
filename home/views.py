@@ -169,7 +169,6 @@ def auth_login(request):
             username = request.POST['login_username']
             password = request.POST['login_password']
 
-            # import pdb; pdb.set_trace()
             user = authenticate(username=username, password=password)
             if user is not None:
                 login(request, user)
@@ -393,7 +392,6 @@ def recipe_detail(request, slug, pk):
         context['bw_pngs'] = dict(zip(recipe.bw_pngs, bw_classes))
         print(context['bw_pngs'])
 
-    # import pdb; pdb.set_trace()
     return render(request, 'home/recipe_detail.html', context)
 
 
