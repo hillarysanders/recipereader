@@ -25,26 +25,26 @@
                     <p>  {{add_recipe_form.ready_in_minutes|as_material:"s7 m5 l2"}}</p>
                 <!--</div>-->
             </div>
-            <!--<div class="col s12 m4 l6">-->
-               <!--{% if add_recipe_form.image.value %}-->
+            <div class="col s12 m4 l6">
+               {% if add_recipe_form.image.value %}
 
-                    <!--<div class="existing_recipe_img">-->
-                        <!--<h6>Current Image:</h6>-->
-                        <!--<img src="{{ add_recipe_form.image.value.url }}" class="existing_recipe_img"/>-->
-                    <!--</div>-->
-                <!--{% endif %}-->
-            <!--</div>-->
+                    <div class="existing_recipe_img">
+                        <h6>Current Image:</h6>
+                        <img src="{{ add_recipe_form.image.value.url }}" class="existing_recipe_img"/>
+                    </div>
+                {% endif %}
+            </div>
 
-            <!--&lt;!&ndash; image upload view:&ndash;&gt;-->
-            <!--<div class="col s12">-->
-                <!--<input class="validate validate" style="visibility:hidden;" id="id_image" name="image"-->
-                       <!--type="file" onchange="upload_img(this);">-->
-                <!--<div class="col s12">-->
-                    <!--<label for="id_image" class="waves-effect waves-light btn col2 img_upload_btn">Upload image?</label>-->
-                    <!--<br><br>-->
-                    <!--<img id="img_id" class="edit_recipe_img" src="" alt=""/>-->
-                <!--</div>-->
-            <!--</div>-->
+            <!-- image upload view:-->
+            <div class="col s12">
+                <input class="validate validate" style="visibility:hidden;" id="id_image" name="image"
+                       type="file" onchange="upload_img(this);">
+                <div class="col s12">
+                    <label for="id_image" class="waves-effect waves-light btn col2 img_upload_btn">Upload image?</label>
+                    <br><br>
+                    <img id="img_id" class="edit_recipe_img" src="" alt=""/>
+                </div>
+            </div>
 
             <div class="col s12">
                 <p>{{add_recipe_form.description|as_material:"s12 m8 l6"}}</p>
