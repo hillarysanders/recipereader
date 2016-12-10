@@ -24,7 +24,7 @@
 
         <div class="col s12 up_15">
 
-            <div class="col m2 l3 hide-on-small-only">
+            <div class="col m2 l2 hide-on-small-only">
                 {% if bw_pngs %}
                     {% for path, class in bw_pngs.items %}
                         {% if forloop.counter|divisibleby:2  %}
@@ -38,12 +38,12 @@
                     {% endfor %}
                 {% endif %}
             </div>
-            <div class="col s12 m8 l6 content">
+            <div class="col s12 m8 l8 content">
                 {% block rec %}
                 <!--this is where content from child templates will go-->
                 {% endblock %}
             </div>
-            <div class="col m2 l3 hide-on-small-only">
+            <div class="col m2 l2 hide-on-small-only">
                 {% if bw_pngs %}
                     {% for path, class in bw_pngs.items %}
                         {% if not forloop.counter|divisibleby:2  %}

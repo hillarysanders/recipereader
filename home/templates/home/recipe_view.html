@@ -103,48 +103,50 @@
     <div id="recipe_pk" class="blue hide">{{ recipe.pk }}</div>
     <div id="stash_tooltip" class="blue hide">{{ stash_tooltip }}</div>
 
-    <div class="left" id="recipe_by">
-        recipe by:
-        {% if recipe.user_proxy.user %}
-            <a href="{% url 'home:public_profile' recipe.user_proxy.user.username %}">
-                <i>{{ recipe.user_proxy.user.username }}</i>
-            </a>
-        {% else %}
-            <i>anonymous</i>
-        {% endif %}
-    </div>
     <div class="col s12">
-        <!-- why is this needed? (footer breaks when removed) -->
-        <div class="col s1"></div>
-        <div class="right">
-            {% if request.user == recipe.user_proxy.user %}
-                <a class="btn-floating btn-med pale_red modal-trigger detail_footer_btn" href="#confirmdeletemodal">
-                    <i class="large material-icons">delete</i>
-                </a>
-                <a class="btn-floating btn-large col2 detail_footer_btn" href="{% url 'home:edit_recipe' recipe.slug recipe.id %}">
-                    <i class="large material-icons">mode_edit</i>
+        <div class="left" id="recipe_by">
+            recipe by:
+            {% if recipe.user_proxy.user %}
+                <a href="{% url 'home:public_profile' recipe.user_proxy.user.username %}">
+                    <i>{{ recipe.user_proxy.user.username }}</i>
                 </a>
             {% else %}
-                <a class="tooltipped" id="stash_recipe_tooltip" data-position="bottom" data-delay="50">
-                    <div id="stash_recipe_btn" class="detail_footer_btn btn-floating col2 center">{{ stash_plus_or_minus }}</div>
-                </a>
-
-            <!--add an onclick that submits the thingy (ajax) and also pops up a cute modal-->
+                <i>anonymous</i>
             {% endif %}
-
         </div>
+        <div class="col s12">
+            <!-- why is this needed? (footer breaks when removed) -->
+            <div class="col s1"></div>
+            <div class="right">
+                {% if request.user == recipe.user_proxy.user %}
+                    <a class="btn-floating btn-med pale_red modal-trigger detail_footer_btn" href="#confirmdeletemodal">
+                        <i class="large material-icons">delete</i>
+                    </a>
+                    <a class="btn-floating btn-large col2 detail_footer_btn" href="{% url 'home:edit_recipe' recipe.slug recipe.id %}">
+                        <i class="large material-icons">mode_edit</i>
+                    </a>
+                {% else %}
+                    <a class="tooltipped" id="stash_recipe_tooltip" data-position="bottom" data-delay="50">
+                        <div id="stash_recipe_btn" class="detail_footer_btn btn-floating col2 center">{{ stash_plus_or_minus }}</div>
+                    </a>
 
-        <!-- Modal Trigger -->
-        <div id="confirmdeletemodal" class="modal modal-fixed-footer">
-            <div class="modal-content pale_red">
-                <h4>Are you sure you want to delete your recipe?</h4>
+                <!--add an onclick that submits the thingy (ajax) and also pops up a cute modal-->
+                {% endif %}
 
-                <p>Are you sure you want to delete {{recipe.recipe_name}}?</p>
             </div>
-            <div class="modal-footer">
-                <a href="{% url 'home:delete_recipe' recipe.id %}"
-                   class="red modal-action modal-close waves-effect waves-white btn-flat">Yes, Delete</a>
-                <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Nevermind!</a>
+
+            <!-- Modal Trigger -->
+            <div id="confirmdeletemodal" class="modal modal-fixed-footer">
+                <div class="modal-content pale_red">
+                    <h4>Are you sure you want to delete your recipe?</h4>
+
+                    <p>Are you sure you want to delete {{recipe.recipe_name}}?</p>
+                </div>
+                <div class="modal-footer">
+                    <a href="{% url 'home:delete_recipe' recipe.id %}"
+                       class="red modal-action modal-close waves-effect waves-white btn-flat">Yes, Delete</a>
+                    <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Nevermind!</a>
+                </div>
             </div>
         </div>
     </div>
