@@ -108,7 +108,7 @@ input::-webkit-inner-spin-button {
 .container {
   margin: 0 auto;
   max-width: 2560px;
-  width: 90%;
+  width: 80%;
 }
 
 .float_left {
@@ -122,6 +122,9 @@ input::-webkit-inner-spin-button {
 
 /* recipe detail page */
 
+.fullwidth_container {
+    width: 100vw;
+}
 /* the servings / units inputs */
 .unitsform {
     font-size: 18px !important;
@@ -188,6 +191,7 @@ text_indent {
 }
 .recipe_time {
     margin-top: 13px;
+    font-size: 12px;
 }
 .detail_ing_or_img {
   display: inline-block;
@@ -541,11 +545,13 @@ footer.page-footer .footer-copyright {
 }
 
 .bw_png {
-    z-index: -10;
-    max-height: 20vw;
-    max-width: 20vh;
-    opacity: 0.5;
-    filter: alpha(opacity=50); /* For IE8 and earlier */
+    _z-index: -2;
+    margin: auto;
+    display: block;
+    max-height: 10vw;
+    max-width: 10vh;
+    opacity: 0.75;
+    filter: alpha(opacity=75); /* For IE8 and earlier */
 }
 
 
@@ -560,5 +566,4 @@ footer.page-footer .footer-copyright {
 .field {
     position: absolute;
     background-color: transparent;
-
 }

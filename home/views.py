@@ -392,7 +392,7 @@ def recipe_detail(request, slug, pk):
         context['bw_pngs'] = dict(zip(recipe.bw_pngs, bw_classes))
         print(context['bw_pngs'])
 
-    return render(request, 'home/recipe_detail.html', context)
+    return render(request, 'home/recipe_view.html', context)
 
 
 def ajax_add_recipe_to_stash(request):
