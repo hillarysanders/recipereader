@@ -552,6 +552,7 @@ footer.page-footer .footer-copyright {
 .bw_png {
     _z-index: -2;
     margin: auto;
+    padding: 10px;
     display: block;
     max-height: 10vw;
     max-width: 10vh;
