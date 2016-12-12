@@ -185,4 +185,3 @@ SESSION_COOKIE_AGE = 604800*4  # 4 weeks, in seconds
 # https://console.aws.amazon.com/iam/home?#users/user1
 # django storage:
 # https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html
-# import pdb;pdb.set_trace()

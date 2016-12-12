@@ -148,7 +148,6 @@ class Recipe(models.Model):
             self.image = self.reduce_image_size(image=image)
             self.thumbnail = self.make_thumbnail(thumb=image)
 
-        # import pdb; pdb.set_trace()
         matches = self.get_bw_png_paths(str(self.ingredients_text))
         if len(matches) > 0:
             # if not self.thumbnail:
