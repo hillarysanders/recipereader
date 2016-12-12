@@ -85,7 +85,34 @@
 {% endblock %}
 
 
+{% block javascript %}
+<script>
 
+function upload_img(input) {
+    if (input.files && input.files[0]) {
+        var reader = new FileReader();
+
+        reader.onload = function (e) {
+            $('#img_id').attr('src', e.target.result);
+        }
+
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+function delete_img_on_check(checkbox) {
+    console.log(checkbox)
+    if(checkbox.checked == true){
+        $("#img_id").addClass("hide");
+        $("#image-clear-label").text('Bring back?')
+    }else{
+        $("#img_id").removeClass("hide");
+        $("#image-clear-label").text('Delete?')
+   }
+}
+
+</script>
+{% endblock %}
 
 <!--Make the crust mixture. Press into a pie pan, but do not bake. Mix the-->
  <!--lower filling ingredients together. Pour over crust, and bake at 375º for-->
