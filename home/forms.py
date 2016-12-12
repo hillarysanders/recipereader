@@ -64,10 +64,10 @@ class AddRecipeForm(forms.ModelForm):
             self.fields[f].widget = forms.NumberInput(attrs={'placeholder': 'minutes'})
 
         self.fields['ingredients_text'].widget = forms.Textarea(attrs={
-            'placeholder': 'put each ingredient on its own line'
+            'placeholder': '(required)'
         })
         self.fields['instructions_text'].widget = forms.Textarea(attrs={
-            'placeholder': 'put each step on its own line'
+            'placeholder': '(required)'
         })
 
         # make recipe name big:

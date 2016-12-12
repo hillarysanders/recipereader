@@ -198,7 +198,7 @@ def tag_matches_from_line(match_info):
                                                               value_func=lambda x, y: sum([x, y]))
     #######################################################################################################
     # # tag spaces as spacers:
-    match_info.loc[[re.match(pattern='^[- \)\(\.,]+(or so)? ?$', string=n) is not None for n in match_info.name],
+    match_info.loc[[re.match(pattern='^[ \)\(\.,]+(or so)? ?$', string=n) is not None for n in match_info.name],
                    'type'] = 'spacer'
     match_info.loc[[re.match(pattern='^(,? and |,? ?\+ ?|,? plus )$', string=n) is not None for n in match_info.name],
                    'sub_type'] = 'plus'
@@ -231,6 +231,7 @@ def tag_matches_from_line(match_info):
     match_info = conv_utils.replace_match_rows_with_aggregate(match_info=match_info, hits_gen=idx,
                                                               type='number', sub_type='range',
                                                               value_func=lambda val0, val2: '{} {}'.format(val0, val2))
+    # import pdb; pdb.set_trace()
     idx = conv_utils.find_type_pattern(match_info=match_info, n=len(match_info),
                                        columns=['type', 'type', 'type'],
                                        patterns=['number', 'spacer', 'number'],

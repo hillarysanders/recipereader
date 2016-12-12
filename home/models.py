@@ -96,8 +96,8 @@ class PathAndRename(object):
 
 class Recipe(models.Model):
     # TextField is larger than CharField
-    recipe_name = models.CharField(max_length=128, default='')
-    description = models.TextField(max_length=1024, default='', blank=True)
+    recipe_name = models.CharField(max_length=128, default='', verbose_name='Recipe Name (required)')
+    description = models.TextField(max_length=2048, default='', blank=True)
     ingredients_text = models.TextField(max_length=2048 * 2, verbose_name='Ingredients')
     instructions_text = models.TextField(max_length=2048 * 4, verbose_name='Instructions')
     ingredients = JSONField(default=dict)
@@ -116,7 +116,7 @@ class Recipe(models.Model):
     image = models.ImageField(blank=True, upload_to=PathAndRename('images/recipes/'), null=True)
     thumbnail = models.ImageField(blank=True, upload_to=PathAndRename('thumbnails/recipes/'), null=True)
     slug = models.SlugField(max_length=40, default='default-slug')
-    public = models.BooleanField(default=True, verbose_name='make recipe public?')
+    public = models.BooleanField(default=False, verbose_name='make recipe public?')
 
     bw_pngs = ArrayField(base_field=models.CharField(max_length=128),
                          null=True, blank=True)

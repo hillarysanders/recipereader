@@ -341,6 +341,9 @@ def replace_match_rows_with_aggregate(match_info, hits_gen, type, sub_type,
 def find_type_pattern(match_info, n, columns, patterns, middle_name_matches=None, middle_i_subtract=1):
     i = n - 1
     n_patterns = len(patterns)
+    # print('columns: {}'.format(columns))
+    # print('n: {}'.format(n))
+
     # need to search backwards so that when rows are replaced, they are replaced back to front
     # and don't mess up the iloc match placements.
     while (i - n_patterns + 1) >= 0:
@@ -353,8 +356,11 @@ def find_type_pattern(match_info, n, columns, patterns, middle_name_matches=None
 
             match = i - n_patterns + 1
             i -= n_patterns
+            # print('Match!')
+            # print('i={}, patterns={}, match={}'.format(i, patterns, match))
             yield match
         else:
+            # print('No match.')
             i -= 1
 
 
