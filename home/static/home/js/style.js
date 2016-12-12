@@ -29,6 +29,17 @@ function upload_img(input) {
     }
 }
 
+function delete_img_on_check(checkbox) {
+    console.log(checkbox)
+    if(checkbox.checked == true){
+        $("#img_id").addClass("hide");
+        $("#image-clear-label").text('Bring back?')
+    }else{
+        $("#img_id").removeClass("hide");
+        $("#image-clear-label").text('Delete?')
+   }
+}
+
 //
 //function change_units(kind) {
 //  $.getJSON("/change_units/", { pk:{{ recipe.pk }}, change_units: kind }, function(json){

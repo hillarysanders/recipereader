@@ -25,24 +25,28 @@
                     <p>  {{add_recipe_form.ready_in_minutes|as_material:"s7 m5 l2"}}</p>
                 <!--</div>-->
             </div>
-            <div class="col s12 m4 l6">
-               {% if add_recipe_form.image.value %}
-
-                    <div class="existing_recipe_img">
-                        <h6>Current Image:</h6>
-                        <img src="{{ add_recipe_form.image.value.url }}" class="existing_recipe_img"/>
-                    </div>
-                {% endif %}
-            </div>
 
             <!-- image upload view:-->
-            <div class="col s12">
+            <div class="col s12 m4 l6">
+
+                <!--{{add_recipe_form.image}}-->
                 <input class="validate validate" style="visibility:hidden;" id="id_image" name="image"
                        type="file" onchange="upload_img(this);">
                 <div class="col s12">
-                    <label for="id_image" class="waves-effect waves-light btn col2 img_upload_btn">Upload image?</label>
-                    <br><br>
-                    <img id="img_id" class="edit_recipe_img" src="" alt=""/>
+                    <label for="id_image" class="waves-effect waves-light btn col2 img_upload_btn left">Upload image?</label>
+                    <!--<br><br>-->
+
+                    {% if add_recipe_form.image.value %}
+                        <!--current image: -->
+                        <input id="image-clear_id" name="image-clear" type="checkbox" onchange="delete_img_on_check(this)">
+                        <label id="image-clear-label" for="image-clear_id">Remove?</label>
+                        <br><br>
+                        <img id="img_id" src="{{ add_recipe_form.image.value.url }}" class="responsive-img max_height_300"/>
+                    {% else %}
+                        <br>
+                        <!--image that has just been uploaded:-->
+                        <img id="img_id" class="responsive-img max_height_300" src="" alt=""/>
+                    {% endif %}
                 </div>
             </div>
 

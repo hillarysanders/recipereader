@@ -517,15 +517,12 @@ footer.page-footer .footer-copyright {
 .img_upload_btn {
     text-transform: none;
 }
-.edit_recipe_img {
-    max-height: 150px;
-}
-.existing_recipe_img {
-    height: auto;
-    width: auto;
-    max-width: 300px;
+.max_height_300 {
     max-height: 300px;
-    float: right;
+}
+#image-clear-label {
+    margin-top: 10px;
+    margin-left: 10px;
 }
 
 /* cookbook page, recipe search */
