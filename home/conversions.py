@@ -97,7 +97,6 @@ def change_units(ingredients, units_type='metric'):
 
 
 def find_matches_in_line(line):
-    divisor_unicode_chars = '[∕/⁄⟋]'
     ok_left = '[- \(]'
     ok_right = '[- \)\.,]'
     # sooo... first look for numbers. Then loop through the rest of the text using this code?
@@ -105,7 +104,7 @@ def find_matches_in_line(line):
                 name_maps.index]
     pattern = '|'.join(patterns)
     # prepend this pattern with a pattern for integers, floats, and simple fractions:
-    float_pat = '\.?\d{}.?\d|\d+\.?\d+|\d+|\.\d+'.format(divisor_unicode_chars)
+    float_pat = '\.?\d\/.?\d|\d+\.?\d+|\d+|\.\d+'
     pattern = '|'.join([float_pat, pattern])
     pattern = re.compile(pattern, re.IGNORECASE)
 
@@ -119,6 +118,10 @@ def find_matches_in_line(line):
         match_info = pd.DataFrame()
         placement = 0
         iter = 0
+
+        # first, let's replace silly unicode chars with their standards:
+        line = re.sub(pattern='[∕/⁄⟋]', repl='/', string=line)
+        line = re.sub(pattern='[-‐‑]', repl='-', string=line)
         while len(line) > 0:
             match = pattern.search(line)
             if match:
@@ -135,8 +138,8 @@ def find_matches_in_line(line):
 
                 # if it's a float pattern match, we build the row by hand
                 if re.search(pattern=float_pat, string=p):
-                    if re.search(pattern=divisor_unicode_chars, string=p):
-                        value = re.split(pattern=divisor_unicode_chars, string=p)
+                    if '/' in p:
+                        value = p.split('/')
                         value = float(value[0]) / float(value[1])
                         sub_type = 'fraction'
                     else:
@@ -233,13 +236,14 @@ def tag_matches_from_line(match_info):
                                                               type='number', sub_type='range',
                                                               value_func=lambda val0, val2: '{} {}'.format(val0, val2))
 
-    idx = conv_utils.find_type_pattern(match_info=match_info, n=len(match_info),
-                                       columns=['type', 'type', 'type'],
-                                       patterns=['number', 'spacer', 'number'],
-                                       middle_name_matches=[' - ', '- ', ' -', '-', ' to ', '- to ', ' or '])
-    match_info = conv_utils.replace_match_rows_with_aggregate(match_info=match_info, hits_gen=idx,
-                                                              type='number', sub_type='range',
-                                                              value_func=lambda val0, val2: '{} {}'.format(val0, val2))
+    # idx = conv_utils.find_type_pattern(match_info=match_info, n=len(match_info),
+    #                                    columns=['type', 'type', 'type'],
+    #                                    patterns=['number', 'spacer', 'number'],
+    #                                    middle_name_matches=[' - ', '- ', ' -', '-', ' to ', '- to ', ' or '])
+    # match_info = conv_utils.replace_match_rows_with_aggregate(
+    #     match_info=match_info, hits_gen=idx,
+    #     type='number', sub_type='range',
+    #     value_func=lambda val0, val2: '{} {}'.format(val0, val2))
     #######################################################################################################
     # tag dimensions (e.g. 12x9 inches):
     dims_idx = conv_utils.find_type_pattern(match_info=match_info, n=len(match_info),
