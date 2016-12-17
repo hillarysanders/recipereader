@@ -10,7 +10,7 @@ from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.core.serializers.json import DjangoJSONEncoder
 import json
-import itertools
+from django.core.paginator import Paginator
 from . import models
 from .forms import UserForm, LoginForm, AddRecipeForm
 from .conversions_utils import highlight_changed_amounts
@@ -63,6 +63,9 @@ def cookbook(request):
             #     print(r.rank)
             #     print('________________________________')
 
+    # print(len(recipes))
+    # print(recipes[0].recipe_name)
+    # print(recipes[len(recipes)-1].recipe_name)
     context = {
         'recipes': recipes,
         'public_search_attr': 'checked="checked"' if request.GET.get('public_search', False) else '',

@@ -1,4 +1,5 @@
 Django==1.10
+django-autocomplete-light>=2.0,<3.0
 django-materialize-forms==0.2.0
 num2words==0.5.3
 numpy==1.11.1

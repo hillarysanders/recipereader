@@ -94,6 +94,10 @@ class PathAndRename(object):
         return os.path.join(self.path, filename)
 
 
+class RecipeTags(models.Model):
+    tag = models.CharField(max_length=32, default='', verbose_name='Recipe Tag')
+
+
 class Recipe(models.Model):
     # TextField is larger than CharField
     recipe_name = models.CharField(max_length=128, default='', verbose_name='Recipe Name (required)')
@@ -120,6 +124,7 @@ class Recipe(models.Model):
 
     bw_pngs = ArrayField(base_field=models.CharField(max_length=128),
                          null=True, blank=True)
+    tags = models.ManyToManyField(RecipeTags, verbose_name='Recipe tags?', blank=True, null=True)
 
     # invisible to the user stuff:
     pub_date = models.DateTimeField('date published', auto_now_add=True)
@@ -150,24 +155,7 @@ class Recipe(models.Model):
 
         matches = self.get_bw_png_paths(str(self.ingredients_text))
         if len(matches) > 0:
-            # if not self.thumbnail:
-                # thumbnail = Image.open(matches.thumb.iloc[0])
-                # print(matches.thumb.iloc[0])
-                # self.thumbnail = matches.thumb.iloc[0]
-                # self.thumbnail = uploadedfile.UploadedFile(file=matches.thumb.iloc[0],
-                #                                                    name=matches.file.iloc[0],
-                #                                                    content_type='image/png',
-                #                                                    charset=None,
-                #                                                    size=matches.thumb_size.iloc[0])
-                # self.thumbnail = uploadedfile.InMemoryUploadedFile(file=matches.thumb.iloc[0],
-                #                                                    name=matches.file.iloc[0],
-                #                                                    content_type='image/png',
-                #                                                    field_name=None,
-                #                                                    charset=None,
-                #                                                    size=matches.thumb_size.iloc[0])
             self.bw_pngs = matches['file'].tolist()
-            # for f in  self.bw_pngs:
-            #     print(f)
 
         super(Recipe, self).save(*args, **kwargs)
 
