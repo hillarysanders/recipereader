@@ -263,11 +263,12 @@ def edit_recipe(request, slug, pk):
     else:
         add_recipe_form = AddRecipeForm(instance=recipe)
 
-    context = {
-        'add_recipe_form': add_recipe_form,
-        'update': 'Update',
-        'title': 'Edit Recipe'
-    }
+    context = dict(
+        add_recipe_form=add_recipe_form,
+        update='Update',
+        title='Edit Recipe',
+        existing_recipe_tags=[ "dessert", "appetizer", "bread", "meat", "chicken", "turkey", "breakfast" ]  # TODO change to real data
+    )
 
     return render(request, 'home/add_recipe.html', context)
 
