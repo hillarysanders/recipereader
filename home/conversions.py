@@ -107,10 +107,9 @@ def find_matches_in_line(line):
     int_pat = '\d+(?![.)])'  # integer not followed by: ., #, or ).
     # int_pat = '(?(?=^\d+)\d+(?![.)])|\d+)'
     # todo add if then else for #\d+.) if at the start of a line (http://www.regular-expressions.info/conditional.html)
-    floatonly_pat = '\.\d+'
-    intfloat_pat = '\d+\.\d+'
-    float_pat = '|'.join([intfloat_pat, floatonly_pat, int_pat])
-    # float_pat = '\.?\d\/.?\d|\d+(\.\d+)?|\d+|\.\d+'
+    # currently this looks for: fraction, n.n, n, and .n
+    float_pat = '\.?\d+/\.?\d+|\d+\.?\d+|\d+|\.\d+'
+    float_pat = '\.?\d+/\.?\d+|\d+\.?\d+|\d+(?![.)])|\.\d+'
     pattern = '|'.join([float_pat, pattern])
     pattern = re.compile(pattern, re.IGNORECASE)
 
@@ -268,7 +267,7 @@ def tag_matches_from_line(match_info):
                                                            lookback_type='number',
                                                            dont_skip_over_type='text',
                                                            new_sub_type='each_number', lookback=3)
-    each_pattern = r' of this| of the| of your'
+    each_pattern = r' of this| of the| of your| addition| segments'
     match_info = conv_utils.lookback_for_type_from_pattern(match_info=match_info,
                                                            regex_pattern=each_pattern,
                                                            lookback_type='number',

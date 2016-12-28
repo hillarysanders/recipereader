@@ -220,7 +220,7 @@ temperature_patterns = pd.DataFrame(dict(pattern=['ºc', 'ºf', '°c', '°f',  '
                                          type='unit', sub_type='temperature'))
 temperature_patterns['name'] = temperature_patterns['pattern']
 
-time_patterns = pd.DataFrame(dict(pattern=['minutes', 'seconds', 'hours', 'minute', 'second', 'hours'],
+time_patterns = pd.DataFrame(dict(pattern=['minutes', 'seconds', 'hours', 'minute', 'second', 'hour'],
                                   type='unit', sub_type='time'))
 time_patterns['name'] = time_patterns['pattern']
 
