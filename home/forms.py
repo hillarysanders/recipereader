@@ -1,4 +1,3 @@
-from autocomplete_light import shortcuts as al
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
@@ -52,13 +51,9 @@ class LoginForm(forms.ModelForm):
 class AddRecipeForm(forms.ModelForm):
     class Meta:
         model = Recipe
-        autocomplete_fields = ("tags")
         fields = '__all__'
         exclude = ('user_proxy', 'pub_date', 'ingredients', 'instructions',
                    'slug', 'bw_pngs', 'ingredients_sans_amounts')
-        widgets = {
-           "tags": al.TextWidget("RecipeTagsAutocomplete"),
-        }
 
     def __init__(self, *args, **kwargs):
         super(AddRecipeForm, self).__init__(*args, **kwargs)

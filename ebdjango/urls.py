@@ -13,13 +13,11 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-from autocomplete_light import shortcuts as al
 from django.conf.urls import include, url
 from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
-al.autodiscover()
-admin.autodiscover()
+
 
 urlpatterns = [
     # the url() function has four arguments:
@@ -37,5 +35,4 @@ urlpatterns = [
     url(r'^polls/', include('polls.urls')),
     url(r'^admin/', admin.site.urls),
     url(r'^', include('home.urls')),
-    url(r'^autocomplete/', include('autocomplete_light.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

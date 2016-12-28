@@ -53,7 +53,6 @@ INSTALLED_APPS = [
     'django.contrib.postgres',
     # materialize form helper: (awesome: https://github.com/florent1933/django-materializecss-form)
     'materialize_forms',
-    'autocomplete_light',
     'storages',
     # homemade apps:
     'polls.apps.PollsConfig',
