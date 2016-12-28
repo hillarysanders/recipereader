@@ -323,11 +323,12 @@ text_indent {
 
 
 multiplied_amount {
-    background-color: #acbfcc;
-
     background-color: #E0E9E2;
-    border-top: 3px solid #E0E9E2;
-    border-bottom: 3px solid #E0E9E2;
+    background-color: #f9efbd;
+    border-top: 3px solid #f9efbd;
+    border-bottom: 3px solid #f9efbd;
+
+    font-weight: bold;
 }
 
 /*highlights for text parsing:*/

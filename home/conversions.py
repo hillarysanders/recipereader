@@ -104,7 +104,13 @@ def find_matches_in_line(line):
                 name_maps.index]
     pattern = '|'.join(patterns)
     # prepend this pattern with a pattern for integers, floats, and simple fractions:
-    float_pat = '\.?\d\/.?\d|\d+\.?\d+|\d+|\.\d+'
+    int_pat = '\d+(?![.)])'  # integer not followed by: ., #, or ).
+    # int_pat = '(?(?=^\d+)\d+(?![.)])|\d+)'
+    # todo add if then else for #\d+.) if at the start of a line (http://www.regular-expressions.info/conditional.html)
+    floatonly_pat = '\.\d+'
+    intfloat_pat = '\d+\.\d+'
+    float_pat = '|'.join([intfloat_pat, floatonly_pat, int_pat])
+    # float_pat = '\.?\d\/.?\d|\d+(\.\d+)?|\d+|\.\d+'
     pattern = '|'.join([float_pat, pattern])
     pattern = re.compile(pattern, re.IGNORECASE)
 
