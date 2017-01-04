@@ -209,8 +209,11 @@ def tag_matches_from_line(match_info):
     # # tag spaces as spacers:
     match_info.loc[[re.match(pattern='^[ \)\(\.,]+(or so)? ?$', string=n) is not None for n in match_info.name],
                    'type'] = 'spacer'
+    match_info.loc[[re.match(pattern='^ ?(-|to|or) ?$', string=n) is not None for n in match_info.name],
+                   'type'] = 'dash'
     match_info.loc[[re.match(pattern='^(,? and |,? ?\+ ?|,? plus )$', string=n) is not None for n in match_info.name],
                    'sub_type'] = 'plus'
+
     #######################################################################################################
     # tag 1 (16 oz) package numbers:
     # e.g. "1 (16oz.) package"
@@ -226,7 +229,7 @@ def tag_matches_from_line(match_info):
     idx = conv_utils.find_type_pattern(
         match_info=match_info, n=len(match_info),
         columns=['type', 'type', 'type', 'type', 'type'],  # 'type', 'sub_type'
-        patterns=['number', 'spacer', 'number', 'spacer', 'unit'],  # 'spacer', 'pcs'
+        patterns=['number', 'spacer', 'number', ['dash', 'spacer'], 'unit'],  # 'spacer', 'pcs'
         middle_name_matches=None)
     for i in idx:
         match_info['sub_type'].iloc[i + 2] = 'package_number'
@@ -235,20 +238,12 @@ def tag_matches_from_line(match_info):
     #######################################################################################################
     idx = conv_utils.find_type_pattern(match_info=match_info, n=len(match_info),
                                        columns=['type', 'type', 'type'],
-                                       patterns=['number', 'text', 'number'],
-                                       middle_name_matches=[' - ', '- ', ' -', '-', ' to ', '- to ', ' or '])
+                                       patterns=['number', 'dash', 'number'],
+                                       middle_name_matches=None)
     match_info = conv_utils.replace_match_rows_with_aggregate(match_info=match_info, hits_gen=idx,
                                                               type='number', sub_type='range',
                                                               value_func=lambda val0, val2: '{} {}'.format(val0, val2))
 
-    # idx = conv_utils.find_type_pattern(match_info=match_info, n=len(match_info),
-    #                                    columns=['type', 'type', 'type'],
-    #                                    patterns=['number', 'spacer', 'number'],
-    #                                    middle_name_matches=[' - ', '- ', ' -', '-', ' to ', '- to ', ' or '])
-    # match_info = conv_utils.replace_match_rows_with_aggregate(
-    #     match_info=match_info, hits_gen=idx,
-    #     type='number', sub_type='range',
-    #     value_func=lambda val0, val2: '{} {}'.format(val0, val2))
     #######################################################################################################
     # tag dimensions (e.g. 12x9 inches):
     dims_idx = conv_utils.find_type_pattern(match_info=match_info, n=len(match_info),
@@ -308,7 +303,7 @@ def get_amounts(match_info):
         for i in numbers_idx:
             # get the number and the subsequent phrases, sans spacers:
             following = match_info.loc[[j for j in match_info.loc[i:, :].index if
-                                        match_info.loc[j, 'type'] != 'spacer'], :]
+                                        match_info.loc[j, 'type'] not in ['spacer', 'dash']], :]
             # initialize the end location:
             amounts.loc[i, 'end'] = i
             if len(following) > 1:

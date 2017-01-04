@@ -344,24 +344,29 @@ def find_type_pattern(match_info, n, columns, patterns, middle_name_matches=None
     # print('columns: {}'.format(columns))
     # print('n: {}'.format(n))
 
+    # make sure each element of patterns is a list:
+    for i in range(len(patterns)):
+        if not isinstance(patterns[i], list):
+            patterns[i] = [patterns[i]]
+
     # need to search backwards so that when rows are replaced, they are replaced back to front
     # and don't mess up the iloc match placements.
-    while (i - n_patterns + 1) >= 0:
-        comparison = [match_info[columns[j]].iloc[i - n_patterns + 1 + j] for j in range(n_patterns)]
-        if patterns == comparison:
-            if middle_name_matches is not None:
-                if not match_info.iloc[i - middle_i_subtract]['name'] in middle_name_matches:
-                    i -= 1
-                    continue
+    if n_patterns <= n:
+        while (i - n_patterns + 1) >= 0:
+            comparison = [match_info[columns[j]].iloc[i - n_patterns + 1 + j] for j in range(n_patterns)]
+            type_matches = all([el in pats for pats, el in zip(patterns, comparison)])
+            if type_matches:
+                if middle_name_matches is not None:
+                    if not match_info.iloc[i - middle_i_subtract]['name'] in middle_name_matches:
+                        i -= 1
+                        continue
 
-            match = i - n_patterns + 1
-            i -= n_patterns
-            # print('Match!')
-            # print('i={}, patterns={}, match={}'.format(i, patterns, match))
-            yield match
-        else:
-            # print('No match.')
-            i -= 1
+                match = i - n_patterns + 1
+                i -= n_patterns
+                yield match
+            else:
+                # print('No match.')
+                i -= 1
 
 
 def insert_text_match_info_rows(match_info, original_line):
