@@ -9,7 +9,7 @@ from .models import Recipe, UserProxy
 class RecipeAdmin(admin.ModelAdmin):
     fields = ('recipe_name', 'description', 'user_proxy', 'ingredients_text', 'instructions_text',
               'num_servings', 'image')
-    list_display = ('recipe_name', 'description', 'user_proxy')
+    list_display = ('recipe_name', 'description', 'ingredients_text', 'user_proxy')
 
     # this adds a search box to the top of the admin/polls/question page, so you can search for question text:
     search_fields = ['recipe_name', 'description']

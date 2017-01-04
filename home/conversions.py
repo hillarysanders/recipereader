@@ -109,7 +109,7 @@ def find_matches_in_line(line):
     # todo add if then else for #\d+.) if at the start of a line (http://www.regular-expressions.info/conditional.html)
     # currently this looks for: fraction, n.n, n, and .n
     float_pat = '\.?\d+/\.?\d+|\d+\.?\d+|\d+|\.\d+'
-    float_pat = '\.?\d+/\.?\d+|\d+\.?\d+|\d+(?![.)])|\.\d+'
+    float_pat = '\.?\d+/\.?\d+|\d+\.?\d+|(?!#)\d+(?![.)])|\.\d+'
     pattern = '|'.join([float_pat, pattern])
     pattern = re.compile(pattern, re.IGNORECASE)
 
@@ -261,7 +261,7 @@ def tag_matches_from_line(match_info):
     # tag 'for each' numbers:
     # example: "1/2 cups at a time", or "1 teaspoon each", or "spread about 1 teaspoon icing over each cupcake"
     # up to one word followed by one of these phrases (e.g. "3 leaves for each cupcake").
-    each_pattern = r'^[ ,]?[^\s\.]*[, ]?(each|for each|pieces each|times|at a time|over each|full)'
+    each_pattern = r'^[ ,]?[^\s\.]*[, ]?(on|per|each|for each|pieces each|times|at a time|over each|full)'
     match_info = conv_utils.lookback_for_type_from_pattern(match_info=match_info,
                                                            regex_pattern=each_pattern,
                                                            lookback_type='number',
