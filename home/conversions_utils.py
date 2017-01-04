@@ -34,7 +34,7 @@ def number_to_string(value):
     if np.abs(np.abs((value % 1) - .5) - .5) < .05:
         string = str(int(np.round(value)))
     else:
-        fractions = name_maps_fractions.tail(10)
+        fractions = name_maps_fractions.tail(11)
         integer = int(value)
         floater = value % 1
         fraction = fractions.name.iloc[which_min((fractions.value - floater).abs())]
