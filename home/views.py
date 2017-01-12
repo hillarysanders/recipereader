@@ -387,9 +387,7 @@ def recipe_detail(request, slug, pk):
     context['stash_tooltip'] = stash_tooltips.get(stash_plus_or_minus)
 
     if recipe.bw_pngs is not None:
-        degrees = range(0, 360, int(360./(len(recipe.bw_pngs)+1)))[:-1]
-        bw_classes = ['deg{}'.format(d) for d in degrees]
-        context['bw_pngs'] = dict(zip(recipe.bw_pngs, bw_classes))
+        context['bw_pngs'] = [png for png in recipe.bw_pngs]
         print(context['bw_pngs'])
 
     return render(request, 'home/recipe_view.html', context)

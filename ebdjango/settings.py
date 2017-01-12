@@ -171,6 +171,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = 'static'
 MEDIA_ROOT = '/Users/hills/Desktop/code/django-beanstalk/ebdjango/media/'
+# MEDIA_ROOT = '/media/'
 MEDIA_URL = '/media/'
 # MEDIA_URL = "https://recipereader-user-images.s3-us-west-2.amazonaws.com/"
 

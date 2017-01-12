@@ -4,15 +4,8 @@
 {% load static %}
 <!--{% load materialize %}-->
 <div class="container fullwidth_container">
-    <!--<div id="circle-container">-->
-        <!--{% if bw_pngs %}-->
-            <!--{% for path, class in bw_pngs.items %}-->
-                <!--{% with 'https://s3-us-west-2.amazonaws.com/bw-pngs/medium/'|add:path as src %}-->
-                    <!--<div class="field hide"><img class="bw_png center" src="{{src}}"></div>-->
-                <!--{% endwith %}-->
-            <!--{% endfor %}-->
-        <!--{% endif %}-->
-    <!--</div>-->
+
+
     <div class="row">
         <div class="red center-align">{{ form.name.errors }}</div>
 
@@ -26,7 +19,7 @@
 
             <div class="col m2 l2 hide-on-small-only">
                 {% if bw_pngs %}
-                    {% for path, class in bw_pngs.items %}
+                    {% for path in bw_pngs %}
                         {% if forloop.counter|divisibleby:2  %}
                             {% with 'https://s3-us-west-2.amazonaws.com/bw-pngs/medium/'|add:path as src %}
                                 <div class="">
@@ -45,7 +38,7 @@
             </div>
             <div class="col m2 l2 hide-on-small-only">
                 {% if bw_pngs %}
-                    {% for path, class in bw_pngs.items %}
+                    {% for path in bw_pngs %}
                         {% if not forloop.counter|divisibleby:2  %}
                             {% with 'https://s3-us-west-2.amazonaws.com/bw-pngs/medium/'|add:path as src %}
                                 <div class="">
@@ -55,7 +48,8 @@
                             {% endwith %}
                         {% endif %}
                     {% endfor %}
-                {% endif %}            </div>
+                {% endif %}
+            </div>
         </div>
     </div>
 
