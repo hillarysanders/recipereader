@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 """
 
 import os
+
 try:
     from .credentials import *
 except ImportError:
@@ -61,7 +62,6 @@ INSTALLED_APPS = [
 ]
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
 
-
 MIDDLEWARE_CLASSES = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -106,10 +106,9 @@ conn = DB(dbtype='postgres',
           password='{}',
           hostname='{}')
           """.format(os.environ['DB_NAME'],
-                      os.environ['DB_USER'],
-                      os.environ['DB_PASSWORD'],
-                      os.environ['DB_HOST'])
-print(x)
+                     os.environ['DB_USER'],
+                     os.environ['DB_PASSWORD'],
+                     os.environ['DB_HOST'])
 
 DATABASES = {
     'default': {
@@ -172,6 +171,15 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, '..', 'static')
 
+if not DEBUG:
+#     AWS_STORAGE_BUCKET_NAME = 'bw-pngs'
+#     AWS_ACCESS_KEY_ID = AWS_S3_ACCESS_KEY_ID
+#     AWS_SECRET_ACCESS_KEY = AWS_S3_SECRET_ACCESS_KEY
+#     STATICFILES_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
+    S3_URL = 'https://s3-us-west-2.amazonaws.com/recipereader-user-images/'
+    STATIC_URL = S3_URL + 'static/'
+    # todo fix this
+
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, '..', 'media')
@@ -186,7 +194,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, '..', 'media')
 # SESSION_SAVE_EVERY_REQUEST = True
 
 LOGIN_URL = '/'
-SESSION_COOKIE_AGE = 604800*4  # 4 weeks, in seconds
+SESSION_COOKIE_AGE = 604800 * 4  # 4 weeks, in seconds
 
 
 # user 1
