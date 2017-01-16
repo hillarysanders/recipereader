@@ -78,7 +78,7 @@ ROOT_URLCONF = 'ebdjango.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'home/templates')],  # just home templates
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -92,6 +92,7 @@ TEMPLATES = [
         },
     },
 ]
+
 
 WSGI_APPLICATION = 'ebdjango.wsgi.application'
 
@@ -166,19 +167,18 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
-
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, '..', 'static')
 
-if not DEBUG:
-#     AWS_STORAGE_BUCKET_NAME = 'bw-pngs'
-#     AWS_ACCESS_KEY_ID = AWS_S3_ACCESS_KEY_ID
-#     AWS_SECRET_ACCESS_KEY = AWS_S3_SECRET_ACCESS_KEY
+# if not DEBUG:
+# # #     AWS_STORAGE_BUCKET_NAME = 'bw-pngs'
+# # #     AWS_ACCESS_KEY_ID = AWS_S3_ACCESS_KEY_ID
+# # #     AWS_SECRET_ACCESS_KEY = AWS_S3_SECRET_ACCESS_KEY
 #     STATICFILES_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
-    S3_URL = 'https://s3-us-west-2.amazonaws.com/recipereader-user-images/'
-    STATIC_URL = S3_URL + 'static/'
-    # todo fix this
+#     STATIC_S3_URL = 'https://s3-us-west-2.amazonaws.com/recipereader-user-images/static/'
+#     STATIC_URL = STATIC_S3_URL
+#     STATIC_ROOT = STATIC_S3_URL
+#     # todo fix this
 
 
 MEDIA_URL = '/media/'
@@ -197,7 +197,13 @@ LOGIN_URL = '/'
 SESSION_COOKIE_AGE = 604800 * 4  # 4 weeks, in seconds
 
 
-# user 1
-# https://console.aws.amazon.com/iam/home?#users/user1
-# django storage:
-# https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html
+
+
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_BROWSER_XSS_FILTER = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+# CSRF_COOKIE_HTTPONLY = True
+# X_FRAME_OPTIONS = 'DENY'
+# performance optimization:
+CONN_MAX_AGE = 600  # 0 = wait and then close
