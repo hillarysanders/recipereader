@@ -50,7 +50,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.contrib.sites',
+    # 'django.contrib.sites',
     # postgres search:
     'django.contrib.postgres',
     # materialize form helper: (awesome: https://github.com/florent1933/django-materializecss-form)
@@ -196,14 +196,15 @@ MEDIA_ROOT = os.path.join(BASE_DIR, '..', 'media')
 LOGIN_URL = '/'
 SESSION_COOKIE_AGE = 604800 * 4  # 4 weeks, in seconds
 
-
-
-
-SECURE_CONTENT_TYPE_NOSNIFF = True
-SECURE_BROWSER_XSS_FILTER = True
-SESSION_COOKIE_SECURE = True
+# SECURE_CONTENT_TYPE_NOSNIFF = True
+# SECURE_BROWSER_XSS_FILTER = True
+# SESSION_COOKIE_SECURE = False
 # CSRF_COOKIE_SECURE = True
 # CSRF_COOKIE_HTTPONLY = True
 # X_FRAME_OPTIONS = 'DENY'
 # performance optimization:
 CONN_MAX_AGE = 600  # 0 = wait and then close
+
+# CSRF_COOKIE_DOMAIN  = '.recipestasher.com'
+# CSRF_TRUSTED_ORIGINS = ['.recipestasher.com']
+# CSRF_FAILURE_VIEW = 'home.views.csrf_failure'

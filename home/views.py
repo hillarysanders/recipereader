@@ -16,7 +16,8 @@ from .forms import UserForm, LoginForm, AddRecipeForm
 from .conversions_utils import highlight_changed_amounts
 from . import conversions
 # Create your views here.
-
+from django.views.decorators.csrf import csrf_exempt
+# todo hack ^^
 
 stash_tooltips = {'-': 'Remove recipe from personal stash?',
                   '+': 'Add recipe to personal stash?'}
@@ -140,6 +141,7 @@ def logout_user(request):
     return HttpResponseRedirect('/login/')
 
 
+@csrf_exempt
 def auth_login(request):
     error_messages = ''
     if request.method == "POST":
@@ -216,6 +218,7 @@ def check_if_owned_by_user(request, recipe):
     return has_perm
 
 
+@csrf_exempt
 def add_recipe(request):
 
     context = dict(add_recipe_form=AddRecipeForm(),
@@ -238,7 +241,7 @@ def add_recipe(request):
 
     return render(request, 'home/add_recipe.html', context)
 
-
+@csrf_exempt
 def edit_recipe(request, slug, pk):
 
     recipe = get_object_or_404(models.Recipe, pk=pk)
@@ -276,6 +279,7 @@ def bad_perm(request):
     return render(request, 'home/message.html', context)
 
 
+@csrf_exempt
 def ajax_change_servings(request):
 
     ingredients = json.loads(request.POST.get('ingredients', None))
@@ -307,7 +311,7 @@ def ajax_change_servings(request):
 
     return JsonResponse(data)
 
-
+@csrf_exempt
 def ajax_change_units(request):
     # todo now we just need to create the conversions.change_units() function,
     # todo and then after than, make it so servings conversion is done via ajax as well! :)
@@ -413,6 +417,11 @@ def ajax_add_recipe_to_stash(request):
                 stash_tooltip=stash_tooltip)
 
     return JsonResponse(data)
+
+
+# def csrf_failure(request, reason=''):
+#     ctx = {'message': 'some custom messages'}
+#     return render(request, 'home/csrf_failure.html', ctx)
 
 
 

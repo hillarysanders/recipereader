@@ -19,8 +19,7 @@
 
             <div class="col s12 m6 l6">
                 <center><h4>login</h4></center>
-                <form action="/login/" method="post">
-                    {% csrf_token %}
+                <form action="/login/" method="post">{% csrf_token %}
                     {% for f in loginform %}
                         {{ f|as_material:"s12" }}
                     {% endfor %}
@@ -31,8 +30,7 @@
 
             <div class="col s12 m6 l6">
                 <center><h4> create an account</h4></center>
-                <form action="/login/" method="post">
-                    {% csrf_token %}
+                <form action="/login/" method="post">{% csrf_token %}
                     <!--ajax username-already-exists validation:-->
                     <p id="username_validation" class="red-text"> {{content.error_message}}</p>
 
