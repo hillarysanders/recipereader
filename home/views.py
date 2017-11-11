@@ -141,7 +141,7 @@ def logout_user(request):
     return HttpResponseRedirect('/login/')
 
 
-@csrf_exempt
+# @csrf_exempt
 def auth_login(request):
     error_messages = ''
     if request.method == "POST":
@@ -218,7 +218,7 @@ def check_if_owned_by_user(request, recipe):
     return has_perm
 
 
-@csrf_exempt
+# @csrf_exempt
 def add_recipe(request):
 
     context = dict(add_recipe_form=AddRecipeForm(),
@@ -230,6 +230,7 @@ def add_recipe(request):
         if add_recipe_form.is_valid():
             # posted? todo (image)
             context['posted'] = add_recipe_form.instance
+            context['human'] = True
             recipe = add_recipe_form.save(commit=False)  # doesn't save the instance yet, since we need to add stuff
             recipe.user_proxy = get_user_proxy(request)
             recipe.save()
@@ -241,7 +242,7 @@ def add_recipe(request):
 
     return render(request, 'home/add_recipe.html', context)
 
-@csrf_exempt
+# @csrf_exempt
 def edit_recipe(request, slug, pk):
 
     recipe = get_object_or_404(models.Recipe, pk=pk)
@@ -279,7 +280,7 @@ def bad_perm(request):
     return render(request, 'home/message.html', context)
 
 
-@csrf_exempt
+# @csrf_exempt
 def ajax_change_servings(request):
 
     ingredients = json.loads(request.POST.get('ingredients', None))
@@ -311,7 +312,7 @@ def ajax_change_servings(request):
 
     return JsonResponse(data)
 
-@csrf_exempt
+# @csrf_exempt
 def ajax_change_units(request):
     # todo now we just need to create the conversions.change_units() function,
     # todo and then after than, make it so servings conversion is done via ajax as well! :)

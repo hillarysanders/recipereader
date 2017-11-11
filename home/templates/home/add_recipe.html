@@ -57,29 +57,30 @@
                 <p>{{add_recipe_form.instructions_text|as_material:"s12 m6"}}</p>
             </div>
             <div class="col s12">
-                <p>{{add_recipe_form.public|as_material:"s12"}}</p>
+                <p>{{add_recipe_form.public|as_material:"s12 m6"}}</p>
+                <p>{{add_recipe_form.captcha|as_material:"s12 m6"}}</p>
             </div>
+
         </div>
+        {% if add_recipe_form.errors %}
+            {% for field in add_recipe_form %}
+                {% for error in field.errors %}
+                    <div class="alert alert-danger">
+                        <strong class="red">{{ error|escape }}</strong>
+                    </div>
+                {% endfor %}
+            {% endfor %}
+            {% for error in add_recipe_form.non_field_errors %}
+                <div class="alert alert-danger">
+                    <strong class="red">{{ error|escape }}</strong>
+                </div>
+            {% endfor %}
+        {% endif %}
 
         <input type="submit" id="rsubmitbtn" value="{{update}}" name="submit_recipe_button" style='display: none;'/>
         <label for="rsubmitbtn" class="waves-effect waves-light btn col2">Submit</label>
     </form>
 
-
-    {% if add_recipe_form.errors %}
-        {% for field in add_recipe_form %}
-            {% for error in field.errors %}
-                <div class="alert alert-danger">
-                    <strong class="red">{{ error|escape }}</strong>
-                </div>
-            {% endfor %}
-        {% endfor %}
-        {% for error in add_recipe_form.non_field_errors %}
-            <div class="alert alert-danger">
-                <strong class="red">{{ error|escape }}</strong>
-            </div>
-        {% endfor %}
-    {% endif %}
 </div>
 {% endblock %}
 

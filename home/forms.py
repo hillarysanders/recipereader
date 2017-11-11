@@ -1,4 +1,5 @@
 from django import forms
+from captcha.fields import CaptchaField
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from .models import Recipe
@@ -54,10 +55,12 @@ class AddRecipeForm(forms.ModelForm):
         fields = '__all__'
         exclude = ('user_proxy', 'pub_date', 'ingredients', 'instructions',
                    'slug', 'bw_pngs', 'ingredients_sans_amounts')
+        include = ('captcha',)
 
     def __init__(self, *args, **kwargs):
         super(AddRecipeForm, self).__init__(*args, **kwargs)
 
+        self.fields['captcha'] = CaptchaField()
         for f in ['prep_time_hours', 'cook_time_hours', 'ready_in_hours']:
             self.fields[f].widget = forms.NumberInput(attrs={'placeholder': 'hours'})
         for f in ['prep_time_minutes', 'cook_time_minutes', 'ready_in_minutes']:

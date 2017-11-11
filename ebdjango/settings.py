@@ -50,12 +50,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # 'django.contrib.sites',
+    'django.contrib.sites',
     # postgres search:
     'django.contrib.postgres',
     # materialize form helper: (awesome: https://github.com/florent1933/django-materializecss-form)
     'materialize_forms',
     'storages',
+    'captcha',
     # homemade apps:
     'polls.apps.PollsConfig',
     'home.apps.HomeConfig'
@@ -63,10 +64,10 @@ INSTALLED_APPS = [
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
 
 MIDDLEWARE_CLASSES = [
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -194,12 +195,12 @@ MEDIA_ROOT = os.path.join(BASE_DIR, '..', 'media')
 # SESSION_SAVE_EVERY_REQUEST = True
 
 LOGIN_URL = '/'
-SESSION_COOKIE_AGE = 604800 * 4  # 4 weeks, in seconds
+SESSION_COOKIE_AGE = 604800  # 1 week, in seconds
 
 # SECURE_CONTENT_TYPE_NOSNIFF = True
 # SECURE_BROWSER_XSS_FILTER = True
 # SESSION_COOKIE_SECURE = False
-# CSRF_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = False
 # CSRF_COOKIE_HTTPONLY = True
 # X_FRAME_OPTIONS = 'DENY'
 # performance optimization:
