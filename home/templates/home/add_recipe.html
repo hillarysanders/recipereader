@@ -55,8 +55,8 @@
             </div>
 
             <div class="col s12">
-                <p>{{add_recipe_form.ingredients_text|as_material:"s12 m6"}}</p>
-                <p>{{add_recipe_form.instructions_text|as_material:"s12 m6"}}</p>
+                <p>{{add_recipe_form.ingredients_text|escape|as_material:"s12 m6"}}</p>
+                <p>{{add_recipe_form.instructions_text|escape|as_material:"s12 m6"}}</p>
             </div>
             <div class="col s12">
                 <p>{{add_recipe_form.public|as_material:"s12 m6"}}</p>
