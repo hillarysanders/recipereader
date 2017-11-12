@@ -34,10 +34,9 @@ urlpatterns = [
     # include URLs from polls/urls.py
     url(r'^polls/', include('polls.urls')),
     url(r'^admin/', admin.site.urls),
-    # url(r'^captcha/', include('captcha.urls')),
     url(r'^', include('home.urls')),
 ]
 
-urlpatterns += [
-    url(r'^captcha/', include('captcha.urls')),
-]
+# urlpatterns += [
+#     url(r'^captcha/', include('captcha.urls')),
+# ]

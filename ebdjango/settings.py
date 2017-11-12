@@ -56,7 +56,7 @@ INSTALLED_APPS = [
     # materialize form helper: (awesome: https://github.com/florent1933/django-materializecss-form)
     'materialize_forms',
     'storages',
-    'captcha',
+    # 'captcha',
     # homemade apps:
     'polls.apps.PollsConfig',
     'home.apps.HomeConfig'
@@ -197,14 +197,14 @@ MEDIA_ROOT = os.path.join(BASE_DIR, '..', 'media')
 LOGIN_URL = '/'
 SESSION_COOKIE_AGE = 604800  # 1 week, in seconds
 
-CAPTCHA_NOISE_FUNCTIONS = []
+# CAPTCHA_NOISE_FUNCTIONS = []
 # CAPTCHA_MATH_CHALLENGE_OPERATOR = ['x']
-CAPTCHA_CHALLENGE_FUNCT = 'captcha.helpers.math_challenge'
+# CAPTCHA_CHALLENGE_FUNCT = 'captcha.helpers.math_challenge'
 
 # SECURE_CONTENT_TYPE_NOSNIFF = True
 # SECURE_BROWSER_XSS_FILTER = True
-SESSION_COOKIE_SECURE = False
-CSRF_COOKIE_SECURE = False
+# SESSION_COOKIE_SECURE = False
+CSRF_COOKIE_SECURE = True
 # CSRF_COOKIE_HTTPONLY = True
 # X_FRAME_OPTIONS = 'DENY'
 # performance optimization:
