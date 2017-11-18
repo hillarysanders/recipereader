@@ -293,7 +293,7 @@ def get_amounts(match_info):
     :return: amounts data frame
     """
     numbers_idx = match_info.index[match_info.type.values == 'number']
-    amounts = pd.DataFrame(columns=['number_value', 'number_sub_type',  # number_idx is just the index value
+    amounts = pd.DataFrame(columns=['number_value', 'number_sub_type',
                                     'unit_sub_type', 'unit_idx', 'unit_pattern',
                                     'end'],
                            index=numbers_idx)

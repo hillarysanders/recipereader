@@ -185,12 +185,16 @@ def insert_rows_if_amount_decimal_crosses_threshold(amount, amounts, match_info,
 
 
 def combine_two_amounts_rows(left_idx, right_idx, plus_idx, amounts, match_info):
+
     to_merge = amounts.loc[[left_idx, right_idx], :]
     new_row = to_merge.iloc[0, :]
-    # new_row.plus_idx = plus_idx
-    unit_name_1 = name_maps.loc[to_merge.unit_pattern.iloc[1], 'singular']
-    unit_name_2 = name_maps.loc[new_row.unit_pattern, 'singular']
-    conversion_float = CONVERSION_FACTORS.conversions[unit_name_1][unit_name_2]
+    if not to_merge.unit_pattern.isnull().any():
+        unit_name_1 = name_maps.loc[to_merge.unit_pattern.iloc[1], 'singular']
+        unit_name_2 = name_maps.loc[new_row.unit_pattern, 'singular']
+        conversion_float = CONVERSION_FACTORS.conversions[unit_name_1][unit_name_2]
+    else:
+        conversion_float = 1.
+
     new_row['number_value'] += to_merge.number_value.iloc[1] * conversion_float
     new_row['end'] = to_merge.end.iloc[1]
     amounts = replace_rows(amounts, idx=[left_idx, right_idx], new_row=new_row, by_iloc=False)
@@ -478,9 +482,7 @@ def merge_amounts_meant_to_be_together(amounts, match_info):
         # now, merge any amounts that are meant to be together:
         side_by_side_idx = locate_amt_plus_amt_amounts(amounts=amounts, match_info=match_info)
         for left_idx, right_idx, plus_idx in side_by_side_idx:
-            match_info, amounts = combine_two_amounts_rows(left_idx=left_idx, right_idx=right_idx,
-                                                           plus_idx=plus_idx, amounts=amounts,
-                                                           match_info=match_info)
+            match_info, amounts = combine_two_amounts_rows(left_idx=left_idx, right_idx=right_idx,  plus_idx=plus_idx, amounts=amounts, match_info=match_info)
 
     return amounts, match_info
 

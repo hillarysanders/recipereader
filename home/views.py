@@ -379,6 +379,7 @@ def recipe_detail(request, slug, pk):
 
     context['ingredients'] = json.dumps(ingredients, cls=DjangoJSONEncoder)
     context['instructions'] = json.dumps(instructions, cls=DjangoJSONEncoder)
+
     context['hi_ingredients'] = highlight_changed_amounts(ingredients, convert_sisterless_numbers=True,
                                                           ingredients=True)
     context['hi_instructions'] = highlight_changed_amounts(instructions, convert_sisterless_numbers=True)
